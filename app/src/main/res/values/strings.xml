@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">StatusView</string>
+    <string name="my_status">My Status</string>
+    <string name="viewed_update">Viewed update</string>
+</resources>

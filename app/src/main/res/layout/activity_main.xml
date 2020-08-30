@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@color/viewBackgroud">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/top_info_bar" >
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_account_foreground"
+            android:id="@+id/account_image"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/my_status"
+            android:padding="15dp"
+            android:textSize="20sp"
+            android:textColor="#ffffff"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/circle_add_icon" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/top_info_bar"
+        android:id="@+id/viewedText"
+        android:text="@string/viewed_update"
+        android:padding="10dp"
+        android:textColor="@color/appGrey"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/viewedText"
+        android:id="@+id/viewedRecyclerView"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="mini"
+        android:layout_above="@id/camera_button"
+        android:layout_alignStart="@id/camera_button"
+        android:src="@drawable/ic_text_foreground"
+        app:maxImageSize="36dp"
+        app:tint="@android:color/white"
+        android:backgroundTint="@color/appGrey"
+        app:borderWidth="0dp"
+        android:elevation="10dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="15dp"
+        app:fabSize="normal"
+        app:maxImageSize="56dp"
+        android:elevation="10dp"
+        app:tint="@android:color/white"
+        android:src="@drawable/ic_camera_foreground"
+        android:id="@+id/camera_button"
+        android:backgroundTint="@color/iconBackgrouf"/>
+
+</RelativeLayout>
