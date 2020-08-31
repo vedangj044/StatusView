@@ -24,11 +24,16 @@ import java.util.Random;
 
 public class create_text_status extends AppCompatActivity {
 
+    // Background for text view
     private RelativeLayout backgroundOfText;
+    // Text View for status
     private EditText StatusContent;
+    // Button to upload the status
     private FloatingActionButton sendStatus;
 
+    // current background string value
     private String currentBackground = "#778899";
+    // current font index
     private int currentFont = 0;
 
     @Override
@@ -44,6 +49,8 @@ public class create_text_status extends AppCompatActivity {
         TextView fontChangeButton = findViewById(R.id.change_font);
         ImageButton changeBackgroundColor = findViewById(R.id.change_background_color);
 
+
+        // List of all color resources
         final List<String> BackgroundColorResource = new ArrayList<>();
         BackgroundColorResource.add("#778899");
         BackgroundColorResource.add("#290001");
@@ -55,6 +62,7 @@ public class create_text_status extends AppCompatActivity {
         BackgroundColorResource.add("#2d4059");
         BackgroundColorResource.add("#382933");
 
+        // List of all font resources
         final List<Integer> textFont = new ArrayList<>();
         textFont.add(R.font.cantata_one);
         textFont.add(R.font.carter_one);
@@ -64,6 +72,10 @@ public class create_text_status extends AppCompatActivity {
         textFont.add(R.font.delius_unicase_bold);
         textFont.add(R.font.varela_round);
 
+
+        // When the color plate icon is clicked it
+        // changes the background by moving to the next index in the list
+        // if it encounters the last index then set the index to 0
         changeBackgroundColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +88,10 @@ public class create_text_status extends AppCompatActivity {
             }
         });
 
+
+        // When the T button at the button is clicked
+        // it changes the font of the Edit text and if the encounters the last index in the font
+        // list then sets it to 0
         fontChangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,6 +103,9 @@ public class create_text_status extends AppCompatActivity {
             }
         });
 
+
+        // An change listener for the edit text.
+        // The upload button is only visible if the edit text is not null
         StatusContent.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -109,6 +128,8 @@ public class create_text_status extends AppCompatActivity {
             }
         });
 
+
+        // For now, When the upload button is clicked it calls the on string method
         sendStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

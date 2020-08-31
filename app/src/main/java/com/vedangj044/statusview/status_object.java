@@ -7,8 +7,7 @@ public class status_object {
 
     private int NumberOfStatus;
     private String SharedByUid, SharedByName, SharedTime, SharedByProfileImage;
-    private List<String> StatusImageURL = new ArrayList<>();
-    private List<String> ThumbnailURL = new ArrayList<>();
+    private List<status_object> StatusObjectOfDifferentTypes = new ArrayList<>();
 
     /*
     * NumberOfStatus -> The number of status images. This variable decides number of progress bar
@@ -18,34 +17,26 @@ public class status_object {
     * Shared by name -> name of the user
     * Shared by Profile Image -> profile picture of the image
     *
-    * Status Image URL -> Array containing the Url of the images of the status
-    *
-    * Thumbnail URL -> Array containing the URL of the thumbnail images
+    * StatusObjectOfDifferentTypes -> stores the image, text and video object in the same list
     *
     * The length of both array should be equal to the NumberOfStatus
     *
     * */
 
-    public status_object(int numberOfStatus, String sharedByUid, String sharedByName, String sharedTime, String sharedByProfileImage, List<String> statusImageURL, List<String> thumbnailURL) {
+    public status_object() {
+    }
+
+    public status_object(int numberOfStatus, String sharedByUid, String sharedByName, String sharedTime, String sharedByProfileImage, List<status_object> statusObjectOfDifferentTypes) {
         NumberOfStatus = numberOfStatus;
         SharedByUid = sharedByUid;
         SharedByName = sharedByName;
         SharedTime = sharedTime;
         SharedByProfileImage = sharedByProfileImage;
-        StatusImageURL = statusImageURL;
-        ThumbnailURL = thumbnailURL;
+        StatusObjectOfDifferentTypes = statusObjectOfDifferentTypes;
     }
 
     public int getNumberOfStatus() {
         return NumberOfStatus;
-    }
-
-    public List<String> getThumbnailURL() {
-        return ThumbnailURL;
-    }
-
-    public void setThumbnailURL(List<String> thumbnailURL) {
-        ThumbnailURL = thumbnailURL;
     }
 
     public void setNumberOfStatus(int numberOfStatus) {
@@ -84,11 +75,11 @@ public class status_object {
         SharedByProfileImage = sharedByProfileImage;
     }
 
-    public List<String> getStatusImageURL() {
-        return StatusImageURL;
+    public List<status_object> getStatusObjectOfDifferentTypes() {
+        return StatusObjectOfDifferentTypes;
     }
 
-    public void setStatusImageURL(List<String> statusImageURL) {
-        StatusImageURL = statusImageURL;
+    public void setStatusObjectOfDifferentTypes(List<status_object> statusObjectOfDifferentTypes) {
+        StatusObjectOfDifferentTypes = statusObjectOfDifferentTypes;
     }
 }

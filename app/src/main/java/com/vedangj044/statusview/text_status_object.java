@@ -2,10 +2,16 @@ package com.vedangj044.statusview;
 
 import org.jetbrains.annotations.NotNull;
 
-public class text_status_object {
+public class text_status_object extends status_object{
 
     private String Content, ColorString;
     private int FontNumber;
+
+    /*
+    * Content = Main text that has to be displayed
+    * ColorString = String of color code that has to set has background
+    * FontNumber = Int value of the font resource
+    * */
 
     public text_status_object(String content, String colorString, int fontNumber) {
         Content = content;
