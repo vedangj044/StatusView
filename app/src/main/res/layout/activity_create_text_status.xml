@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".create_text_status"
+    android:background="#778899"
+    android:id="@+id/text_relative_layout_backgroud">
+
+    <EditText
+        android:id="@+id/edit_text_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="12dp"
+        android:background="@null"
+        android:hint="@string/type_a_status"
+        android:textAlignment="center"
+        android:textSize="30sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/change_font"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="@string/text_font_change"
+            android:clickable="true"
+            android:textColor="@android:color/white"
+            android:textSize="40sp"
+            android:focusable="true" />
+
+        <ImageButton
+            android:id="@+id/change_background_color"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_color_plate_foreground"
+            android:background="@null"
+            android:layout_marginStart="10dp"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/send_status"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_send_arrow_foreground"
+        app:maxImageSize="48dp"
+        android:visibility="gone"
+        app:tint="@android:color/white"/>
+
+</RelativeLayout>

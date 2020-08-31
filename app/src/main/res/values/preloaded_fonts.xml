@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/allerta_stencil</item>
+        <item>@font/architects_daughter</item>
+        <item>@font/cantata_one</item>
+        <item>@font/carter_one</item>
+        <item>@font/delius_unicase_bold</item>
+        <item>@font/homemade_apple</item>
+        <item>@font/varela_round</item>
+    </array>
+</resources>
