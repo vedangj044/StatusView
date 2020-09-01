@@ -1,4 +1,4 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,14 +13,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
+import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
+import com.vedangj044.statusview.R;
+import com.vedangj044.statusview.Activity.StatusDisplay;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
-public class status_adapter extends RecyclerView.Adapter<status_adapter.MyViewHolder> {
+public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.MyViewHolder> {
 
-    public List<thumbnail_status> mDataset = new ArrayList<>();
+    public List<ThumbnailStatusObject> mDataset = new ArrayList<>();
     // mdataset holds the data to be displayed in the recycler view
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
@@ -46,7 +48,7 @@ public class status_adapter extends RecyclerView.Adapter<status_adapter.MyViewHo
         }
     }
 
-    public status_adapter(List<thumbnail_status> mDataset) {
+    public StatusAdapter(List<ThumbnailStatusObject> mDataset) {
         this.mDataset = mDataset;
     }
 
@@ -59,7 +61,7 @@ public class status_adapter extends RecyclerView.Adapter<status_adapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
-        thumbnail_status object = mDataset.get(position);
+        ThumbnailStatusObject object = mDataset.get(position);
 
         holder.sharedBy.setText(object.getSharedByName());
         holder.numberOfStatus.setText(String.valueOf(object.getNumberOfStatus()));
@@ -72,7 +74,7 @@ public class status_adapter extends RecyclerView.Adapter<status_adapter.MyViewHo
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(holder.context, status_display.class);
+                Intent intent = new Intent(holder.context, StatusDisplay.class);
                 holder.context.startActivity(intent);
             }
         });

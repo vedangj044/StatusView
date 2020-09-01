@@ -1,4 +1,4 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
@@ -16,13 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.vedangj044.statusview.ModelObject.TextStatusObject;
+import com.vedangj044.statusview.R;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class create_text_status extends AppCompatActivity {
+public class CreateTextStatus extends AppCompatActivity {
 
     // Background for text view
     private RelativeLayout backgroundOfText;
@@ -133,7 +133,7 @@ public class create_text_status extends AppCompatActivity {
         sendStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                text_status_object t1 = new text_status_object(StatusContent.getText().toString(),
+                TextStatusObject t1 = new TextStatusObject(StatusContent.getText().toString(),
                         currentBackground, textFont.get(currentFont));
 
                 Toast.makeText(getApplicationContext(), t1.toString(), Toast.LENGTH_SHORT).show();

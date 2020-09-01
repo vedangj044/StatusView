@@ -1,8 +1,8 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.ModelObject;
 
 import org.jetbrains.annotations.NotNull;
 
-public class text_status_object extends status_object{
+public class TextStatusObject extends StatusObject {
 
     private String Content, ColorString;
     private int FontNumber;
@@ -13,7 +13,7 @@ public class text_status_object extends status_object{
     * FontNumber = Int value of the font resource
     * */
 
-    public text_status_object(String content, String colorString, int fontNumber) {
+    public TextStatusObject(String content, String colorString, int fontNumber) {
         Content = content;
         ColorString = colorString;
         FontNumber = fontNumber;

@@ -1,8 +1,6 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.ModelObject;
 
-import java.util.List;
-
-public class image_status_object extends status_object {
+public class ImageStatusObject extends StatusObject {
 
     private String thumbnailURL, ImageURL;
 
@@ -12,7 +10,7 @@ public class image_status_object extends status_object {
     *
     * */
 
-    public image_status_object(String thumbnailURL, String imageURL) {
+    public ImageStatusObject(String thumbnailURL, String imageURL) {
         this.thumbnailURL = thumbnailURL;
         ImageURL = imageURL;
     }

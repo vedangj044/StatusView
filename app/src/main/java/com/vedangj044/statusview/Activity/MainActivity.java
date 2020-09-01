@@ -1,4 +1,4 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.vedangj044.statusview.Adapters.StatusAdapter;
+import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
+import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView viewedRecyclerView;
     private RecyclerView.LayoutManager viewedlayoutManager;
-    private status_adapter viewedStatusAdapter;
+    private StatusAdapter viewedStatusAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +37,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         // create list to hold hardcoded values.
-        List<thumbnail_status> tempData = new ArrayList<>();
+        List<ThumbnailStatusObject> tempData = new ArrayList<>();
 
-        thumbnail_status th1 = new thumbnail_status("https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png",
+        ThumbnailStatusObject th1 = new ThumbnailStatusObject("https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png",
                 "https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png", "1000", "Vedang Joshi", 2);
-        thumbnail_status th2 = new thumbnail_status("https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png",
+        ThumbnailStatusObject th2 = new ThumbnailStatusObject("https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png",
                 "https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png", "1000", "Vedang Joshi", 2);
-        thumbnail_status th3 = new thumbnail_status("https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png",
+        ThumbnailStatusObject th3 = new ThumbnailStatusObject("https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png",
                 "https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png", "1000", "Vedang Joshi", 2);
 
         tempData.add(th1);
@@ -48,14 +51,14 @@ public class MainActivity extends AppCompatActivity {
         tempData.add(th3);
 
         // attached adapter
-        viewedStatusAdapter = new status_adapter(tempData);
+        viewedStatusAdapter = new StatusAdapter(tempData);
         viewedRecyclerView.setAdapter(viewedStatusAdapter);
 
         FloatingActionButton createText = findViewById(R.id.create_text_status);
         createText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, create_text_status.class);
+                Intent intent = new Intent(MainActivity.this, CreateTextStatus.class);
                 startActivity(intent);
             }
         });

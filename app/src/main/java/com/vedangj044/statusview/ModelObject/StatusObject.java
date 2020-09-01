@@ -1,13 +1,13 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.ModelObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class status_object {
+public class StatusObject {
 
     private int NumberOfStatus;
     private String SharedByUid, SharedByName, SharedTime, SharedByProfileImage;
-    private List<status_object> StatusObjectOfDifferentTypes = new ArrayList<>();
+    private List<StatusObject> StatusObjectOfDifferentTypes = new ArrayList<>();
 
     /*
     * NumberOfStatus -> The number of status images. This variable decides number of progress bar
@@ -23,10 +23,10 @@ public class status_object {
     *
     * */
 
-    public status_object() {
+    public StatusObject() {
     }
 
-    public status_object(int numberOfStatus, String sharedByUid, String sharedByName, String sharedTime, String sharedByProfileImage, List<status_object> statusObjectOfDifferentTypes) {
+    public StatusObject(int numberOfStatus, String sharedByUid, String sharedByName, String sharedTime, String sharedByProfileImage, List<StatusObject> statusObjectOfDifferentTypes) {
         NumberOfStatus = numberOfStatus;
         SharedByUid = sharedByUid;
         SharedByName = sharedByName;
@@ -75,11 +75,11 @@ public class status_object {
         SharedByProfileImage = sharedByProfileImage;
     }
 
-    public List<status_object> getStatusObjectOfDifferentTypes() {
+    public List<StatusObject> getStatusObjectOfDifferentTypes() {
         return StatusObjectOfDifferentTypes;
     }
 
-    public void setStatusObjectOfDifferentTypes(List<status_object> statusObjectOfDifferentTypes) {
+    public void setStatusObjectOfDifferentTypes(List<StatusObject> statusObjectOfDifferentTypes) {
         StatusObjectOfDifferentTypes = statusObjectOfDifferentTypes;
     }
 }

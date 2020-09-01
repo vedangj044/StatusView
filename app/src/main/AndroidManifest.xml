@@ -11,13 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".create_text_status"
+        <activity android:name=".Activity.CreateTextStatus"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="adjustResize"></activity>
         <activity
-            android:name=".status_display"
+            android:name=".Activity.StatusDisplay"
             android:theme="@style/NoActionBar" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

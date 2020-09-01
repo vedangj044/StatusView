@@ -1,6 +1,6 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.ModelObject;
 
-public class thumbnail_status {
+public class ThumbnailStatusObject {
 
     // POJO
 
@@ -13,7 +13,7 @@ public class thumbnail_status {
     // SharedByName - name of the person who shared this status
     // numberOfStatus - number of status that can be view by clicking on this.
 
-    public thumbnail_status(String imageUrl, String statusUrl, String sharedByUID, String sharedByName, int numberOfStatus) {
+    public ThumbnailStatusObject(String imageUrl, String statusUrl, String sharedByUID, String sharedByName, int numberOfStatus) {
         ImageUrl = imageUrl;
         StatusUrl = statusUrl;
         SharedByUID = sharedByUID;

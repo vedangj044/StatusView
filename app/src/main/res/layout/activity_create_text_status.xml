@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".create_text_status"
+    tools:context=".Activity.CreateTextStatus"
     android:background="#778899"
     android:id="@+id/text_relative_layout_backgroud">
 

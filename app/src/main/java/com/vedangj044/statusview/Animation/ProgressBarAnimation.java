@@ -1,4 +1,4 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.Animation;
 
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
