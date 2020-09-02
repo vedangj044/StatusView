@@ -6,4 +6,5 @@
     <color name="viewBackgroud">#312f38</color>
     <color name="iconBackgrouf">#00aeef</color>
     <color name="appGrey">#6f6f74</color>
+    <color name="lightGrey">#e7e7e7</color>
 </resources>

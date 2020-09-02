@@ -1,6 +1,7 @@
 package com.vedangj044.statusview.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.graphics.Color;
@@ -15,17 +16,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.vedangj044.statusview.BottomSheets.BackgroundBottomSheet;
 import com.vedangj044.statusview.ModelObject.TextStatusObject;
 import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateTextStatus extends AppCompatActivity {
+public class CreateTextStatus extends AppCompatActivity implements BackgroundBottomSheet.BackgroundChangeListener {
 
     // Background for text view
-    private RelativeLayout backgroundOfText;
+    private CoordinatorLayout backgroundOfText;
     // Text View for status
     private EditText StatusContent;
     // Button to upload the status
@@ -36,6 +39,8 @@ public class CreateTextStatus extends AppCompatActivity {
     // current font index
     private int currentFont = 0;
 
+    private BottomSheetBehavior bottomSheetBehavior;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,22 +50,11 @@ public class CreateTextStatus extends AppCompatActivity {
         StatusContent = findViewById(R.id.edit_text_content);
         sendStatus = findViewById(R.id.send_status);
 
+        View bottomSheet = findViewById(R.id.tab_bottom);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
         TextView fontChangeButton = findViewById(R.id.change_font);
         ImageButton changeBackgroundColor = findViewById(R.id.change_background_color);
-
-
-        // List of all color resources
-        final List<String> BackgroundColorResource = new ArrayList<>();
-        BackgroundColorResource.add("#778899");
-        BackgroundColorResource.add("#290001");
-        BackgroundColorResource.add("#f8bd7f");
-        BackgroundColorResource.add("#4e89ae");
-        BackgroundColorResource.add("#206a5d");
-        BackgroundColorResource.add("#ffc93c");
-        BackgroundColorResource.add("#1a1a2e");
-        BackgroundColorResource.add("#2d4059");
-        BackgroundColorResource.add("#382933");
 
         // List of all font resources
         final List<Integer> textFont = new ArrayList<>();
@@ -72,19 +66,19 @@ public class CreateTextStatus extends AppCompatActivity {
         textFont.add(R.font.delius_unicase_bold);
         textFont.add(R.font.varela_round);
 
-
         // When the color plate icon is clicked it
         // changes the background by moving to the next index in the list
         // if it encounters the last index then set the index to 0
         changeBackgroundColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int current =  BackgroundColorResource.indexOf(currentBackground);
-                if(current == BackgroundColorResource.size() - 1){
-                    current = -1;
-                }
-                currentBackground = BackgroundColorResource.get(current + 1);
-                backgroundOfText.setBackgroundColor(Color.parseColor(currentBackground));
+
+                // Push the background selection fragment to the bottom sheet
+                BackgroundBottomSheet backgroundBottomSheet = new BackgroundBottomSheet();
+                getSupportFragmentManager().beginTransaction().replace(R.id.tab, backgroundBottomSheet).commit();
+
+                // bottom sheet is expanded
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
 
@@ -139,5 +133,12 @@ public class CreateTextStatus extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), t1.toString(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    // Implementing method to receive changes in the background
+    @Override
+    public void onInputASend(String color) {
+        currentBackground = color;
+        backgroundOfText.setBackgroundColor(Color.parseColor(color));
     }
 }
