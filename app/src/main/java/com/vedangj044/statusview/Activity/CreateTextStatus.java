@@ -19,13 +19,14 @@ import android.widget.Toast;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vedangj044.statusview.BottomSheets.BackgroundBottomSheet;
+import com.vedangj044.statusview.BottomSheets.FontBottomSheet;
 import com.vedangj044.statusview.ModelObject.TextStatusObject;
 import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateTextStatus extends AppCompatActivity implements BackgroundBottomSheet.BackgroundChangeListener {
+public class CreateTextStatus extends AppCompatActivity implements BackgroundBottomSheet.BackgroundChangeListener, FontBottomSheet.FontStyleChangeListener {
 
     // Background for text view
     private CoordinatorLayout backgroundOfText;
@@ -38,7 +39,10 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
     private String currentBackground = "#778899";
     // current font index
     private int currentFont = 0;
+    // current font color
+    private String currentFontColor;
 
+    // bottom sheer behaviour
     private BottomSheetBehavior bottomSheetBehavior;
 
     @Override
@@ -56,15 +60,6 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
         TextView fontChangeButton = findViewById(R.id.change_font);
         ImageButton changeBackgroundColor = findViewById(R.id.change_background_color);
 
-        // List of all font resources
-        final List<Integer> textFont = new ArrayList<>();
-        textFont.add(R.font.cantata_one);
-        textFont.add(R.font.carter_one);
-        textFont.add(R.font.homemade_apple);
-        textFont.add(R.font.allerta_stencil);
-        textFont.add(R.font.architects_daughter);
-        textFont.add(R.font.delius_unicase_bold);
-        textFont.add(R.font.varela_round);
 
         // When the color plate icon is clicked it
         // changes the background by moving to the next index in the list
@@ -82,18 +77,19 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
             }
         });
 
-
         // When the T button at the button is clicked
         // it changes the font of the Edit text and if the encounters the last index in the font
         // list then sets it to 0
         fontChangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentFont == textFont.size() - 1){
-                    currentFont = 0;
-                }
-                Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), textFont.get(currentFont++));
-                StatusContent.setTypeface(typeface);
+
+                // Push the font selection fragment to the bottom sheet
+                FontBottomSheet fontBottomSheet = new FontBottomSheet();
+                getSupportFragmentManager().beginTransaction().replace(R.id.tab, fontBottomSheet).commit();
+
+                // bottom sheet is expanded
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
 
@@ -128,7 +124,7 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
             @Override
             public void onClick(View v) {
                 TextStatusObject t1 = new TextStatusObject(StatusContent.getText().toString(),
-                        currentBackground, textFont.get(currentFont));
+                        currentBackground, currentFont);
 
                 Toast.makeText(getApplicationContext(), t1.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -140,5 +136,20 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
     public void onInputASend(String color) {
         currentBackground = color;
         backgroundOfText.setBackgroundColor(Color.parseColor(color));
+    }
+
+    // Implementing method to receive changes in the font style
+    @Override
+    public void onInputBSend(int a) {
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), a);
+        StatusContent.setTypeface(typeface);
+        currentFont = a;
+    }
+
+    // Implementing method to receive changes in the font color
+    @Override
+    public void onInputCSend(String color) {
+        StatusContent.setTextColor(Color.parseColor(color));
+        currentFontColor = color;
     }
 }
