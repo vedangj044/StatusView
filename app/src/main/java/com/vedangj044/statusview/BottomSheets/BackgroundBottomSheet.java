@@ -35,6 +35,7 @@ public class BackgroundBottomSheet extends Fragment {
     private List<String> BackgroundColorResource = new ArrayList<>();
 
     // Interface to send message back to the activity
+    // Change commit messages
     public interface BackgroundChangeListener{
         void onInputASend(String color);
     }
