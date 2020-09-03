@@ -1,6 +1,7 @@
 package com.vedangj044.statusview.Activity;
 
 import androidx.annotation.ContentView;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.res.ResourcesCompat;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Size;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -141,6 +143,18 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
                     sendStatus.setVisibility(View.GONE);
                 }
                 else{
+                    // Here we have hardcoded the values of maximum length of status text
+                    // if it exceeds the threshold the size is reduced
+                    int chara = StatusContent.getText().toString().length();
+                    if(chara > 1000){
+                        StatusContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                    }
+                    else if(chara > 500){
+                        StatusContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                    }
+                    else  if(chara > 300){
+                        StatusContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                    }
                     sendStatus.setVisibility(View.VISIBLE);
                 }
             }
@@ -219,5 +233,36 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
             // when the keyboard should NOT be visible
             inputManager.hideSoftInputFromWindow(backgroundOfText.getWindowToken(), 0);
         }
+    }
+
+    // Saving state to enable screen rotation and handle configuration changes
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        savedInstanceState.putString("currentBackground", currentBackground);
+        savedInstanceState.putString("currentFontColor", currentFontColor);
+        savedInstanceState.putInt("currentFont", currentFont);
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    // restoring state
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        currentFontColor = savedInstanceState.getString("currentFontColor");
+        currentBackground = savedInstanceState.getString("currentBackground");
+        currentFont = savedInstanceState.getInt("currentFont");
+
+        backgroundOfText.setBackgroundColor(Color.parseColor(currentBackground));
+
+        if(currentFont != 0){
+            Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), currentFont);
+            StatusContent.setTypeface(typeface);
+        }
+
+        if(currentFontColor != null){
+            StatusContent.setTextColor(Color.parseColor(currentFontColor));
+        }
+
     }
 }
