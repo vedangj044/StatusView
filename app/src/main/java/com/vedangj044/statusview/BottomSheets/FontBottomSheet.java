@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -42,6 +43,15 @@ public class FontBottomSheet extends Fragment {
     // default width for font color circular image view
     private static final int width = 50;
 
+    // Padding for text view 10dp
+    private int paddingTextView;
+
+    // current fontStyleSelectedState
+    private int currentFontSelectedId = -1;
+
+    // current font color selected id
+    private int currentFontColorSelectedId = -1;
+
     // interface to send message back to activity
     public interface FontStyleChangeListener{
         // send font style change event
@@ -49,12 +59,15 @@ public class FontBottomSheet extends Fragment {
 
         // send font color change event
         void onInputCSend(String color);
+
+        // shows the keyboard in CreateTextStatus activity
+        void onCallKeyboardB(int i);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.bottom_text_select, container, false);
+        final View view = inflater.inflate(R.layout.bottom_text_select, container, false);
 
         textFont.add(R.font.cantata_one);
         textFont.add(R.font.carter_one);
@@ -73,22 +86,44 @@ public class FontBottomSheet extends Fragment {
                 int id = v.getId();
                 // triggers goes back to activity
                 listener.onInputBSend(textFont.get(id));
+
+                // if a font style is already selected then restore it to default style
+                if(currentFontSelectedId != -1){
+                    TextView tv = view.findViewById(currentFontSelectedId);
+                    tv.setBackgroundResource(0);
+                    tv.setPadding(paddingTextView, paddingTextView, paddingTextView, paddingTextView);
+                }
+
+                // change the selected style
+                currentFontSelectedId = id;
+
+                // background to have round corners
+                v.setBackgroundResource(R.drawable.round_text_font_background);
+
+                // Padding
+                v.setPadding(paddingTextView, paddingTextView, paddingTextView, paddingTextView);
+
             }
         };
+
+        // Already selected font is send to the fragment by the activity on creation
+        currentFontSelectedId = textFont.indexOf(getArguments().getInt("currentFont", -1));
 
         // styling and dynamically adding the text font based on the textFont array
         for(int i = 0; i < textFont.size(); i++){
             TextView textView = new TextView(getActivity());
 
             // background to have round corners
-            textView.setBackgroundResource(R.drawable.round_text_font_background);
+            if(currentFontSelectedId == i){
+                textView.setBackgroundResource(R.drawable.round_text_font_background);
+            }
 
             // set text
             textView.setText("Text");
 
             // padding
-            int p = Math.round(padding* Resources.getSystem().getDisplayMetrics().density);;
-            textView.setPadding(p, p, p, p);
+            paddingTextView = Math.round(padding* Resources.getSystem().getDisplayMetrics().density);;
+            textView.setPadding(paddingTextView, paddingTextView, paddingTextView, paddingTextView);
 
             // margin
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -127,16 +162,46 @@ public class FontBottomSheet extends Fragment {
             @Override
             public void onClick(View v) {
                 int id = v.getId();
+
+                // 100 offset is set so that id doesn't clash with text view ids
+                id = id - 100;
+
+                // send message back to activity
                 listener.onInputCSend(fontColor.get(id));
+
+                // if a color is already selected then restore its styling to default
+                if(currentFontColorSelectedId != -1){
+
+                    CircularImageView ig = view.findViewById(currentFontColorSelectedId+100);
+                    ig.setBackgroundResource(R.drawable.round_profile_pic);
+
+                    setColor(ig, fontColor.get(currentFontColorSelectedId));
+                }
+
+                // change the current selected font color
+                currentFontColorSelectedId = id;
+
+                // replaces current border with a thick one
+                v.setBackgroundResource(R.drawable.round_profile_pic_thick);
+                setColor(v, fontColor.get(currentFontColorSelectedId));
             }
         };
+
+        // Already selected font color is send to the fragment by the activity on creation
+        currentFontColorSelectedId = fontColor.indexOf(getArguments().getString("currentFontColor"));
 
         for(int i = 0; i < fontColor.size(); i++){
             // circular image view is an open source library for circular image views
             CircularImageView imageItem = new CircularImageView(getActivity());
 
+            if(currentFontColorSelectedId == i){
+                imageItem.setBackgroundResource(R.drawable.round_profile_pic_thick);
+            }
+            else{
+                imageItem.setBackgroundResource(R.drawable.round_profile_pic);
+            }
             // background with white border
-            imageItem.setBackgroundResource(R.drawable.round_profile_pic);
+
 
             // background color
             GradientDrawable drawable = (GradientDrawable) imageItem.getBackground();
@@ -151,14 +216,31 @@ public class FontBottomSheet extends Fragment {
             imageItem.setLayoutParams(params);
 
             // id, click Listener
-            imageItem.setId(i);
+            // 100 is added so that id doesn't clash with text view id
+            imageItem.setId(i+100);
             imageItem.setOnClickListener(fontColorChange);
             fontColorLayout.addView(imageItem);
         }
 
 
+        // Triggers when top left corner keyboard button is clicked
+        ImageButton showKeyboard = view.findViewById(R.id.show_keyboard_2);
+        showKeyboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onCallKeyboardB(1);
+            }
+        });
+
         return view;
     }
+
+    // set color method to set color when a background resource is already set
+    private void setColor(View v, String s) {
+        GradientDrawable drawable = (GradientDrawable) v.getBackground();
+        drawable.setColorFilter(Color.parseColor(s), PorterDuff.Mode.DST_OVER);
+    }
+
 
     @Override
     public void onAttach(@NonNull Context context) {

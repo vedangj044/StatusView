@@ -1,15 +1,22 @@
 package com.vedangj044.statusview.Activity;
 
+import androidx.annotation.ContentView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.res.ResourcesCompat;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -68,9 +75,19 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
             @Override
             public void onClick(View v) {
 
+                // bundle is send to the fragment to keep the selection persistent
+                Bundle bundle = new Bundle();
+                bundle.putString("background", currentBackground);
+
                 // Push the background selection fragment to the bottom sheet
                 BackgroundBottomSheet backgroundBottomSheet = new BackgroundBottomSheet();
+                backgroundBottomSheet.setArguments(bundle);
+
                 getSupportFragmentManager().beginTransaction().replace(R.id.tab, backgroundBottomSheet).commit();
+
+                // When background selection needs to displayed the keyboard is first collapses if visible
+                showKeyboardShortcut(false);
+
 
                 // bottom sheet is expanded
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -84,9 +101,20 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
             @Override
             public void onClick(View v) {
 
+                // bundle is sent to the fragment to keep the selection persistent
+                Bundle bundle = new Bundle();
+                bundle.putInt("currentFont", currentFont);
+                bundle.putString("currentFontColor", currentFontColor);
+
                 // Push the font selection fragment to the bottom sheet
                 FontBottomSheet fontBottomSheet = new FontBottomSheet();
+                fontBottomSheet.setArguments(bundle);
+
                 getSupportFragmentManager().beginTransaction().replace(R.id.tab, fontBottomSheet).commit();
+
+                // When font selection fragment needs to be displayed keyboard is collapsed first
+                showKeyboardShortcut(false);
+
 
                 // bottom sheet is expanded
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -118,6 +146,21 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
             }
         });
 
+        // preventing opening of keyboard and the bottom sheet together
+        backgroundOfText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int heightDiff = backgroundOfText.getRootView().getHeight() - backgroundOfText.getHeight();
+
+                DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
+                float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, metrics);
+
+                // If anything calls the keyboard it should collapse the bottom sheet
+                if(heightDiff > height){
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+        });
 
         // For now, When the upload button is clicked it calls the on string method
         sendStatus.setOnClickListener(new View.OnClickListener() {
@@ -151,5 +194,30 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
     public void onInputCSend(String color) {
         StatusContent.setTextColor(Color.parseColor(color));
         currentFontColor = color;
+    }
+
+    // When show keyboard button is clicked in the font selection fragment
+    @Override
+    public void onCallKeyboardB(int i) {
+        showKeyboardShortcut(true);
+    }
+
+    // When show keyboard button is clicked in the background selection fragment
+    @Override
+    public void onCallKeyboardA(int i) {
+        showKeyboardShortcut(true);
+    }
+
+    private void showKeyboardShortcut(boolean t) {
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(t){
+            // when the keyboard should be visible
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            inputManager.toggleSoftInputFromWindow(backgroundOfText.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+        }
+        else{
+            // when the keyboard should NOT be visible
+            inputManager.hideSoftInputFromWindow(backgroundOfText.getWindowToken(), 0);
+        }
     }
 }
