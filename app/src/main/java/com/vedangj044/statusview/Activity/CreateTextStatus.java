@@ -12,8 +12,10 @@ import android.graphics.Typeface;
 import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.View;
@@ -145,15 +147,29 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
                 else{
                     // Here we have hardcoded the values of maximum length of status text
                     // if it exceeds the threshold the size is reduced
+
                     int chara = StatusContent.getText().toString().length();
-                    if(chara > 1000){
-                        StatusContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                    if(chara >= 700 || StatusContent.getLineCount() > 15){
+                        // Max limit is set if any condition is met
+                        StatusContent.setFilters(new InputFilter[]{new InputFilter.LengthFilter(chara)});
+                        Toast.makeText(getApplicationContext(), "Content can't exceed 700 characters or 15 lines", Toast.LENGTH_SHORT).show();
                     }
-                    else if(chara > 500){
+                    else{
+                        // Max limit is restored to 700
+                        StatusContent.setFilters(new InputFilter[]{new InputFilter.LengthFilter(700)});
+                    }
+
+                    // Smallest Size
+                    if(chara > 500){
                         StatusContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
                     }
+                    // Mid size
                     else  if(chara > 300){
                         StatusContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                    }
+                    // Normal Size
+                    else{
+                        StatusContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
                     }
                     sendStatus.setVisibility(View.VISIBLE);
                 }
