@@ -8,7 +8,7 @@
     android:background="#778899"
     android:id="@+id/text_relative_layout_backgroud">
 
-    <EditText
+    <com.vanniktech.emoji.EmojiEditText
         android:id="@+id/edit_text_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,6 +51,15 @@
                 android:layout_alignParentTop="true"
                 android:orientation="horizontal"
                 android:id="@+id/top_selection">
+
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@null"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_emoji_foreground"
+                    android:id="@+id/emoji_open"/>
+
 
                 <TextView
                     android:id="@+id/change_font"

@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.vanniktech.emoji.EmojiPopup;
 import com.vedangj044.statusview.BottomSheets.BackgroundBottomSheet;
 import com.vedangj044.statusview.BottomSheets.FontBottomSheet;
 import com.vedangj044.statusview.ModelObject.TextStatusObject;
@@ -70,6 +71,18 @@ public class CreateTextStatus extends AppCompatActivity implements BackgroundBot
 
         TextView fontChangeButton = findViewById(R.id.change_font);
         ImageButton changeBackgroundColor = findViewById(R.id.change_background_color);
+        ImageButton emojiPopup = findViewById(R.id.emoji_open);
+
+        // Emoji popup builder
+        final EmojiPopup emojiPopup1 = EmojiPopup.Builder.fromRootView(backgroundOfText).build(StatusContent);
+
+        // Triggers the emoji popup
+        emojiPopup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emojiPopup1.toggle();
+            }
+        });
 
 
         // When the color plate icon is clicked it

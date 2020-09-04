@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.vanniktech.emoji.EmojiManager;
 import com.vedangj044.statusview.Adapters.StatusAdapter;
+import com.vedangj044.statusview.CustomEmoji.CEmojiProvider;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
 
@@ -26,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Installing the Custom Emoji Provider class at the start of the app
+        EmojiManager.install(new CEmojiProvider());
 
         viewedRecyclerView = findViewById(R.id.viewedRecyclerView);
         // recycler view
