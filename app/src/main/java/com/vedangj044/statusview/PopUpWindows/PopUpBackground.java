@@ -1,34 +1,41 @@
-package com.vedangj044.statusview.BottomSheets;
+package com.vedangj044.statusview.PopUpWindows;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.VectorDrawable;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.vedangj044.statusview.Adapters.BackgroudColorAdapter;
 import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class BackgroundBottomSheet extends Fragment {
+public class PopUpBackground extends PopUpSetup {
+
+
+    // Layout of the background passed to the parent to measure height
+    View ScreenLayout;
+
+    // Context of the activity
+    Context context;
+
+    public PopUpBackground(Context context, View screenLayout) {
+        super(context, screenLayout);
+        this.context = context;
+        this.ScreenLayout = screenLayout;
+
+        // View is set Here
+        View customView = createCustomView();
+        setContentView(customView);
+    }
 
     // Interface to send messaged back to the activity
     private BackgroundChangeListener listener;
@@ -50,10 +57,19 @@ public class BackgroundBottomSheet extends Fragment {
     // one color is selected at the same time
     private int current_Selected = -1;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.bottom_background_select, container, false);
+    // Called before the popUpWindow is displayed to style the previously selected choice
+    public void setState(String color){
+        this.current_Selected = BackgroundColorResource.indexOf(color);
+    }
+
+    // Notifies the activity for the changes in user selection
+    public void setBackgroundChangeListener(BackgroundChangeListener listener){
+        this.listener = listener;
+    }
+
+    private View createCustomView() {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.bottom_background_select, null, false);
 
         BackgroundColorResource.add("#778899");
         BackgroundColorResource.add("#290001");
@@ -68,8 +84,6 @@ public class BackgroundBottomSheet extends Fragment {
 
         final GridView gridView = v.findViewById(R.id.background_selector);
 
-        // getting argument to keep the selection persistent
-        current_Selected = BackgroundColorResource.indexOf(getArguments().getString("background"));
 
         // set adapter for grid view
         BackgroudColorAdapter bgAdapter = new BackgroudColorAdapter(v.getContext(), BackgroundColorResource, current_Selected);
@@ -125,23 +139,5 @@ public class BackgroundBottomSheet extends Fragment {
         });
 
         return v;
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if(context instanceof BackgroundChangeListener){
-            listener = (BackgroundChangeListener) context;
-        }
-        else{
-            throw new RuntimeException(context.toString() + "must implement Background listener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
     }
 }

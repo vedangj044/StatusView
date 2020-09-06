@@ -1,15 +1,12 @@
-package com.vedangj044.statusview.BottomSheets;
+package com.vedangj044.statusview.PopUpWindows;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.VectorDrawable;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.fragment.app.Fragment;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.vedangj044.statusview.R;
@@ -28,10 +22,10 @@ import com.vedangj044.statusview.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FontBottomSheet extends Fragment {
+public class PopUpFont extends PopUpSetup {
 
     // Interface to send messages back to activity
-    private FontStyleChangeListener listener;
+    FontStyleChangeListener li;
 
     // array to hold all font integer value
     final List<Integer> textFont = new ArrayList<>();
@@ -52,6 +46,7 @@ public class FontBottomSheet extends Fragment {
     // current font color selected id
     private int currentFontColorSelectedId = -1;
 
+
     // interface to send message back to activity
     public interface FontStyleChangeListener{
         // send font style change event
@@ -64,10 +59,41 @@ public class FontBottomSheet extends Fragment {
         void onCallKeyboardB(int i);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.bottom_text_select, container, false);
+    // Layout of the background passed to the parent to measure height
+    View ScreenLayout;
+
+    // Content
+    Context context;
+
+    public PopUpFont(Context context, View screenLayout) {
+        super(context, screenLayout);
+        this.ScreenLayout = screenLayout;
+        this.context = context;
+
+        // View is set here
+        View customView = createCustomView();
+        setContentView(customView);
+    }
+
+
+    // set the listener to trigger if user interacts with the popUpWindow
+    public void setFontStyleChangeListener (FontStyleChangeListener listener){
+        this.li = listener;
+    }
+
+    // When the popUpWindow is create setState function is called, it takes in the
+    // already selected font and fontColor and style them accordingly.
+    // creating a persistent behavior
+    // it is similar to onSavedInstanceBundle
+    public void setState(int currentFontSelectedId, String currentFontColorSelectedId){
+        this.currentFontColorSelectedId = fontColor.indexOf(currentFontColorSelectedId);
+        this.currentFontSelectedId = textFont.indexOf(currentFontSelectedId);
+    }
+
+    // Returns the view
+    private View createCustomView() {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.bottom_text_select, null, false);
 
         textFont.add(R.font.cantata_one);
         textFont.add(R.font.carter_one);
@@ -85,7 +111,7 @@ public class FontBottomSheet extends Fragment {
             public void onClick(View v) {
                 int id = v.getId();
                 // triggers goes back to activity
-                listener.onInputBSend(textFont.get(id));
+                li.onInputBSend(textFont.get(id));
 
                 // if a font style is already selected then restore it to default style
                 if(currentFontSelectedId != -1){
@@ -106,12 +132,9 @@ public class FontBottomSheet extends Fragment {
             }
         };
 
-        // Already selected font is send to the fragment by the activity on creation
-        currentFontSelectedId = textFont.indexOf(getArguments().getInt("currentFont", -1));
-
         // styling and dynamically adding the text font based on the textFont array
         for(int i = 0; i < textFont.size(); i++){
-            TextView textView = new TextView(getActivity());
+            TextView textView = new TextView(context);
 
             // background to have round corners
             if(currentFontSelectedId == i){
@@ -131,11 +154,11 @@ public class FontBottomSheet extends Fragment {
             textView.setLayoutParams(params);
 
             // color and size
-            textView.setTextColor(getResources().getColor(R.color.iconBackgrouf));
+            textView.setTextColor(context.getResources().getColor(R.color.iconBackgrouf));
             textView.setTextSize(20);
 
             // font style
-            Typeface typeface = ResourcesCompat.getFont(getActivity(), textFont.get(i));
+            Typeface typeface = ResourcesCompat.getFont(context, textFont.get(i));
             textView.setTypeface(typeface);
 
             // id, click listener
@@ -167,7 +190,7 @@ public class FontBottomSheet extends Fragment {
                 id = id - 100;
 
                 // send message back to activity
-                listener.onInputCSend(fontColor.get(id));
+                li.onInputCSend(fontColor.get(id));
 
                 // if a color is already selected then restore its styling to default
                 if(currentFontColorSelectedId != -1){
@@ -188,11 +211,11 @@ public class FontBottomSheet extends Fragment {
         };
 
         // Already selected font color is send to the fragment by the activity on creation
-        currentFontColorSelectedId = fontColor.indexOf(getArguments().getString("currentFontColor"));
+//        currentFontColorSelectedId = fontColor.indexOf(getArguments().getString("currentFontColor"));
 
         for(int i = 0; i < fontColor.size(); i++){
             // circular image view is an open source library for circular image views
-            CircularImageView imageItem = new CircularImageView(getActivity());
+            CircularImageView imageItem = new CircularImageView(context);
 
             if(currentFontColorSelectedId == i){
                 imageItem.setBackgroundResource(R.drawable.round_profile_pic_thick);
@@ -205,7 +228,7 @@ public class FontBottomSheet extends Fragment {
 
             // background color
             GradientDrawable drawable = (GradientDrawable) imageItem.getBackground();
-            drawable.setColorFilter(Color.parseColor(fontColor.get(i)), PorterDuff.Mode.DST_OVER);
+            drawable.setColorFilter(Color.parseColor(fontColor.get(i)), PorterDuff.Mode.MULTIPLY);
 
             // Size and width
             int p = Math.round(width* Resources.getSystem().getDisplayMetrics().density);;
@@ -228,35 +251,17 @@ public class FontBottomSheet extends Fragment {
         showKeyboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onCallKeyboardB(1);
+                li.onCallKeyboardB(1);
             }
         });
 
         return view;
     }
 
-    // set color method to set color when a background resource is already set
     private void setColor(View v, String s) {
         GradientDrawable drawable = (GradientDrawable) v.getBackground();
-        drawable.setColorFilter(Color.parseColor(s), PorterDuff.Mode.DST_OVER);
+        drawable.setColorFilter(Color.parseColor(s), PorterDuff.Mode.MULTIPLY);
     }
 
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if(context instanceof BackgroundBottomSheet.BackgroundChangeListener){
-            listener = (FontStyleChangeListener) context;
-        }
-        else{
-            throw new RuntimeException(context.toString() + "must implement Background listener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
+    
 }

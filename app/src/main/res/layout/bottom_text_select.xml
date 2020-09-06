@@ -34,7 +34,7 @@
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:layout_below="@+id/top_bar_heading1"
         android:id="@+id/font_style_selection">
         
@@ -70,7 +70,7 @@
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:layout_below="@id/font_color_text"
         android:id="@+id/font_color_selection">
 
