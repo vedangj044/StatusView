@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.CameraActivty">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/camera"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/preview_area"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:padding="5dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/recent_image"
+                android:orientation="horizontal" />
+
+        </HorizontalScrollView>
+
+        <RelativeLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
+
+            <ImageView
+                android:layout_width="75dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/camera_flash_off_foreground"
+                android:id="@+id/camera_flash"/>
+
+            <ImageView
+                android:id="@+id/captureImg"
+                android:layout_width="90dp"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:contentDescription="@string/capture"
+                android:src="@drawable/camera_ring_foreground" />
+
+            <ImageView
+                android:layout_width="75dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/camera_flip_foreground"
+                android:id="@+id/camera_switch"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_margin="5dp"
+            android:textColor="@android:color/white"
+            android:text="@string/hold_for_video_tap_for_photo" />
+
+    </LinearLayout>
+
+</RelativeLayout>

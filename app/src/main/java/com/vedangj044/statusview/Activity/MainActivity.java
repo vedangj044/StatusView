@@ -59,11 +59,22 @@ public class MainActivity extends AppCompatActivity {
         viewedStatusAdapter = new StatusAdapter(tempData);
         viewedRecyclerView.setAdapter(viewedStatusAdapter);
 
+        // Text Status Creation
         FloatingActionButton createText = findViewById(R.id.create_text_status);
         createText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, CreateTextStatus.class);
+                startActivity(intent);
+            }
+        });
+
+        // Camera Image/Video Status Creation
+        FloatingActionButton createCamera = findViewById(R.id.camera_button);
+        createCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, CameraActivty.class);
                 startActivity(intent);
             }
         });

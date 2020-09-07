@@ -3,6 +3,9 @@
     package="com.vedangj044.statusview">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -10,10 +13,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".Activity.CreateTextStatus"
+        android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true">
+        <activity android:name=".Activity.CameraActivty"
+            android:theme="@style/NoActionBar"></activity>
+        <activity
+            android:name=".Activity.CreateTextStatus"
             android:theme="@style/NoActionBar"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.StatusDisplay"
             android:theme="@style/NoActionBar" />

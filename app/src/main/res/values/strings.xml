@@ -7,4 +7,7 @@
     <string name="background_style">Background Style</string>
     <string name="font_style">Font Style</string>
     <string name="CustomEmojiCategoryName">CEmoji</string>
+    <string name="capture">Capture</string>
+    <string name="preview_area">Preview Area</string>
+    <string name="hold_for_video_tap_for_photo">Hold for video, tap for photo</string>
 </resources>
