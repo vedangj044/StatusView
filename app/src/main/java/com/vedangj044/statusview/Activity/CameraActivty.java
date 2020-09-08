@@ -6,24 +6,39 @@ import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.extensions.HdrImageCaptureExtender;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MotionEventCompat;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.vedangj044.statusview.Adapters.GalleryImageAdapter;
+import com.vedangj044.statusview.GalleryViewFragment;
 import com.vedangj044.statusview.R;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -59,6 +74,41 @@ public class CameraActivty extends AppCompatActivity {
         mPreviewView = findViewById(R.id.camera);
         captureImage = findViewById(R.id.captureImg);
 
+        RecyclerView recyclerImage = findViewById(R.id.recyle_image);
+        recyclerImage.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        GalleryImageAdapter mAdapter = new GalleryImageAdapter(this, 100);
+        recyclerImage.setAdapter(mAdapter);
+
+        // todo creating custom view
+        // https://stackoverflow.com/questions/47107105/android-button-has-setontouchlistener-called-on-it-but-does-not-override-perform
+
+        mPreviewView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = MotionEventCompat.getActionMasked(event);
+                if(action == MotionEvent.ACTION_DOWN){
+                    return true;
+                }
+                if(action == MotionEvent.ACTION_UP){
+                    Toast.makeText(CameraActivty.this, "as", Toast.LENGTH_SHORT).show();
+
+                    FrameLayout fragmentLayout = new FrameLayout(CameraActivty.this);
+                    // set the layout params to fill the activity
+                    fragmentLayout.setLayoutParams(new  ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                                // set an id to the layout
+                    fragmentLayout.setId(R.id.fragmentLayout); // some positive integer
+// set the layout as Activity content
+                    setContentView(fragmentLayout);
+                    GalleryViewFragment grp = new GalleryViewFragment();
+                    getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, grp).commit();
+
+                    return true;
+                }
+
+                return false;
+            }
+        });
 
         // asking for permission
         if(allPermissionsGranted()){
@@ -142,10 +192,35 @@ public class CameraActivty extends AppCompatActivity {
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // functionality required
+                SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+                File File = new File(getBatchDirectoryName(), mDateFormat.format(new Date())+ ".jpg");
+                ImageCapture.OutputFileOptions file = new ImageCapture.OutputFileOptions.Builder(File).build();
+                imageCapture.takePicture(file, executor, new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        Intent intent = new Intent(CameraActivty.this, UploadActivity.class);
+                        intent.putExtra("image", File.getAbsolutePath());
+                        startActivity(intent);
+                    }
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
         });
+    }
 
+    public String getBatchDirectoryName() {
+
+        String app_folder_path = "";
+        app_folder_path = Environment.getExternalStorageDirectory().toString() + "/images";
+        File dir = new File(app_folder_path);
+        if (!dir.exists() && !dir.mkdirs()) {
+
+        }
+        return app_folder_path;
     }
 
     private boolean allPermissionsGranted(){

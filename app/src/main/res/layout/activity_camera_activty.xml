@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/parent_of_preview"
     tools:context=".Activity.CameraActivty">
 
     <androidx.camera.view.PreviewView
@@ -20,18 +21,16 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
-        <HorizontalScrollView
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:src="@drawable/camera_up_arrow_foreground"/>
+
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:padding="5dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/recent_image"
-                android:orientation="horizontal" />
-
-        </HorizontalScrollView>
+            android:layout_height="60dp"
+            android:id="@+id/recyle_image"
+            android:scrollbars="horizontal"/>
 
         <RelativeLayout
             android:id="@+id/linearLayout"
