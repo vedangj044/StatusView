@@ -42,6 +42,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc02"
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
 
     def camerax_version = "1.0.0-beta08"
     implementation "androidx.camera:camera-core:${camerax_version}"

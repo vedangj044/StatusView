@@ -8,7 +8,7 @@
     android:id="@+id/parent_of_preview"
     tools:context=".Activity.CameraActivty">
 
-    <androidx.camera.view.PreviewView
+    <com.vedangj044.statusview.customView.PreviewCustom
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -25,6 +25,12 @@
             android:layout_width="match_parent"
             android:layout_height="15dp"
             android:src="@drawable/camera_up_arrow_foreground"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:id="@+id/selected_tick"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="wrap_content"

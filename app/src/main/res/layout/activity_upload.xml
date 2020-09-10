@@ -4,8 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.UploadActivity"
-    android:id="@+id/parent_layout">
+    android:background="#000000"
+    tools:context=".Activity.UploadActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/parent_layout">
+
+
+        <VideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/video_status"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:scaleType="fitCenter"
+            android:id="@+id/image_status"
+            android:visibility="gone"/>
+
+
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,10 +39,32 @@
         android:orientation="horizontal">
 
         <com.mikhaellopez.circularimageview.CircularImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="16dp"
             android:id="@+id/profile_picture"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:gravity="end"
+            android:padding="16dp">
+
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/delete_icon"
+                android:src="@drawable/camera_delete_foreground"
+                android:background="@null"/>
+
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/rotation_button"
+                android:src="@drawable/camera_crop_rotate_foreground"
+                android:background="@null"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -29,5 +77,19 @@
         android:src="@drawable/ic_send_arrow_foreground"
         app:tint="@android:color/white"
         app:maxImageSize="48dp"/>
+
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:id="@+id/image_selection_list"/>
+
+    </HorizontalScrollView>
 
 </RelativeLayout>

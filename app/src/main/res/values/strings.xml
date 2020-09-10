@@ -10,4 +10,5 @@
     <string name="capture">Capture</string>
     <string name="preview_area">Preview Area</string>
     <string name="hold_for_video_tap_for_photo">Hold for video, tap for photo</string>
+    <string name="recent">Recent</string>
 </resources>
