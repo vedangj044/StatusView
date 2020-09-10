@@ -1,4 +1,4 @@
-package com.vedangj044.statusview.customView;
+package com.vedangj044.statusview.CustomView;
 
 import android.content.Context;
 import android.util.AttributeSet;

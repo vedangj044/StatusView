@@ -20,9 +20,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView viewedRecyclerView;
-    private RecyclerView.LayoutManager viewedlayoutManager;
-    private StatusAdapter viewedStatusAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,52 +30,9 @@ public class MainActivity extends AppCompatActivity {
         // Installing the Custom Emoji Provider class at the start of the app
         EmojiManager.install(new CEmojiProvider());
 
-        viewedRecyclerView = findViewById(R.id.viewedRecyclerView);
-        // recycler view
-
-        viewedlayoutManager = new GridLayoutManager(this, 2);
-        viewedRecyclerView.setLayoutManager(viewedlayoutManager);
-        // used grid layout manager to inflate a grid and not a list.
-        // span count refers to the number of entries in a single row of the grid
-
-
-        // create list to hold hardcoded values.
-        List<ThumbnailStatusObject> tempData = new ArrayList<>();
-
-        ThumbnailStatusObject th1 = new ThumbnailStatusObject("https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png",
-                "https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png", "1000", "Vedang Joshi", 2);
-        ThumbnailStatusObject th2 = new ThumbnailStatusObject("https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png",
-                "https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png", "1000", "Vedang Joshi", 2);
-        ThumbnailStatusObject th3 = new ThumbnailStatusObject("https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png",
-                "https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png", "1000", "Vedang Joshi", 2);
-
-        tempData.add(th1);
-        tempData.add(th2);
-        tempData.add(th3);
-
-        // attached adapter
-        viewedStatusAdapter = new StatusAdapter(tempData);
-        viewedRecyclerView.setAdapter(viewedStatusAdapter);
-
-        // Text Status Creation
-        FloatingActionButton createText = findViewById(R.id.create_text_status);
-        createText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CreateTextStatus.class);
-                startActivity(intent);
-            }
-        });
-
-        // Camera Image/Video Status Creation
-        FloatingActionButton createCamera = findViewById(R.id.camera_button);
-        createCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CameraActivty.class);
-                startActivity(intent);
-            }
-        });
+        // MainActivityFragment Instance
+        MainActivityFragment mainActivityFragment = new MainActivityFragment();
+        getSupportFragmentManager().beginTransaction().add(R.id.container, mainActivityFragment).commit();
 
     }
 

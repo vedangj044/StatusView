@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.vedangj044.statusview.Adapters.GalleryImageAdapter;
-import com.vedangj044.statusview.customView.PreviewCustom;
+import com.vedangj044.statusview.CustomView.PreviewCustom;
 import com.vedangj044.statusview.R;
 
 import java.io.File;

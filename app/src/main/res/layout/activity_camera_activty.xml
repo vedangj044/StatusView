@@ -8,7 +8,7 @@
     android:id="@+id/parent_of_preview"
     tools:context=".Activity.CameraActivty">
 
-    <com.vedangj044.statusview.customView.PreviewCustom
+    <com.vedangj044.statusview.CustomView.PreviewCustom
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
