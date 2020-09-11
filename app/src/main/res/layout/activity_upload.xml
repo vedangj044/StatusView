@@ -74,6 +74,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
+        android:id="@+id/upload_status"
         android:src="@drawable/ic_send_arrow_foreground"
         app:tint="@android:color/white"
         app:maxImageSize="48dp"/>

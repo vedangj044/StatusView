@@ -6,10 +6,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
+import android.util.Base64;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.Filter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,9 +33,16 @@ import android.widget.VideoView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.vedangj044.statusview.ModelObject.ImageStatusObject;
+import com.vedangj044.statusview.ModelObject.StatusObject;
 import com.vedangj044.statusview.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UploadActivity extends AppCompatActivity {
@@ -157,6 +176,45 @@ public class UploadActivity extends AppCompatActivity {
             }
         });
 
+
+        sendButton = findViewById(R.id.upload_status);
+
+        // Send button click event
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(path != null){
+                    if(!isVideo(path)){
+                        // Bitmap is saved to the app file directory
+                        Bitmap compressedBitmap = getCompressedBitmap(BitmapFactory.decodeFile(path));
+
+                        File file = new File(getApplicationContext().getFilesDir(), "1.png");
+                        try(FileOutputStream out = new FileOutputStream(file)){
+                            compressedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                        }
+                        catch (IOException e){}
+                        Bitmap thumbnail = getThumbnailBitmap(compressedBitmap);
+                    }
+                }
+                else{
+                    List<String> path;
+                    for(int  i = 0; i < lp.getChildCount(); i++){
+                        // Bitmap is saved to the app file directory
+
+                        File file = new File(getApplicationContext().getFilesDir(), String.valueOf(i)+".png");
+                        try(FileOutputStream out = new FileOutputStream(file)){
+                            String p = arg.get(lp.getChildAt(i).getId());
+                            if(!isVideo(p)){
+                                Bitmap compressedBitmap = getCompressedBitmap(BitmapFactory.decodeFile(p));
+                                compressedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                                Toast.makeText(UploadActivity.this, "saved!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        catch (IOException e){}
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -197,13 +255,7 @@ public class UploadActivity extends AppCompatActivity {
     public void addImage(String path){
         Bitmap bmp = BitmapFactory.decodeFile(path);
 
-        // compression of image happens here
-        int nh = (int) ( bmp.getHeight() * (512.0 / bmp.getWidth()) );
-        Bitmap scaled = Bitmap.createScaledBitmap(bmp, 512, nh, true);
-        ImageStatus.setImageBitmap(scaled);
-
-        Toast.makeText(this, "Original "+String.valueOf(bmp.getByteCount()) + " Proccessed "+ String.valueOf(scaled.getByteCount()), Toast.LENGTH_LONG).show();
-
+        ImageStatus.setImageBitmap(bmp);
         VideoStatus.setVisibility(View.GONE);
         ImageStatus.setVisibility(View.VISIBLE);
     }
@@ -222,5 +274,50 @@ public class UploadActivity extends AppCompatActivity {
         VideoStatus.setMediaController(mediaController);
         mediaController.setAnchorView(VideoStatus);
         VideoStatus.start();
+    }
+
+    public Bitmap getCompressedBitmap(Bitmap bmp){
+        // compression of image happens here
+        int nh = (int) ( bmp.getHeight() * (512.0 / bmp.getWidth()) );
+        Bitmap scaled = Bitmap.createScaledBitmap(bmp, 512, nh, true);
+
+        return scaled;
+    }
+
+    // Generates the thumbnail for the bitmap
+    public Bitmap getThumbnailBitmap(Bitmap bm) {
+
+        // Scale by which image should be reduced
+        int reduction = 100;
+
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+
+        int newWidth = width/reduction;
+        int newHeight = height/reduction;
+
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+
+        // Blur the scaled down image
+        RenderScript rs = RenderScript.create(this);
+
+        final Allocation input = Allocation.createFromBitmap(rs, resizedBitmap); //use this constructor for best performance, because it uses USAGE_SHARED mode which reuses memory
+        final Allocation output = Allocation.createTyped(rs, input.getType());
+        final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+        script.setRadius(8f);
+        script.setInput(input);
+        script.forEach(output);
+        output.copyTo(resizedBitmap);
+
+        return resizedBitmap;
     }
 }
