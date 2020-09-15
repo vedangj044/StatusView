@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RangeSeekBar">
+        <attr name="tick_count" format="integer" />
+        <attr name="thumb_color" format="color" />
+        <attr name="thumb_normal_radius" format="dimension" />
+        <attr name="thumb_pressed_radius" format="dimension" />
+        <attr name="left_index" format="integer" />
+        <attr name="right_index" format="integer" />
+    </declare-styleable>
+</resources>

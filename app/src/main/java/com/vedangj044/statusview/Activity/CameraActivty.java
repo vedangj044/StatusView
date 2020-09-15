@@ -1,13 +1,20 @@
 package com.vedangj044.statusview.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.camera2.Camera2Config;
+import androidx.camera.camera2.internal.VideoCaptureConfigProvider;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
+import androidx.camera.core.impl.Config;
+import androidx.camera.core.impl.OptionsBundle;
+import androidx.camera.core.impl.UseCaseConfig;
+import androidx.camera.core.impl.VideoCaptureConfig;
 import androidx.camera.extensions.HdrImageCaptureExtender;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.app.ActivityCompat;
@@ -18,8 +25,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +40,17 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.vedangj044.statusview.Adapters.GalleryImageAdapter;
 import com.vedangj044.statusview.CustomView.PreviewCustom;
 import com.vedangj044.statusview.R;
+import com.vedangj044.statusview.VideoCapture;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -47,7 +61,8 @@ public class CameraActivty extends AppCompatActivity {
     private int REQUEST_CODE_PERMISSIONS = 1001;
     private final String[] REQUIRED_PERMISSIONS = new String[]{
             "android.permission.CAMERA",
-            "android.permission.WRITE_EXTERNAL_STORAGE"
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.RECORD_AUDIO"
     };
 
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -149,6 +164,28 @@ public class CameraActivty extends AppCompatActivity {
                 camera.getCameraControl().enableTorch(torch);
             }
         });
+
+        captureImage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                VideoCapture vd = new VideoCapture();
+                try {
+                    ProcessCameraProvider.getInstance(CameraActivty.this).get().unbindAll();
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+                FrameLayout fragmentLayout = new FrameLayout(CameraActivty.this);
+                // set the layout params to fill the activity
+                fragmentLayout.setLayoutParams(new  ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                // set an id to the layout
+                fragmentLayout.setId(R.id.fragmentLayout); // some positive integer
+                // set the layout as Activity content
+                setContentView(fragmentLayout);
+                getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, vd).commit();
+                return true;
+            }
+        });
+
     }
 
 

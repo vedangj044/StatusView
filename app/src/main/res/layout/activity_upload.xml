@@ -36,7 +36,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:id="@+id/imagineDragon">
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:layout_width="40dp"
@@ -68,6 +69,36 @@
 
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/containerTimeLine"
+        android:background="@android:color/white"
+        android:layout_margin="8dp"
+        android:padding="1dp"
+        android:layout_below="@+id/imagineDragon">
+
+
+        <com.vedangj044.statusview.RangeSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:thumb_color="@color/colorPrimary"
+            android:id="@+id/range_seek_bar"
+            app:thumb_normal_radius="10dp"
+            android:layout_centerInParent="true"
+            android:elevation="10dp"
+            android:layout_margin="8dp"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/duration_text"
+        android:textColor="@android:color/white"
+        android:layout_marginStart="8dp"
+        android:layout_below="@id/containerTimeLine"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -78,6 +109,7 @@
         android:src="@drawable/ic_send_arrow_foreground"
         app:tint="@android:color/white"
         app:maxImageSize="48dp"/>
+
 
 
     <HorizontalScrollView
@@ -92,5 +124,6 @@
             android:id="@+id/image_selection_list"/>
 
     </HorizontalScrollView>
+
 
 </RelativeLayout>

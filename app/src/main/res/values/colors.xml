@@ -7,4 +7,6 @@
     <color name="iconBackgrouf">#00aeef</color>
     <color name="appGrey">#6f6f74</color>
     <color name="lightGrey">#e7e7e7</color>
+    <color name="thumb_default">#f44336</color>
+    <color name="thumb_ripple_color">#757575</color>
 </resources>

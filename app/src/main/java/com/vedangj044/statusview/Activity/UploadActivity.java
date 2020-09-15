@@ -10,27 +10,35 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.media.ExifInterface;
+import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
+import android.util.Xml;
 import android.view.View;
 import android.widget.Filter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.arthenica.mobileffmpeg.Config;
 import com.bumptech.glide.Glide;
+import com.arthenica.mobileffmpeg.FFmpeg;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.vedangj044.statusview.ModelObject.ImageStatusObject;
@@ -42,8 +50,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import com.vedangj044.statusview.RangeSeekBar;
+
+import org.xmlpull.v1.XmlPullParser;
+
+import life.knowledge4.videotrimmer.view.TimeLineView;
+
+import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
+import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 public class UploadActivity extends AppCompatActivity {
 
@@ -64,6 +85,15 @@ public class UploadActivity extends AppCompatActivity {
 
     private int currentImage = -1;
     private int rotateAngle = 0;
+
+    private RangeSeekBar rangeSeekBar;
+    private int endTime;
+    private int startTime;
+
+    private RelativeLayout timeLineLayout;
+    private TextView durationText;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +116,11 @@ public class UploadActivity extends AppCompatActivity {
 
         ImageStatus = findViewById(R.id.image_status);
         VideoStatus = findViewById(R.id.video_status);
+
+        rangeSeekBar = findViewById(R.id.range_seek_bar);
+        timeLineLayout = findViewById(R.id.containerTimeLine);
+
+        durationText = findViewById(R.id.duration_text);
 
         // On click listener to change image in view when multiple entries
         View.OnClickListener listener = new View.OnClickListener() {
@@ -195,6 +230,9 @@ public class UploadActivity extends AppCompatActivity {
                         catch (IOException e){}
                         Bitmap thumbnail = getThumbnailBitmap(compressedBitmap);
                     }
+                    else{
+                        trimVideo(startTime/1000,endTime/1000,path);
+                    }
                 }
                 else{
                     List<String> path;
@@ -215,6 +253,32 @@ public class UploadActivity extends AppCompatActivity {
                 }
             }
         });
+
+        rangeSeekBar.setOnRangeBarChangeListener(new RangeSeekBar.OnRangeSeekBarChangerListener() {
+            @Override
+            public void onIndexChange(RangeSeekBar rangeSeekBar, int i, int i1) {
+                int duration = (i1 - i);
+
+                String text = String.format(Locale.getDefault(), "%d : %d ",
+                        TimeUnit.MILLISECONDS.toMinutes(duration),
+                        TimeUnit.MILLISECONDS.toSeconds(duration) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+
+                durationText.setText(text);
+                duration = duration/1000;
+
+                if(duration > 31){
+                    rangeSeekBar.setRightIndex(i+30000);
+                }
+                if(i != startTime){
+                    VideoStatus.seekTo(i);
+                }
+                Log.v("asss", ""+i+" "+i1);
+                startTime = i;
+                endTime = i1;
+            }
+        });
+
     }
 
     @Override
@@ -256,6 +320,7 @@ public class UploadActivity extends AppCompatActivity {
         Bitmap bmp = BitmapFactory.decodeFile(path);
 
         ImageStatus.setImageBitmap(bmp);
+        timeLineLayout.setVisibility(View.GONE);
         VideoStatus.setVisibility(View.GONE);
         ImageStatus.setVisibility(View.VISIBLE);
     }
@@ -266,6 +331,30 @@ public class UploadActivity extends AppCompatActivity {
         // adding media controls
         MediaController mediaController = new MediaController(this);
         VideoStatus.setVideoPath(path);
+        timeLineLayout.setVisibility(View.VISIBLE);
+        XmlPullParser parser = getResources().getXml(R.xml.layout_timeline);
+
+        try {
+            parser.next();
+            parser.nextTag();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        AttributeSet attr  = Xml.asAttributeSet(parser);
+        TimeLineView timeLineView = new TimeLineView(UploadActivity.this, attr);
+        int count = attr.getAttributeCount();
+        Log.v("As", String.valueOf(count));
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        params.setMargins(10, 10, 10, 10);
+
+        timeLineLayout.addView(timeLineView, params);
+
+        timeLineView.setVideo(Uri.fromFile(new File(path)));
+
+
         VideoStatus.requestFocus();
 
         ImageStatus.setVisibility(View.GONE);
@@ -274,6 +363,17 @@ public class UploadActivity extends AppCompatActivity {
         VideoStatus.setMediaController(mediaController);
         mediaController.setAnchorView(VideoStatus);
         VideoStatus.start();
+
+       VideoStatus.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+           @Override
+           public void onPrepared(MediaPlayer mp) {
+               int duration = mp.getDuration();
+               Log.v("max", String.valueOf(duration));
+               rangeSeekBar.setTickCount(duration);
+               rangeSeekBar.setLeftIndex(duration);
+               rangeSeekBar.setRightIndex(0);
+           }
+       });
     }
 
     public Bitmap getCompressedBitmap(Bitmap bmp){
@@ -319,5 +419,36 @@ public class UploadActivity extends AppCompatActivity {
         output.copyTo(resizedBitmap);
 
         return resizedBitmap;
+    }
+
+    public void trimVideo(int startMs, int endMs, String path){
+
+        String fileName = "newVideo.mp4";
+        File saveTrimmedVideo = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        String time = new SimpleDateFormat("yyyyMMddss").format(new Date())+".mp4";
+        int duration = (endMs - startMs)/1000;
+
+        //  ffmpeg -ss 823.2 -t 44.1 -i input.mp4 -ss 1074.1 -t 27.3 -i input.mp4 -filter_complex "[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[v][a]" -map "[v]" -map "[a]" output.mp4
+        //  ffmpeg -ss 823.2 -t 44.1 -i input.mp4 -ss 1074.1 -t 27.3 -i input.mp4 -filter_complex "[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[v][a]" -map "[v]" -map "[a]" -c:v libx265 -crf 35 -preset slow output.mp4
+
+        File fff = new File(saveTrimmedVideo, time);
+        String[] comm = {"-i", path, "-ss", "0", "-t", "5", "-async", "1", "-c", "copy", "output.mp4"};
+
+        String command  = "-ss 1 -i "+path+" -to 5 -c copy "+fff.getAbsolutePath();
+        String command1  = "-ss 1 -i "+path+" -to 5 -c copy  -vcodec libx265 -crf 28 "+fff.getAbsolutePath();
+
+        int rc = FFmpeg.execute(command1);
+
+
+        if (rc == RETURN_CODE_SUCCESS) {
+            Toast.makeText(this, "Done !", Toast.LENGTH_SHORT).show();
+            Log.i(Config.TAG, "Command execution completed successfully.");
+        } else if (rc == RETURN_CODE_CANCEL) {
+            Log.i(Config.TAG, "Command execution cancelled by user.");
+        } else {
+            Log.i(Config.TAG, String.format("Command execution failed with rc=%d and the output below.", rc));
+            Config.printLastCommandOutput(Log.INFO);
+        }
+
     }
 }

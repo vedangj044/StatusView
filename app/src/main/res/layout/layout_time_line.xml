@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<life.knowledge4.videotrimmer.view.TimeLineView android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@android:color/white"
+    android:id="@+id/time_line"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

@@ -50,4 +50,8 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
     implementation"androidx.camera:camera-view:1.0.0-alpha15"
     implementation "androidx.camera:camera-extensions:1.0.0-alpha15"
+
+
+    implementation 'com.arthenica:mobile-ffmpeg-min-gpl:4.4.LTS'
+    implementation 'life.knowledge4:k4l-video-trimmer:1.0'
 }
