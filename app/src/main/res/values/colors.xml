@@ -9,4 +9,24 @@
     <color name="lightGrey">#e7e7e7</color>
     <color name="thumb_default">#f44336</color>
     <color name="thumb_ripple_color">#757575</color>
+
+    <color name="backgroundResourceColor1"> #778899 </color>
+    <color name="backgroundResourceColor2"> #290001 </color>
+    <color name="backgroundResourceColor3"> #f8bd7f </color>
+    <color name="backgroundResourceColor4"> #4e89ae </color>
+    <color name="backgroundResourceColor5"> #206a5d </color>
+    <color name="backgroundResourceColor6"> #ffc93c </color>
+    <color name="backgroundResourceColor7"> #1a1a2e </color>
+    <color name="backgroundResourceColor8"> #2d4059 </color>
+    <color name="backgroundResourceColor9"> #382933 </color>
+
+    <color name="FontResourceColor1"> #778899 </color>
+    <color name="FontResourceColor2"> #290001 </color>
+    <color name="FontResourceColor3"> #f8bd7f </color>
+    <color name="FontResourceColor4"> #4e89ae </color>
+    <color name="FontResourceColor5"> #206a5d </color>
+    <color name="FontResourceColor6"> #ffc93c </color>
+    <color name="FontResourceColor7"> #1a1a2e </color>
+    <color name="FontResourceColor8"> #2d4059 </color>
+    <color name="FontResourceColor9"> #382933 </color>
 </resources>

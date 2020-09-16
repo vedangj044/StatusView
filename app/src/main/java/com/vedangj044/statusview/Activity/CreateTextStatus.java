@@ -42,13 +42,12 @@ public class CreateTextStatus extends AppCompatActivity{
     private FloatingActionButton sendStatus;
 
     // current background string value
-    private String currentBackgroundColor = "#778899";
     private int currentBackgroundResource = -1;
 
     // current font index
     private int currentFont = 0;
     // current font color
-    private String currentFontColor;
+    private int currentFontColor;
 
     private PopUpFont popUpFont;
 
@@ -56,8 +55,9 @@ public class CreateTextStatus extends AppCompatActivity{
 
     private boolean EmojiIconState = true;
 
-    ListOfResource ld = new ListOfResource();
+    private List<Integer> backgroundResourceList = ListOfResource.BackgroundColorResource;
     private List<Integer> textFont = ListOfResource.textFont;
+    private List<Integer> fontColor = ListOfResource.fontColor;
 
 
 
@@ -113,19 +113,10 @@ public class CreateTextStatus extends AppCompatActivity{
 
         popUpBackground.setBackgroundChangeListener(new PopUpBackground.BackgroundChangeListener() {
             @Override
-            public void onInputASend(String color, int backgroundResource, boolean isColor) {
+            public void onInputASend(int backgroundResource) {
 
-                if(isColor){
-                    backgroundOfText.setBackgroundColor(Color.parseColor(color));
-                    currentBackgroundColor = color;
-                    currentBackgroundResource = -1;
-                }
-                else{
-                    backgroundOfText.setBackgroundResource(backgroundResource);
-                    currentBackgroundResource = backgroundResource;
-                    currentBackgroundColor = "";
-                }
-
+                backgroundOfText.setBackgroundResource(backgroundResourceList.get(backgroundResource));
+                currentBackgroundResource = backgroundResource;
 
             }
 
@@ -142,12 +133,8 @@ public class CreateTextStatus extends AppCompatActivity{
             @Override
             public void onClick(View v) {
 
-                if(currentBackgroundResource == -1){
-                    popUpBackground.setState(currentBackgroundColor);
-                }
-                else {
-                    popUpBackground.setState(String.valueOf(currentBackgroundResource));
-                }
+                popUpBackground.setState(String.valueOf(currentBackgroundResource));
+
                 showKeyboardShortcut(true);
 
                 final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -181,13 +168,13 @@ public class CreateTextStatus extends AppCompatActivity{
                 StatusContent.setTypeface(typeface);
                 currentFont = a;
 
-
             }
 
             @Override
-            public void onInputCSend(String color) {
+            public void onInputCSend(int color) {
 
-                StatusContent.setTextColor(Color.parseColor(color));
+                String co = getApplicationContext().getResources().getString(fontColor.get(color));
+                StatusContent.setTextColor(Color.parseColor(co));
                 currentFontColor = color;
 
             }
@@ -270,9 +257,6 @@ public class CreateTextStatus extends AppCompatActivity{
 
                         }
                     }
-
-
-
                     sendStatus.setVisibility(View.VISIBLE);
                 }
             }
@@ -283,7 +267,7 @@ public class CreateTextStatus extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 TextStatusObject t1 = new TextStatusObject(StatusContent.getText().toString(),
-                        currentBackgroundColor, currentFont);
+                        String.valueOf(currentBackgroundResource), currentFont);
 
                 Toast.makeText(getApplicationContext(), t1.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -306,8 +290,8 @@ public class CreateTextStatus extends AppCompatActivity{
     // Saving state to enable screen rotation and handle configuration changes
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
-        savedInstanceState.putString("currentBackground", currentBackgroundColor);
-        savedInstanceState.putString("currentFontColor", currentFontColor);
+        savedInstanceState.putInt("currentBackground", currentBackgroundResource);
+        savedInstanceState.putInt("currentFontColor", currentFontColor);
         savedInstanceState.putInt("currentFont", currentFont);
 
         super.onSaveInstanceState(savedInstanceState);
@@ -317,19 +301,21 @@ public class CreateTextStatus extends AppCompatActivity{
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        currentFontColor = savedInstanceState.getString("currentFontColor");
-        currentBackgroundColor = savedInstanceState.getString("currentBackground");
+        currentFontColor = savedInstanceState.getInt("currentFontColor");
+        currentBackgroundResource = savedInstanceState.getInt("currentBackground");
         currentFont = savedInstanceState.getInt("currentFont");
 
-        backgroundOfText.setBackgroundColor(Color.parseColor(currentBackgroundColor));
+        try{
+            backgroundOfText.setBackgroundResource(backgroundResourceList.get(currentBackgroundResource));
 
-        if(currentFont != 0){
-            Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), currentFont);
+            Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), textFont.get(currentFont));
             StatusContent.setTypeface(typeface);
-        }
 
-        if(currentFontColor != null){
-            StatusContent.setTextColor(Color.parseColor(currentFontColor));
+            String co = getApplicationContext().getResources().getString(fontColor.get(currentFontColor));
+            StatusContent.setTextColor(Color.parseColor(co));
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
 
     }

@@ -31,7 +31,7 @@ public class PopUpFont extends PopUpSetup {
     // array to hold all font integer value
     final List<Integer> textFont = ListOfResource.textFont;
     // array to hold the font color value
-    final List<String> fontColor = ListOfResource.fontColor;
+    final List<Integer> fontColor = ListOfResource.fontColor;
 
     // default padding
     private static final int padding = 10;
@@ -54,7 +54,7 @@ public class PopUpFont extends PopUpSetup {
         void onInputBSend(int a);
 
         // send font color change event
-        void onInputCSend(String color);
+        void onInputCSend(int color);
 
         // shows the keyboard in CreateTextStatus activity
         void onCallKeyboardB(int i);
@@ -86,9 +86,9 @@ public class PopUpFont extends PopUpSetup {
     // already selected font and fontColor and style them accordingly.
     // creating a persistent behavior
     // it is similar to onSavedInstanceBundle
-    public void setState(int currentFontSelectedId, String currentFontColorSelectedId){
-        this.currentFontColorSelectedId = fontColor.indexOf(currentFontColorSelectedId);
-        this.currentFontSelectedId = textFont.indexOf(currentFontSelectedId);
+    public void setState(int currentFontSelectedId, int currentFontColorSelectedId){
+        this.currentFontColorSelectedId = currentFontColorSelectedId;
+        this.currentFontSelectedId = currentFontSelectedId;
     }
 
     // Returns the view
@@ -177,7 +177,7 @@ public class PopUpFont extends PopUpSetup {
                 id = id - 100;
 
                 // send message back to activity
-                li.onInputCSend(fontColor.get(id));
+                li.onInputCSend(id);
 
                 // if a color is already selected then restore its styling to default
                 if(currentFontColorSelectedId != -1){
@@ -185,7 +185,7 @@ public class PopUpFont extends PopUpSetup {
                     CircularImageView ig = view.findViewById(currentFontColorSelectedId+100);
                     ig.setBackgroundResource(R.drawable.round_profile_pic);
 
-                    setColor(ig, fontColor.get(currentFontColorSelectedId));
+                    setColor(ig, context.getResources().getString(fontColor.get(currentFontColorSelectedId)));
                 }
 
                 // change the current selected font color
@@ -193,7 +193,7 @@ public class PopUpFont extends PopUpSetup {
 
                 // replaces current border with a thick one
                 v.setBackgroundResource(R.drawable.round_profile_pic_thick);
-                setColor(v, fontColor.get(currentFontColorSelectedId));
+                setColor(v, context.getResources().getString(fontColor.get(currentFontColorSelectedId)));
             }
         };
 
@@ -215,7 +215,7 @@ public class PopUpFont extends PopUpSetup {
 
             // background color
             GradientDrawable drawable = (GradientDrawable) imageItem.getBackground();
-            drawable.setColorFilter(Color.parseColor(fontColor.get(i)), PorterDuff.Mode.MULTIPLY);
+            drawable.setColorFilter(Color.parseColor(context.getResources().getString(fontColor.get(i))), PorterDuff.Mode.MULTIPLY);
 
             // Size and width
             int p = Math.round(width* Resources.getSystem().getDisplayMetrics().density);;

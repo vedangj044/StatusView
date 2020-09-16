@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.vedangj044.statusview.Adapters.BackgroudColorAdapter;
 import com.vedangj044.statusview.ListOfResource;
@@ -43,15 +45,13 @@ public class PopUpBackground extends PopUpSetup {
     private BackgroundChangeListener listener;
 
     // Contains the string of color code
-    private List<String> BackgroundColorResource = ListOfResource.BackgroundColorResource;
-
-    private List<Boolean> isColor = ListOfResource.isColor;
+    private List<Integer> BackgroundColorResource = ListOfResource.BackgroundColorResource;
 
     // Interface to send message back to the activity
     // Change commit messages
     public interface BackgroundChangeListener{
         // send the color string value
-        void onInputASend(String color, int resource, boolean isColor);
+        void onInputASend(int backgroundResource);
 
         // shows the keyboard in the createTextStatus activity
         void onCallKeyboardA(int i);
@@ -80,7 +80,7 @@ public class PopUpBackground extends PopUpSetup {
 
 
         // set adapter for grid view
-        BackgroudColorAdapter bgAdapter = new BackgroudColorAdapter(v.getContext(), BackgroundColorResource, isColor,  current_Selected);
+        BackgroudColorAdapter bgAdapter = new BackgroudColorAdapter(v.getContext(), BackgroundColorResource,  current_Selected);
         gridView.setAdapter(bgAdapter);
 
 
@@ -88,50 +88,71 @@ public class PopUpBackground extends PopUpSetup {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                // when clicked the first time
-                if(current_Selected == -1){
-                    current_Selected = position;
+                Log.v("aaa", String.valueOf(position));
+                Log.v("aaa", String.valueOf(current_Selected));
 
-                    // set background to have a tick
-                    view.setBackgroundResource(R.drawable.round_white);
-                    // set color using Layer drawable
-                    // reference: https://stackoverflow.com/questions/11977302/android-set-background-resource-and-color
-                    LayerDrawable drawable = (LayerDrawable) view.getBackground();
-                    drawable.setColorFilter(Color.parseColor(BackgroundColorResource.get(current_Selected)), PorterDuff.Mode.DST_OVER);
-                }
-                else{
-                    // Clears the already selected color by restoring default background
-                    if(isColor.get(current_Selected)){
-                        Log.v("cuure", String.valueOf(current_Selected));
-                        gridView.getChildAt(current_Selected).setBackgroundResource(R.drawable.custom_rounded_backgroud);
-                        GradientDrawable dr = (GradientDrawable) gridView.getChildAt(current_Selected).getBackground();
-                        dr.setColor(Color.parseColor(BackgroundColorResource.get(current_Selected)));
+                if(current_Selected  != -1){
+                    RelativeLayout rp = (RelativeLayout) gridView.findViewById(current_Selected);
+                    try{
+                        rp.findViewById(current_Selected+100).setBackgroundResource(0);
                     }
-
-
-                    // changing the current selection to what user has clicked on
-                    current_Selected = position;
-
-
-                    if(isColor.get(current_Selected)){
-                        // Selects the particular item and changes its background
-                        view.setBackgroundResource(R.drawable.round_white);
-                        LayerDrawable drawable = (LayerDrawable) view.getBackground();
-                        drawable.setColorFilter(Color.parseColor(BackgroundColorResource.get(current_Selected)), PorterDuff.Mode.DST_OVER);
+                    catch (NullPointerException e){
+                        e.getMessage();
                     }
 
                 }
 
-                // sends the changes to the activity
-                // Reference https://www.youtube.com/watch?v=i22INe14JUc&list=PLrnPJCHvNZuBkhcesO6DfdCghl6ZejVPc&index=2
-                if(isColor.get(current_Selected)){
-                    String cl = BackgroundColorResource.get(current_Selected);
-                    listener.onInputASend(cl, -1, true);
-                }
-                else{
-                    int cl = Integer.parseInt(BackgroundColorResource.get(current_Selected));
-                    listener.onInputASend("", cl, false);
-                }
+
+                ImageView item = (ImageView) view.findViewById(position+100);
+                item.setBackgroundResource(R.drawable.ic_tick_foreground);
+                current_Selected = position;
+
+                listener.onInputASend(position);
+//                // when clicked the first time
+//                if(current_Selected == -1){
+//                    current_Selected = position;
+//
+//                    // set background to have a tick
+//                    view.setBackgroundResource(R.drawable.round_white);
+//                    // set color using Layer drawable
+//                    // reference: https://stackoverflow.com/questions/11977302/android-set-background-resource-and-color
+//                    LayerDrawable drawable = (LayerDrawable) view.getBackground();
+//                    drawable.setColorFilter(Color.parseColor(BackgroundColorResource.get(current_Selected)), PorterDuff.Mode.DST_OVER);
+//                }
+//                else{
+//                    // Clears the already selected color by restoring default background
+//                    if(isColor.get(current_Selected)){
+////                        Log.v("cuure", String.valueOf(current_Selected));
+//
+//                        gridView.findViewById(current_Selected).setBackgroundResource(R.drawable.custom_rounded_backgroud);
+//                        GradientDrawable dr = (GradientDrawable) gridView.findViewById(current_Selected).getBackground();
+//                        dr.setColor(Color.parseColor(BackgroundColorResource.get(current_Selected)));
+//                    }
+//
+//
+//                    // changing the current selection to what user has clicked on
+//                    current_Selected = position;
+//
+//
+//                    if(isColor.get(current_Selected)){
+//                        // Selects the particular item and changes its background
+//                        view.setBackgroundResource(R.drawable.round_white);
+//                        LayerDrawable drawable = (LayerDrawable) view.getBackground();
+//                        drawable.setColorFilter(Color.parseColor(BackgroundColorResource.get(current_Selected)), PorterDuff.Mode.DST_OVER);
+//                    }
+//
+//                }
+//
+//                // sends the changes to the activity
+//                // Reference https://www.youtube.com/watch?v=i22INe14JUc&list=PLrnPJCHvNZuBkhcesO6DfdCghl6ZejVPc&index=2
+//                if(isColor.get(current_Selected)){
+//                    String cl = BackgroundColorResource.get(current_Selected);
+//                    listener.onInputASend(cl, -1, true);
+//                }
+//                else{
+//                    int cl = Integer.parseInt(BackgroundColorResource.get(current_Selected));
+//                    listener.onInputASend("", cl, false);
+//                }
             }
         });
 
