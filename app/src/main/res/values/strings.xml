@@ -11,4 +11,7 @@
     <string name="preview_area">Preview Area</string>
     <string name="hold_for_video_tap_for_photo">Hold for video, tap for photo</string>
     <string name="recent">Recent</string>
+    <string name="select_video">Select Video</string>
+
+    <string name="selected_video_thumbnail">Selected Video\'s Thumbnail</string>
 </resources>

@@ -6,13 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.media.ExifInterface;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.renderscript.Allocation;
@@ -20,51 +18,65 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
 import android.util.Xml;
 import android.view.View;
-import android.widget.Filter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.arthenica.mobileffmpeg.Config;
+
 import com.bumptech.glide.Glide;
-import com.arthenica.mobileffmpeg.FFmpeg;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+//
+//import org.mp4parser.Container;
+//import org.mp4parser.muxer.Track;
+//import org.mp4parser.muxer.Movie;
+//import org.mp4parser.muxer.builder.DefaultMp4Builder;
+//import org.mp4parser.muxer.container.mp4.MovieCreator;
+//import org.mp4parser.muxer.tracks.AppendTrack;
+//import org.mp4parser.muxer.tracks.ClippedTrack;
+
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.vedangj044.statusview.ModelObject.ImageStatusObject;
-import com.vedangj044.statusview.ModelObject.StatusObject;
 import com.vedangj044.statusview.R;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.BufferOverflowException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import com.vedangj044.statusview.RangeSeekBar;
+import com.vedangj044.statusview.TrimVideoUtils;
+import com.vedangj044.statusview.commonvideolibrary.MediaHelper;
+import com.vedangj044.statusview.commonvideolibrary.Resolution;
+import com.vedangj044.statusview.commonvideolibrary.SamplerClip;
+import com.vedangj044.statusview.commonvideolibrary.VideoResampler;
+import com.vedangj044.statusview.videocompressor.VideoCompress;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import life.knowledge4.videotrimmer.interfaces.OnTrimVideoListener;
+import life.knowledge4.videotrimmer.utils.BackgroundExecutor;
 import life.knowledge4.videotrimmer.view.TimeLineView;
-
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 public class UploadActivity extends AppCompatActivity {
 
@@ -93,6 +105,7 @@ public class UploadActivity extends AppCompatActivity {
     private RelativeLayout timeLineLayout;
     private TextView durationText;
 
+    private OnTrimVideoListener onTrimVideoListener;
 
 
     @Override
@@ -229,6 +242,8 @@ public class UploadActivity extends AppCompatActivity {
                         }
                         catch (IOException e){}
                         Bitmap thumbnail = getThumbnailBitmap(compressedBitmap);
+
+                        //
                     }
                     else{
                         trimVideo(startTime/1000,endTime/1000,path);
@@ -245,6 +260,8 @@ public class UploadActivity extends AppCompatActivity {
                             if(!isVideo(p)){
                                 Bitmap compressedBitmap = getCompressedBitmap(BitmapFactory.decodeFile(p));
                                 compressedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+
                                 Toast.makeText(UploadActivity.this, "saved!", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -273,7 +290,7 @@ public class UploadActivity extends AppCompatActivity {
                 if(i != startTime){
                     VideoStatus.seekTo(i);
                 }
-                Log.v("asss", ""+i+" "+i1);
+//                Log.v("asss", ""+i+" "+i1);
                 startTime = i;
                 endTime = i1;
             }
@@ -437,18 +454,448 @@ public class UploadActivity extends AppCompatActivity {
         String command  = "-ss 1 -i "+path+" -to 5 -c copy "+fff.getAbsolutePath();
         String command1  = "-ss 1 -i "+path+" -to 5 -c copy  -vcodec libx265 -crf 28 "+fff.getAbsolutePath();
 
-        int rc = FFmpeg.execute(command1);
+//        TrimVideoUtils.startTrim(path, fff.getAbsolutePath(), startTime, endTime);
 
+//        new TrimTask().execute(Uri.parse(path), Uri.parse(fff.getAbsolutePath()));
+        String ui = saveTrimmedVideo.getAbsolutePath() + "/2020091549.mp4";
+        Uri.parse(ui);
+//        mux(Uri.parse(path).toString(), Uri.parse(fff.getAbsolutePath()).toString());
 
-        if (rc == RETURN_CODE_SUCCESS) {
-            Toast.makeText(this, "Done !", Toast.LENGTH_SHORT).show();
-            Log.i(Config.TAG, "Command execution completed successfully.");
-        } else if (rc == RETURN_CODE_CANCEL) {
-            Log.i(Config.TAG, "Command execution cancelled by user.");
-        } else {
-            Log.i(Config.TAG, String.format("Command execution failed with rc=%d and the output below.", rc));
-            Config.printLastCommandOutput(Log.INFO);
+//        int rc = FFmpeg.execute(command1);
+//
+//
+//        if (rc == RETURN_CODE_SUCCESS) {
+//            Toast.makeText(this, "Done !", Toast.LENGTH_SHORT).show();
+//            Log.i(Config.TAG, "Command execution completed successfully.");
+//        } else if (rc == RETURN_CODE_CANCEL) {
+//            Log.i(Config.TAG, "Command execution cancelled by user.");
+//        } else {
+//            Log.i(Config.TAG, String.format("Command execution failed with rc=%d and the output below.", rc));
+//            Config.printLastCommandOutput(Log.INFO);
+//        }
+
+        Uri mSrc = Uri.parse(path);
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(this, mSrc);
+        long METADATA_KEY_DURATION = Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+
+        final File file = new File(mSrc.getPath());
+
+        int mTimeVideo = (endTime - startTime)/1000;
+        int MIN_TIME_FRAME = 1000;
+        int mEndPosition = endTime;
+        int mStartPosition = startTime;
+
+        if (mTimeVideo < MIN_TIME_FRAME) {
+
+            if ((METADATA_KEY_DURATION - mEndPosition) > (MIN_TIME_FRAME - mTimeVideo)) {
+                mEndPosition += (MIN_TIME_FRAME - mTimeVideo);
+            } else if (mStartPosition > (MIN_TIME_FRAME - mTimeVideo)) {
+                mStartPosition -= (MIN_TIME_FRAME - mTimeVideo);
+            }
         }
 
+        onTrimVideoListener = new OnTrimVideoListener() {
+            @Override
+            public void onTrimStarted() {
+
+            }
+
+            @Override
+            public void getResult(Uri uri) {
+                String out = uri.toString().replace(".mp4", "_compress.mp4");
+                VideoCompress.VideoCompressTask task = VideoCompress.compressVideoLow(uri.toString(), out, new VideoCompress.CompressListener() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onFail() {
+
+                    }
+
+                    @Override
+                    public void onProgress(float percent) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void cancelAction() {
+
+            }
+
+            @Override
+            public void onError(String message) {
+
+            }
+        };
+
+        int finalMStartPosition = mStartPosition;
+        int finalMEndPosition = mEndPosition;
+        BackgroundExecutor.execute(
+                new BackgroundExecutor.Task("", 0L, "") {
+                    @Override
+                    public void execute() {
+                        try {
+                            String out = "/storage/emulated/0/Android/data/com.vedangj044.statusview/files/Download/";
+                            TrimVideoUtils.startTrim(file, out, finalMStartPosition, finalMEndPosition, onTrimVideoListener);
+                        } catch (final Throwable e) {
+                            Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
+                        }
+                    }
+                }
+        );
+
     }
+
+    class TrimTask extends AsyncTask<Uri, Void, Uri> {
+
+        @Override
+        protected Uri doInBackground( Uri... uris ) {
+
+            if ( uris.length < 2 ) {
+                return null;
+            }
+
+            Uri inputUri = uris[0];
+            Uri outputUri = uris[1];
+
+            VideoResampler resampler = new VideoResampler();
+            SamplerClip clip = new SamplerClip( inputUri );
+            clip.setStartTime( startTime );
+            clip.setEndTime( endTime );
+            resampler.addSamplerClip( clip );
+
+            // resampler.setInput( inputUri );
+            resampler.setOutput( outputUri );
+
+            Resolution mOutputResolution = Resolution.RESOLUTION_480P;
+
+            int mInputHeight = MediaHelper.GetHeight(inputUri);
+            int mInputWWidth = MediaHelper.GetWidth(inputUri);
+
+            Log.v("IMpir", mInputHeight+""+mInputWWidth);
+            if(mInputHeight > mInputWWidth){
+                mOutputResolution = mOutputResolution.rotate();
+            }
+
+            int mOutputBitRate = 512000;
+            int mOutputFrameRate = 30;
+            int mOutputIFrameInterval = 5;
+
+            resampler.setOutputResolution( mOutputResolution.getWidth(), mOutputResolution.getHeight() );
+            resampler.setOutputBitRate( mOutputBitRate );
+            resampler.setOutputFrameRate( mOutputFrameRate );
+            resampler.setOutputIFrameInterval( mOutputIFrameInterval );
+
+
+            // resampler.setStartTime( mTrimStart );
+            // resampler.setEndTime( mTrimEnd );
+
+            try {
+                resampler.start();
+//                mux(inputUri.toString(), outputUri.toString());
+            } catch ( Throwable e ) {
+                e.printStackTrace();
+            }
+
+            return outputUri;
+        }
+
+        @Override
+        protected void onPostExecute( Uri outputUri ) {
+            Toast.makeText(UploadActivity.this, "Done 1", Toast.LENGTH_SHORT);
+        }
+    }
+
+//    public void trimFun(String url){
+//
+//        Movie movie = null;
+//        try {
+//            movie = new MovieCreator().build(url);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        double startTime1 = 10;
+//        double endTime1 = 20;
+//        double startTime2 = 30;
+//        double endTime2 = 40;
+//
+//        boolean timeCorrected = false;
+//
+//        List<Track> tracks = movie.getTracks();
+//        movie.setTracks(new LinkedList<>());
+//
+//        // Here we try to find a track that has sync samples. Since we can only start decoding
+//        // at such a sample we SHOULD make sure that the start of the new fragment is exactly
+//        // such a frame
+//        for (Track track : tracks) {
+//            if (track.getSyncSamples() != null && track.getSyncSamples().length > 0) {
+//                if (timeCorrected) {
+//                    // This exception here could be a false positive in case we have multiple tracks
+//                    // with sync samples at exactly the same positions. E.g. a single movie containing
+//                    // multiple qualities of the same video (Microsoft Smooth Streaming file)
+//
+//                    throw new RuntimeException("The startTime has already been corrected by another track with SyncSample. Not Supported.");
+//                }
+//                startTime1 = correctTimeToSyncSample(track, startTime1, false);
+//                endTime1 = correctTimeToSyncSample(track, endTime1, true);
+//                startTime2 = correctTimeToSyncSample(track, startTime2, false);
+//                endTime2 = correctTimeToSyncSample(track, endTime2, true);
+//                timeCorrected = true;
+//            }
+//        }
+//
+//        for (Track track : tracks) {
+//            long currentSample = 0;
+//            double currentTime = 0;
+//            double lastTime = -1;
+//            long startSample1 = -1;
+//            long endSample1 = -1;
+//            long startSample2 = -1;
+//            long endSample2 = -1;
+//
+//            for (int i = 0; i < track.getSampleDurations().length; i++) {
+//                long delta = track.getSampleDurations()[i];
+//
+//
+//                if (currentTime > lastTime && currentTime <= startTime1) {
+//                    // current sample is still before the new starttime
+//                    startSample1 = currentSample;
+//                }
+//                if (currentTime > lastTime && currentTime <= endTime1) {
+//                    // current sample is after the new start time and still before the new endtime
+//                    endSample1 = currentSample;
+//                }
+//                if (currentTime > lastTime && currentTime <= startTime2) {
+//                    // current sample is still before the new starttime
+//                    startSample2 = currentSample;
+//                }
+//                if (currentTime > lastTime && currentTime <= endTime2) {
+//                    // current sample is after the new start time and still before the new endtime
+//                    endSample2 = currentSample;
+//                }
+//                lastTime = currentTime;
+//                currentTime += (double) delta / (double) track.getTrackMetaData().getTimescale();
+//                currentSample++;
+//            }
+//            try {
+//                movie.addTrack(new AppendTrack(new ClippedTrack(track, startSample1, endSample1), new ClippedTrack(track, startSample2, endSample2)));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        long start1 = System.currentTimeMillis();
+//        Container out = new DefaultMp4Builder().build(movie);
+//        long start2 = System.currentTimeMillis();
+//        FileOutputStream fos = null;
+//        try {
+//            fos = new FileOutputStream(String.format("output-%f-%f--%f-%f.mp4", startTime1, endTime1, startTime2, endTime2));
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        FileChannel fc = fos.getChannel();
+//        try {
+//            out.writeContainer(fc);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        try {
+//            fc.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            fos.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        long start3 = System.currentTimeMillis();
+//    }
+//
+//    private static double correctTimeToSyncSample(Track track, double cutHere, boolean next) {
+//        double[] timeOfSyncSamples = new double[track.getSyncSamples().length];
+//        long currentSample = 0;
+//        double currentTime = 0;
+//        for (int i = 0; i < track.getSampleDurations().length; i++) {
+//            long delta = track.getSampleDurations()[i];
+//
+//            if (Arrays.binarySearch(track.getSyncSamples(), currentSample + 1) >= 0) {
+//                // samples always start with 1 but we start with zero therefore +1
+//                timeOfSyncSamples[Arrays.binarySearch(track.getSyncSamples(), currentSample + 1)] = currentTime;
+//            }
+//            currentTime += (double) delta / (double) track.getTrackMetaData().getTimescale();
+//            currentSample++;
+//
+//        }
+//        double previous = 0;
+//        for (double timeOfSyncSample : timeOfSyncSamples) {
+//            if (timeOfSyncSample > cutHere) {
+//                if (next) {
+//                    return timeOfSyncSample;
+//                } else {
+//                    return previous;
+//                }
+//            }
+//            previous = timeOfSyncSample;
+//        }
+//        return timeOfSyncSamples[timeOfSyncSamples.length - 1];
+//    }
+//
+//    public Uri mux(String audioFile, String videoFile) {
+//        String outputFilePath = videoFile.replace(".mp4", "_with_audio.mp4");
+//        Uri outputFile = Uri.parse(outputFilePath);
+//        Movie video;
+//
+////        try {
+////            video = new MovieCreator().build(videoFile);
+////        } catch (RuntimeException e) {
+////            e.printStackTrace();
+////            return null;
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////            return null;
+////        }
+//
+//
+//        Movie audio;
+//        try {
+//            audio = new MovieCreator().build(audioFile);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//
+//        Movie movie = null;
+//        try {
+//            movie = new MovieCreator().build(audioFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            // audioFile is my original big videoFile. Index 0 is video, index 1 is audio  in Tracks.
+//            // if you have a media file with only audio index can be 0. Be carefull
+//
+//
+////            movie =  new MovieCreator().build(audioFile);
+//            movie.setTracks(new LinkedList<>());
+//
+////            long currentSample = 0;
+////            double currentTime = 0;
+////            double lastTIme = -1;
+////            long startSample = -1;
+////            long endSample = -1;
+////            for (Track track: audio.getTracks()){
+////                for(int i = 0; i < track.getSampleDurations().length; i++){
+////                    if(currentTime > lastTIme && currentTime <= startTime) {
+////                        startSample = currentSample;
+////                    }
+////                    if(currentTime > lastTIme && currentTime <= endTime){
+////                        endSample = currentSample;
+////                    }
+////                    else{
+////                        break;
+////                    }
+////                    lastTIme = currentTime;
+////                    currentTime += (double) track.getSampleDurations()[i]/(double)track.getTrackMetaData().getTimescale();
+////                    currentSample++;
+//////                    Log.v( "startTrim: ", startSample + " " + endSample);
+////
+////                }
+////                Log.v( "startTrim: " , startTime + " " + endTime);
+////                movie.addTrack(new CroppedTrack(track, startSample, endSample));
+////
+////            }
+////            video.addTrack(movie.getTracks().get(1));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        org.mp4parser.Container out = new DefaultMp4Builder().build(movie);
+//
+//        FileOutputStream fos;
+//        try {
+//            fos = new FileOutputStream(outputFile.toString());
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//        BufferedWritableFileByteChannel byteBufferByteChannel = new BufferedWritableFileByteChannel(fos);
+//        try {
+////            Toast.makeText(UploadActivity.this, "Done 2", Toast.LENGTH_SHORT);
+//
+//            out.writeContainer(byteBufferByteChannel);
+//            byteBufferByteChannel.close();
+//            fos.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//        return outputFile;
+//    }
+//
+//    private static class BufferedWritableFileByteChannel implements WritableByteChannel {
+//        private static final int BUFFER_CAPACITY = 1000000;
+//
+//        private boolean isOpen = true;
+//        private final OutputStream outputStream;
+//        private final ByteBuffer byteBuffer;
+//        private final byte[] rawBuffer = new byte[BUFFER_CAPACITY];
+//
+//        private BufferedWritableFileByteChannel(OutputStream outputStream) {
+//            this.outputStream = outputStream;
+//            this.byteBuffer = ByteBuffer.wrap(rawBuffer);
+//        }
+//
+//        @Override
+//        public int write(ByteBuffer inputBuffer) throws IOException {
+//            int inputBytes = inputBuffer.remaining();
+//
+//            if (inputBytes > byteBuffer.remaining()) {
+//                dumpToFile();
+//                byteBuffer.clear();
+//
+//                if (inputBytes > byteBuffer.remaining()) {
+//                    throw new BufferOverflowException();
+//                }
+//            }
+//
+//            byteBuffer.put(inputBuffer);
+//
+//            return inputBytes;
+//        }
+//
+//        @Override
+//        public boolean isOpen() {
+//            return isOpen;
+//        }
+//
+//        @Override
+//        public void close() throws IOException {
+//            dumpToFile();
+//            isOpen = false;
+//        }
+//
+//        private void dumpToFile() {
+//            try {
+//                outputStream.write(rawBuffer, 0, byteBuffer.position());
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 }
