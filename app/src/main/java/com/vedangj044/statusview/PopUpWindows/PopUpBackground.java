@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +14,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 
 import com.vedangj044.statusview.Adapters.BackgroudColorAdapter;
+import com.vedangj044.statusview.ListOfResource;
 import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
@@ -41,13 +43,15 @@ public class PopUpBackground extends PopUpSetup {
     private BackgroundChangeListener listener;
 
     // Contains the string of color code
-    private List<String> BackgroundColorResource = new ArrayList<>();
+    private List<String> BackgroundColorResource = ListOfResource.BackgroundColorResource;
+
+    private List<Boolean> isColor = ListOfResource.isColor;
 
     // Interface to send message back to the activity
     // Change commit messages
     public interface BackgroundChangeListener{
         // send the color string value
-        void onInputASend(String color);
+        void onInputASend(String color, int resource, boolean isColor);
 
         // shows the keyboard in the createTextStatus activity
         void onCallKeyboardA(int i);
@@ -71,22 +75,12 @@ public class PopUpBackground extends PopUpSetup {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.bottom_background_select, null, false);
 
-        BackgroundColorResource.add("#778899");
-        BackgroundColorResource.add("#290001");
-        BackgroundColorResource.add("#f8bd7f");
-        BackgroundColorResource.add("#4e89ae");
-        BackgroundColorResource.add("#206a5d");
-        BackgroundColorResource.add("#ffc93c");
-        BackgroundColorResource.add("#1a1a2e");
-        BackgroundColorResource.add("#2d4059");
-        BackgroundColorResource.add("#382933");
-
 
         final GridView gridView = v.findViewById(R.id.background_selector);
 
 
         // set adapter for grid view
-        BackgroudColorAdapter bgAdapter = new BackgroudColorAdapter(v.getContext(), BackgroundColorResource, current_Selected);
+        BackgroudColorAdapter bgAdapter = new BackgroudColorAdapter(v.getContext(), BackgroundColorResource, isColor,  current_Selected);
         gridView.setAdapter(bgAdapter);
 
 
@@ -106,26 +100,38 @@ public class PopUpBackground extends PopUpSetup {
                     drawable.setColorFilter(Color.parseColor(BackgroundColorResource.get(current_Selected)), PorterDuff.Mode.DST_OVER);
                 }
                 else{
-
                     // Clears the already selected color by restoring default background
-                    gridView.getChildAt(current_Selected).setBackgroundResource(R.drawable.custom_rounded_backgroud);
-                    GradientDrawable dr = (GradientDrawable) gridView.getChildAt(current_Selected).getBackground();
-                    dr.setColor(Color.parseColor(BackgroundColorResource.get(current_Selected)));
+                    if(isColor.get(current_Selected)){
+                        Log.v("cuure", String.valueOf(current_Selected));
+                        gridView.getChildAt(current_Selected).setBackgroundResource(R.drawable.custom_rounded_backgroud);
+                        GradientDrawable dr = (GradientDrawable) gridView.getChildAt(current_Selected).getBackground();
+                        dr.setColor(Color.parseColor(BackgroundColorResource.get(current_Selected)));
+                    }
+
 
                     // changing the current selection to what user has clicked on
                     current_Selected = position;
 
 
-                    // Selects the particular item and changes its background
-                    view.setBackgroundResource(R.drawable.round_white);
-                    LayerDrawable drawable = (LayerDrawable) view.getBackground();
-                    drawable.setColorFilter(Color.parseColor(BackgroundColorResource.get(current_Selected)), PorterDuff.Mode.DST_OVER);
+                    if(isColor.get(current_Selected)){
+                        // Selects the particular item and changes its background
+                        view.setBackgroundResource(R.drawable.round_white);
+                        LayerDrawable drawable = (LayerDrawable) view.getBackground();
+                        drawable.setColorFilter(Color.parseColor(BackgroundColorResource.get(current_Selected)), PorterDuff.Mode.DST_OVER);
+                    }
+
                 }
 
                 // sends the changes to the activity
                 // Reference https://www.youtube.com/watch?v=i22INe14JUc&list=PLrnPJCHvNZuBkhcesO6DfdCghl6ZejVPc&index=2
-                String cl = BackgroundColorResource.get(current_Selected);
-                listener.onInputASend(cl);
+                if(isColor.get(current_Selected)){
+                    String cl = BackgroundColorResource.get(current_Selected);
+                    listener.onInputASend(cl, -1, true);
+                }
+                else{
+                    int cl = Integer.parseInt(BackgroundColorResource.get(current_Selected));
+                    listener.onInputASend("", cl, false);
+                }
             }
         });
 

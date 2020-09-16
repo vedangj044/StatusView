@@ -1,6 +1,8 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.CustomView.RangeSeekBarView;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+
+import com.vedangj044.statusview.CustomView.RangeSeekBarView.Thumb;
 
 /**
  * Created by lamphuong.

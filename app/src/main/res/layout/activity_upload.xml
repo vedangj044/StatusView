@@ -79,10 +79,10 @@
         android:layout_below="@+id/imagineDragon">
 
 
-        <com.vedangj044.statusview.RangeSeekBar
+        <com.vedangj044.statusview.CustomView.RangeSeekBarView.RangeSeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:thumb_color="@color/colorPrimary"
+            app:thumb_color="@android:color/white"
             android:id="@+id/range_seek_bar"
             app:thumb_normal_radius="10dp"
             android:layout_centerInParent="true"

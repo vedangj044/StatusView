@@ -1,4 +1,4 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.Activity;
 
 import android.Manifest;
 import android.content.Context;
@@ -47,6 +47,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.vedangj044.statusview.Activity.UploadActivity;
+import com.vedangj044.statusview.R;
 
 import java.io.File;
 import java.io.IOException;

@@ -31,16 +31,18 @@ public class BackgroudColorAdapter extends BaseAdapter {
     private Context mContext;
     private List<String> backgroundResource = new ArrayList<>();
 
+    private List<Boolean> isColor = new ArrayList<>();
     // position of the item that needs to be marked selected
     private int current;
 
     // Default height of each cell
     private static int height = 70;
 
-    public BackgroudColorAdapter(Context mContext, List<String> backgroudResource, int current) {
+    public BackgroudColorAdapter(Context mContext, List<String> backgroudResource, List<Boolean> isColor, int current) {
         this.mContext = mContext;
         this.backgroundResource = backgroudResource;
         this.current = current;
+        this.isColor = isColor;
     }
 
     @Override
@@ -74,21 +76,35 @@ public class BackgroudColorAdapter extends BaseAdapter {
         Item.setLayoutParams(layoutParams);
 
         if(current == position){
-            // This position is selected
-            Item.setBackgroundResource(R.drawable.round_white);
 
-            LayerDrawable drawable = (LayerDrawable) Item.getBackground();
-            drawable.setColorFilter(Color.parseColor(backgroundResource.get(position)), PorterDuff.Mode.DST_OVER);
+            if(isColor.get(position)){
+                // This position is selected
+                Item.setBackgroundResource(R.drawable.round_white);
+
+                LayerDrawable drawable = (LayerDrawable) Item.getBackground();
+                drawable.setColorFilter(Color.parseColor(backgroundResource.get(position)), PorterDuff.Mode.DST_OVER);
+            }
+            else{
+
+                // do nothing;
+            }
+
         }
         else{
 
-            // Background resource file
-            Item.setBackgroundResource(R.drawable.custom_rounded_backgroud);
+            if(isColor.get(position)){
+                // Background resource file
+                Item.setBackgroundResource(R.drawable.custom_rounded_backgroud);
 
-            // To use background resource and background color together we need Gradient drawable
-            // Reference: https://stackoverflow.com/questions/11977302/android-set-background-resource-and-color
-            GradientDrawable drawable = (GradientDrawable) Item.getBackground();
-            drawable.setColor(Color.parseColor(backgroundResource.get(position)));
+                // To use background resource and background color together we need Gradient drawable
+                // Reference: https://stackoverflow.com/questions/11977302/android-set-background-resource-and-color
+                GradientDrawable drawable = (GradientDrawable) Item.getBackground();
+                drawable.setColor(Color.parseColor(backgroundResource.get(position)));
+            }
+            else{
+                Item.setBackgroundResource(Integer.parseInt(backgroundResource.get(position)));
+            }
+
 
         }
 

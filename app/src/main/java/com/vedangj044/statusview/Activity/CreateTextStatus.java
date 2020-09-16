@@ -2,7 +2,6 @@ package com.vedangj044.statusview.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.content.Context;
@@ -17,28 +16,35 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vanniktech.emoji.EmojiPopup;
+import com.vedangj044.statusview.ListOfResource;
 import com.vedangj044.statusview.ModelObject.TextStatusObject;
 import com.vedangj044.statusview.PopUpWindows.PopUpBackground;
 import com.vedangj044.statusview.PopUpWindows.PopUpFont;
 import com.vedangj044.statusview.PopUpWindows.PopUpSetup;
 import com.vedangj044.statusview.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CreateTextStatus extends AppCompatActivity{
 
     // Background for text view
-    private CoordinatorLayout backgroundOfText;
+    private RelativeLayout backgroundOfText;
     // Text View for status
     private EditText StatusContent;
     // Button to upload the status
     private FloatingActionButton sendStatus;
 
     // current background string value
-    private String currentBackground = "#778899";
+    private String currentBackgroundColor = "#778899";
+    private int currentBackgroundResource = -1;
+
     // current font index
     private int currentFont = 0;
     // current font color
@@ -49,6 +55,11 @@ public class CreateTextStatus extends AppCompatActivity{
     private PopUpBackground popUpBackground;
 
     private boolean EmojiIconState = true;
+
+    ListOfResource ld = new ListOfResource();
+    private List<Integer> textFont = ListOfResource.textFont;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,10 +113,19 @@ public class CreateTextStatus extends AppCompatActivity{
 
         popUpBackground.setBackgroundChangeListener(new PopUpBackground.BackgroundChangeListener() {
             @Override
-            public void onInputASend(String color) {
+            public void onInputASend(String color, int backgroundResource, boolean isColor) {
 
-                backgroundOfText.setBackgroundColor(Color.parseColor(color));
-                currentBackground = color;
+                if(isColor){
+                    backgroundOfText.setBackgroundColor(Color.parseColor(color));
+                    currentBackgroundColor = color;
+                    currentBackgroundResource = -1;
+                }
+                else{
+                    backgroundOfText.setBackgroundResource(backgroundResource);
+                    currentBackgroundResource = backgroundResource;
+                    currentBackgroundColor = "";
+                }
+
 
             }
 
@@ -122,7 +142,12 @@ public class CreateTextStatus extends AppCompatActivity{
             @Override
             public void onClick(View v) {
 
-                popUpBackground.setState(currentBackground);
+                if(currentBackgroundResource == -1){
+                    popUpBackground.setState(currentBackgroundColor);
+                }
+                else {
+                    popUpBackground.setState(String.valueOf(currentBackgroundResource));
+                }
                 showKeyboardShortcut(true);
 
                 final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -152,7 +177,7 @@ public class CreateTextStatus extends AppCompatActivity{
             @Override
             public void onInputBSend(int a) {
 
-                Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), a);
+                Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), textFont.get(a));
                 StatusContent.setTypeface(typeface);
                 currentFont = a;
 
@@ -258,7 +283,7 @@ public class CreateTextStatus extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 TextStatusObject t1 = new TextStatusObject(StatusContent.getText().toString(),
-                        currentBackground, currentFont);
+                        currentBackgroundColor, currentFont);
 
                 Toast.makeText(getApplicationContext(), t1.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -281,7 +306,7 @@ public class CreateTextStatus extends AppCompatActivity{
     // Saving state to enable screen rotation and handle configuration changes
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
-        savedInstanceState.putString("currentBackground", currentBackground);
+        savedInstanceState.putString("currentBackground", currentBackgroundColor);
         savedInstanceState.putString("currentFontColor", currentFontColor);
         savedInstanceState.putInt("currentFont", currentFont);
 
@@ -293,10 +318,10 @@ public class CreateTextStatus extends AppCompatActivity{
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         currentFontColor = savedInstanceState.getString("currentFontColor");
-        currentBackground = savedInstanceState.getString("currentBackground");
+        currentBackgroundColor = savedInstanceState.getString("currentBackground");
         currentFont = savedInstanceState.getInt("currentFont");
 
-        backgroundOfText.setBackgroundColor(Color.parseColor(currentBackground));
+        backgroundOfText.setBackgroundColor(Color.parseColor(currentBackgroundColor));
 
         if(currentFont != 0){
             Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), currentFont);

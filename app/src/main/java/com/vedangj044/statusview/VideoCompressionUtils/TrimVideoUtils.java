@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.VideoCompressionUtils;
 
 import android.net.Uri;
 import android.util.Log;

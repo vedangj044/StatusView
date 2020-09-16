@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.vedangj044.statusview.ListOfResource;
 import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
@@ -28,9 +29,9 @@ public class PopUpFont extends PopUpSetup {
     FontStyleChangeListener li;
 
     // array to hold all font integer value
-    final List<Integer> textFont = new ArrayList<>();
+    final List<Integer> textFont = ListOfResource.textFont;
     // array to hold the font color value
-    final List<String> fontColor = new ArrayList<>();
+    final List<String> fontColor = ListOfResource.fontColor;
 
     // default padding
     private static final int padding = 10;
@@ -95,13 +96,7 @@ public class PopUpFont extends PopUpSetup {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.bottom_text_select, null, false);
 
-        textFont.add(R.font.cantata_one);
-        textFont.add(R.font.carter_one);
-        textFont.add(R.font.homemade_apple);
-        textFont.add(R.font.allerta_stencil);
-        textFont.add(R.font.architects_daughter);
-        textFont.add(R.font.delius_unicase_bold);
-        textFont.add(R.font.varela_round);
+
 
         LinearLayout layout = view.findViewById(R.id.font_style_selection_list);
 
@@ -111,7 +106,7 @@ public class PopUpFont extends PopUpSetup {
             public void onClick(View v) {
                 int id = v.getId();
                 // triggers goes back to activity
-                li.onInputBSend(textFont.get(id));
+                li.onInputBSend(id);
 
                 // if a font style is already selected then restore it to default style
                 if(currentFontSelectedId != -1){
@@ -169,15 +164,7 @@ public class PopUpFont extends PopUpSetup {
 
         // Similar to above approach we populate the font color change layout
 
-        fontColor.add("#778899");
-        fontColor.add("#290001");
-        fontColor.add("#f8bd7f");
-        fontColor.add("#4e89ae");
-        fontColor.add("#206a5d");
-        fontColor.add("#ffc93c");
-        fontColor.add("#1a1a2e");
-        fontColor.add("#2d4059");
-        fontColor.add("#382933");
+
 
         LinearLayout fontColorLayout = view.findViewById(R.id.font_color_selection_list);
 
