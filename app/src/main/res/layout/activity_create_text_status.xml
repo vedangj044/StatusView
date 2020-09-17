@@ -8,36 +8,45 @@
     android:background="#778899"
     android:id="@+id/text_relative_layout_backgroud">
 
-    <com.vanniktech.emoji.EmojiEditText
-        android:id="@+id/edit_text_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:background="@null"
-        android:maxLength="700"
-        android:isScrollContainer="false"
-        android:hint="@string/type_a_status"
-        android:textAlignment="center"
-        android:textSize="30sp"
-        android:layout_centerInParent="true"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/tab_bottom">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/send_status"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_send_arrow_foreground"
-        app:maxImageSize="48dp"
-        android:visibility="gone"
-        app:tint="@android:color/white"/>
+        <com.vanniktech.emoji.EmojiEditText
+            android:id="@+id/edit_text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:background="@null"
+            android:maxLength="700"
+            android:isScrollContainer="false"
+            android:hint="@string/type_a_status"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:layout_centerInParent="true" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/send_status"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_send_arrow_foreground"
+            app:maxImageSize="48dp"
+            android:visibility="gone"
+            app:tint="@android:color/white"/>
+
+    </RelativeLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:orientation="vertical"
         app:behavior_hideable = "false"
         app:behavior_peekHeight="55dp"
         android:id="@+id/tab_bottom">
@@ -91,6 +100,18 @@
                 android:id="@+id/tab"/>
 
         </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:visibility="gone"
+            android:id="@+id/background_fragment_container"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:visibility="gone"
+            android:id="@+id/font_fragment_container"/>
 
     </LinearLayout>
 

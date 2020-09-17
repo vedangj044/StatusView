@@ -1,4 +1,4 @@
-package com.vedangj044.statusview.PopUpWindows;
+package com.vedangj044.statusview.FragmentWindows;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +20,6 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import com.vedangj044.statusview.ListOfResource;
 import com.vedangj044.statusview.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PopUpFont extends PopUpSetup {

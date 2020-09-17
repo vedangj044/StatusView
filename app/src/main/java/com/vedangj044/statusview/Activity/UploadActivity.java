@@ -123,17 +123,14 @@ public class UploadActivity extends AppCompatActivity {
         durationText = findViewById(R.id.duration_text);
 
         // On click listener to change image in view when multiple entries
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentImage = v.getId();
-                String path = arg.get(v.getId());
-                if(isVideo(path)){
-                    addVideo(path);
-                }
-                else{
-                    addImage(path);
-                }
+        View.OnClickListener listener = v -> {
+            currentImage = v.getId();
+            String path = arg.get(v.getId());
+            if(isVideo(path)){
+                addVideo(path);
+            }
+            else{
+                addImage(path);
             }
         };
 
@@ -263,12 +260,8 @@ public class UploadActivity extends AppCompatActivity {
             public void onIndexChange(RangeSeekBar rangeSeekBar, int i, int i1) {
                 int duration = (i1 - i);
 
-                String text = String.format(Locale.getDefault(), "%d : %d ",
-                        TimeUnit.MILLISECONDS.toMinutes(duration),
-                        TimeUnit.MILLISECONDS.toSeconds(duration) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
 
-                durationText.setText(text);
+
                 duration = duration/1000;
 
                 if(duration > 31){
@@ -278,7 +271,14 @@ public class UploadActivity extends AppCompatActivity {
                     VideoStatus.seekTo(i);
                 }
                 startTime = i;
-                endTime = i1;
+                endTime = Math.min(i1, i + 30000);
+
+                duration = endTime - startTime;
+                String text = String.format(Locale.getDefault(), "%d : %d ",
+                        TimeUnit.MILLISECONDS.toMinutes(duration),
+                        TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+
+                durationText.setText(text);
             }
         });
 
@@ -320,6 +320,8 @@ public class UploadActivity extends AppCompatActivity {
 
     // Set the image view according to the image URI
     public void addImage(String path){
+
+        CropRotation.setVisibility(View.VISIBLE);
         Bitmap bmp = BitmapFactory.decodeFile(path);
 
         ImageStatus.setImageBitmap(bmp);
@@ -353,6 +355,7 @@ public class UploadActivity extends AppCompatActivity {
         params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         params.setMargins(10, 10, 10, 10);
 
+        CropRotation.setVisibility(View.GONE);
         timeLineLayout.addView(timeLineView, params);
 
         timeLineView.setVideo(Uri.fromFile(new File(path)));
@@ -440,7 +443,7 @@ public class UploadActivity extends AppCompatActivity {
 
             @Override
             public void getResult(Uri uri) {
-//                compressVideo(uri);
+
             }
 
             @Override

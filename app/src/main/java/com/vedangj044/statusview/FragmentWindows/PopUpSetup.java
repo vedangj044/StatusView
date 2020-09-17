@@ -1,4 +1,4 @@
-package com.vedangj044.statusview.PopUpWindows;
+package com.vedangj044.statusview.FragmentWindows;
 
 
 import android.content.Context;

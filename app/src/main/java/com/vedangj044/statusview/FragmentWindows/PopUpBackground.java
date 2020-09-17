@@ -1,11 +1,7 @@
-package com.vedangj044.statusview.PopUpWindows;
+package com.vedangj044.statusview.FragmentWindows;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +15,6 @@ import com.vedangj044.statusview.Adapters.BackgroudColorAdapter;
 import com.vedangj044.statusview.ListOfResource;
 import com.vedangj044.statusview.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PopUpBackground extends PopUpSetup {
@@ -108,51 +103,6 @@ public class PopUpBackground extends PopUpSetup {
                 current_Selected = position;
 
                 listener.onInputASend(position);
-//                // when clicked the first time
-//                if(current_Selected == -1){
-//                    current_Selected = position;
-//
-//                    // set background to have a tick
-//                    view.setBackgroundResource(R.drawable.round_white);
-//                    // set color using Layer drawable
-//                    // reference: https://stackoverflow.com/questions/11977302/android-set-background-resource-and-color
-//                    LayerDrawable drawable = (LayerDrawable) view.getBackground();
-//                    drawable.setColorFilter(Color.parseColor(BackgroundColorResource.get(current_Selected)), PorterDuff.Mode.DST_OVER);
-//                }
-//                else{
-//                    // Clears the already selected color by restoring default background
-//                    if(isColor.get(current_Selected)){
-////                        Log.v("cuure", String.valueOf(current_Selected));
-//
-//                        gridView.findViewById(current_Selected).setBackgroundResource(R.drawable.custom_rounded_backgroud);
-//                        GradientDrawable dr = (GradientDrawable) gridView.findViewById(current_Selected).getBackground();
-//                        dr.setColor(Color.parseColor(BackgroundColorResource.get(current_Selected)));
-//                    }
-//
-//
-//                    // changing the current selection to what user has clicked on
-//                    current_Selected = position;
-//
-//
-//                    if(isColor.get(current_Selected)){
-//                        // Selects the particular item and changes its background
-//                        view.setBackgroundResource(R.drawable.round_white);
-//                        LayerDrawable drawable = (LayerDrawable) view.getBackground();
-//                        drawable.setColorFilter(Color.parseColor(BackgroundColorResource.get(current_Selected)), PorterDuff.Mode.DST_OVER);
-//                    }
-//
-//                }
-//
-//                // sends the changes to the activity
-//                // Reference https://www.youtube.com/watch?v=i22INe14JUc&list=PLrnPJCHvNZuBkhcesO6DfdCghl6ZejVPc&index=2
-//                if(isColor.get(current_Selected)){
-//                    String cl = BackgroundColorResource.get(current_Selected);
-//                    listener.onInputASend(cl, -1, true);
-//                }
-//                else{
-//                    int cl = Integer.parseInt(BackgroundColorResource.get(current_Selected));
-//                    listener.onInputASend("", cl, false);
-//                }
             }
         });
 

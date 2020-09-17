@@ -22,14 +22,12 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vanniktech.emoji.EmojiPopup;
+import com.vedangj044.statusview.FragmentWindows.FragmentBackground;
+import com.vedangj044.statusview.FragmentWindows.FragmentFont;
 import com.vedangj044.statusview.ListOfResource;
 import com.vedangj044.statusview.ModelObject.TextStatusObject;
-import com.vedangj044.statusview.PopUpWindows.PopUpBackground;
-import com.vedangj044.statusview.PopUpWindows.PopUpFont;
-import com.vedangj044.statusview.PopUpWindows.PopUpSetup;
 import com.vedangj044.statusview.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CreateTextStatus extends AppCompatActivity{
@@ -49,17 +47,19 @@ public class CreateTextStatus extends AppCompatActivity{
     // current font color
     private int currentFontColor;
 
-    private PopUpFont popUpFont;
-
-    private PopUpBackground popUpBackground;
+    private FragmentFont fragmentFont;
+    private FragmentBackground fragmentBackground;
 
     private boolean EmojiIconState = true;
+    private EmojiPopup emojiPopup1;
+
+    private RelativeLayout fontFragmentContainer;
+    private RelativeLayout backgroundFragmentContainer;
+
 
     private List<Integer> backgroundResourceList = ListOfResource.BackgroundColorResource;
     private List<Integer> textFont = ListOfResource.textFont;
     private List<Integer> fontColor = ListOfResource.fontColor;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +75,20 @@ public class CreateTextStatus extends AppCompatActivity{
         ImageButton changeBackgroundColor = findViewById(R.id.change_background_color);
         final ImageButton emojiPopup = findViewById(R.id.emoji_open);
 
+        // relative layout container
+        fontFragmentContainer = findViewById(R.id.font_fragment_container);
+        backgroundFragmentContainer = findViewById(R.id.background_fragment_container);
+
+        // fragment instances
+        fragmentFont = new FragmentFont();
+        fragmentBackground = new FragmentBackground();
+
+        // adding fragment
+        getSupportFragmentManager().beginTransaction().add(R.id.font_fragment_container, fragmentFont).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.background_fragment_container, fragmentBackground).commit();
+
         // Emoji popup builder
-        final EmojiPopup emojiPopup1 = EmojiPopup.Builder.fromRootView(backgroundOfText).build(StatusContent);
+        emojiPopup1 = EmojiPopup.Builder.fromRootView(backgroundOfText).build(StatusContent);
 
         // Triggers the emoji popup
         emojiPopup.setOnClickListener(new View.OnClickListener() {
@@ -93,25 +105,7 @@ public class CreateTextStatus extends AppCompatActivity{
             }
         });
 
-        popUpBackground = new PopUpBackground(getApplicationContext(), backgroundOfText);
-        popUpBackground.setSizeForSoftKeyboard();
-
-
-        popUpBackground.setOnSoftKeyboardOpenCloseListener(new PopUpSetup.OnSoftKeyboardOpenCloseListener() {
-            @Override
-            public void onKeyboardOpen(int keyBoardHeight) {
-
-            }
-
-            @Override
-            public void onKeyboardClose() {
-                if(popUpBackground.isShowing()){
-                    popUpBackground.dismiss();
-                }
-            }
-        });
-
-        popUpBackground.setBackgroundChangeListener(new PopUpBackground.BackgroundChangeListener() {
+        fragmentBackground.setBackgroundChangeListener(new FragmentBackground.BackgroundChangeListener() {
             @Override
             public void onInputASend(int backgroundResource) {
 
@@ -126,6 +120,14 @@ public class CreateTextStatus extends AppCompatActivity{
             }
         });
 
+        StatusContent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fontFragmentContainer.setVisibility(View.GONE);
+                backgroundFragmentContainer.setVisibility(View.GONE);
+            }
+        });
+
         // When the color plate icon is clicked it
         // changes the background by moving to the next index in the list
         // if it encounters the last index then set the index to 0
@@ -133,34 +135,23 @@ public class CreateTextStatus extends AppCompatActivity{
             @Override
             public void onClick(View v) {
 
-                popUpBackground.setState(String.valueOf(currentBackgroundResource));
+                // keyboard hides
+                showKeyboardShortcut(false);
+                if(backgroundFragmentContainer.getVisibility() == View.GONE){
 
-                showKeyboardShortcut(true);
-
-                final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(StatusContent, InputMethodManager.SHOW_IMPLICIT);
-
-                popUpBackground.showAtBottomPending();
+                    // font container is set to GONE
+                    fontFragmentContainer.setVisibility(View.GONE);
+                    backgroundFragmentContainer.setVisibility(View.VISIBLE);
+                }
+                else{
+                    backgroundFragmentContainer.setVisibility(View.GONE);
+                }
 
             }
         });
 
-        popUpFont = new PopUpFont(getApplicationContext(), backgroundOfText);
-        popUpFont.setSizeForSoftKeyboard();
-        popUpFont.setOnSoftKeyboardOpenCloseListener(new PopUpSetup.OnSoftKeyboardOpenCloseListener() {
-            @Override
-            public void onKeyboardOpen(int keyBoardHeight) {
 
-            }
-
-            @Override
-            public void onKeyboardClose() {
-                if(popUpFont.isShowing())
-                    popUpFont.dismiss();
-            }
-        });
-
-        popUpFont.setFontStyleChangeListener(new PopUpFont.FontStyleChangeListener() {
+        fragmentFont.setFontStyleChangeListener(new FragmentFont.FontStyleChangeListener() {
             @Override
             public void onInputBSend(int a) {
 
@@ -194,12 +185,17 @@ public class CreateTextStatus extends AppCompatActivity{
             @Override
             public void onClick(View v) {
 
-                popUpFont.setState(currentFont, currentFontColor);
+                // keyboard hides
+                showKeyboardShortcut(false);
+                if(fontFragmentContainer.getVisibility() == View.GONE){
 
-                showKeyboardShortcut(true);
-                final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(StatusContent, InputMethodManager.SHOW_IMPLICIT);
-                popUpFont.showAtBottomPending();
+                    // set to GONE
+                    backgroundFragmentContainer.setVisibility(View.GONE);
+                    fontFragmentContainer.setVisibility(View.VISIBLE);
+                }
+                else{
+                    fontFragmentContainer.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -278,8 +274,13 @@ public class CreateTextStatus extends AppCompatActivity{
         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if(t){
             // when the keyboard should be visible
-            popUpFont.dismiss();
-            popUpBackground.dismiss();
+            emojiPopup1.dismiss();
+            fontFragmentContainer.setVisibility(View.GONE);
+            backgroundFragmentContainer.setVisibility(View.GONE);
+
+            inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            StatusContent.requestFocus();
+
         }
         else{
             // when the keyboard should NOT be visible
