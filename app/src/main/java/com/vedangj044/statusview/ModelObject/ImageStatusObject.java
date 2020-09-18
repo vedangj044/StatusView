@@ -30,4 +30,12 @@ public class ImageStatusObject extends StatusObject {
     public void setImageURL(String imageURL) {
         ImageURL = imageURL;
     }
+
+    @Override
+    public String toString() {
+        return "ImageStatusObject{" +
+                "thumbnailURL='" + thumbnailURL + '\'' +
+                ", ImageURL='" + ImageURL + '\'' +
+                '}';
+    }
 }

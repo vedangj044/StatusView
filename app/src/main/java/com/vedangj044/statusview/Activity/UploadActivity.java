@@ -9,15 +9,20 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.util.Log;
+import android.util.Size;
 import android.util.TypedValue;
 import android.util.Xml;
 import android.view.View;
@@ -27,38 +32,31 @@ import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 
 import com.bumptech.glide.Glide;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-//
-//import org.mp4parser.Container;
-//import org.mp4parser.muxer.Track;
-//import org.mp4parser.muxer.Movie;
-//import org.mp4parser.muxer.builder.DefaultMp4Builder;
-//import org.mp4parser.muxer.container.mp4.MovieCreator;
-//import org.mp4parser.muxer.tracks.AppendTrack;
-//import org.mp4parser.muxer.tracks.ClippedTrack;
-
-import com.iceteck.silicompressorr.SiliCompressor;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.vedangj044.statusview.ModelObject.MediaPreview;
+import com.vedangj044.statusview.ModelObject.ImageStatusObject;
 import com.vedangj044.statusview.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import com.vedangj044.statusview.CustomView.RangeSeekBarView.RangeSeekBar;
 import com.vedangj044.statusview.VideoCompressionUtils.TrimVideoUtils;
+import com.vedangj044.statusview.VideoCompressionUtils.VideoConverter;
+
+import org.jetbrains.annotations.NotNull;
 import org.xmlpull.v1.XmlPullParser;
 
 import life.knowledge4.videotrimmer.interfaces.OnTrimVideoListener;
@@ -67,14 +65,18 @@ import life.knowledge4.videotrimmer.view.TimeLineView;
 
 public class UploadActivity extends AppCompatActivity {
 
+    private static int MAX_DURATION  = 30000;
+
     private FloatingActionButton sendButton;
     private ImageView imageView;
     private RelativeLayout parentLayout;
     private ImageView profilePicture;
     private ImageButton CropRotation;
 
-    // Array maintains the list of path of the images/videos
+    // Array maintains the list of path of the images/videos which is received from intent
     private List<String> arg;
+
+    // horizontal layout at the bottom when multi-selected
     private LinearLayout lp;
 
     private ImageView ImageStatus;
@@ -83,16 +85,14 @@ public class UploadActivity extends AppCompatActivity {
     private ImageButton deleteIcon;
 
     private int currentImage = -1;
-    private int rotateAngle = 0;
-
     private RangeSeekBar rangeSeekBar;
-    private int endTime;
-    private int startTime;
+
 
     private RelativeLayout timeLineLayout;
     private TextView durationText;
 
-    private OnTrimVideoListener onTrimVideoListener;
+    // List contains mediaPreview objects
+    private List<MediaPreview> mediaPreviewsList;
 
 
     @Override
@@ -114,6 +114,7 @@ public class UploadActivity extends AppCompatActivity {
         CropRotation = findViewById(R.id.rotation_button);
         deleteIcon = findViewById(R.id.delete_icon);
 
+        // Status preview
         ImageStatus = findViewById(R.id.image_status);
         VideoStatus = findViewById(R.id.video_status);
 
@@ -122,75 +123,73 @@ public class UploadActivity extends AppCompatActivity {
 
         durationText = findViewById(R.id.duration_text);
 
+        mediaPreviewsList = new ArrayList<>();
+
         // On click listener to change image in view when multiple entries
         View.OnClickListener listener = v -> {
             currentImage = v.getId();
-            String path = arg.get(v.getId());
-            if(isVideo(path)){
-                addVideo(path);
+            MediaPreview m1 = getIdOfMedia(currentImage);
+
+            if(m1.isVideo()){
+                addVideo(m1);
             }
             else{
-                addImage(path);
+                addImage(m1);
             }
+
         };
 
-        // Get intent from path
-        /*
-        * Intent can either be a String "image"
-        * OR
-        * a list "imageList"
-        *
-        * Depending on this the layout is changed
-        * */
+        // Intent is received from GalleyViewFragment
+        arg = getIntent().getStringArrayListExtra("imageList");
 
-        String path = getIntent().getStringExtra("image");
-        if(path != null){
-            // When only one image is selected
-            if(isVideo(path)){
-                addVideo(path);
-            }
-            else{
-                addImage(path);
-            }
+        // MediaPreviewList is populated and the index is assigned as ID to each
+        for(String path: arg){
+            mediaPreviewsList.add(new MediaPreview(path, arg.indexOf(path)));
         }
-        else{
-            // When multiple images are selected the bottom horizontal scroll is populated
-            arg = getIntent().getStringArrayListExtra("imageList");
 
-            for(String s1: arg){
+        // When there are more than one entries we need to populate the bottom horizontal scroll layout
+        if(mediaPreviewsList.size() > 1) {
+            for (MediaPreview s1 : mediaPreviewsList) {
                 ImageView img = new ImageView(this);
 
                 int dimensionInDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dimensionInDp, LinearLayout.LayoutParams.MATCH_PARENT);
-                params.setMargins(10, 10 ,10 ,10);
+                params.setMargins(10, 10, 10, 10);
 
                 img.setLayoutParams(params);
                 img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                img.setId(arg.indexOf(s1));
+
+                // ID is assigned equal to ID of mediaPreview
+                img.setId(s1.getId());
 
                 img.setOnClickListener(listener);
 
-                Glide.with(this).load(s1).into(img);
+                Glide.with(this).load(s1.getPath()).into(img);
                 lp.addView(img);
             }
         }
+        else{
+
+            // otherwise when only one entry is present it is displayed
+            currentImage = 0;
+            MediaPreview m1 = mediaPreviewsList.get(0);
+            if (m1.isVideo()) {
+                addVideo(m1);
+            } else {
+                addImage(m1);
+            }
+        }
+
 
         // Image cropping activity
         // Reference https://github.com/ArthurHub/Android-Image-Cropper
         CropRotation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(path != null){
-                    // When only one image is selected
-                    if(!isVideo(path)){
-                        CropImage.activity(Uri.fromFile(new File(path))).start(UploadActivity.this);
-                    }
-                }
-                else{
-                    // When there are multiple images we have to select from arg
-                    if(!isVideo(arg.get(currentImage))){
-                        CropImage.activity(Uri.fromFile(new File(arg.get(currentImage)))).start(UploadActivity.this);
-                    }
+                // View is updated
+                MediaPreview m1 = getIdOfMedia(currentImage);
+                if(!m1.isVideo()){
+                    CropImage.activity(Uri.fromFile(new File(m1.getPath()))).start(UploadActivity.this);
                 }
             }
         });
@@ -204,6 +203,8 @@ public class UploadActivity extends AppCompatActivity {
                     VideoStatus.setVisibility(View.GONE);
                     lp.removeView(lp.findViewById(currentImage));
 
+                    // when an status is discarded it is deleted from mediaPreviewList as well
+                    mediaPreviewsList.remove(getIdOfMedia(currentImage));
                 }
             }
         });
@@ -215,42 +216,95 @@ public class UploadActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(path != null){
-                    if(!isVideo(path)){
-                        // Bitmap is saved to the app file directory
-                        Bitmap compressedBitmap = getCompressedBitmap(BitmapFactory.decodeFile(path));
 
-                        File file = new File(getApplicationContext().getFilesDir(), "1.png");
-                        try(FileOutputStream out = new FileOutputStream(file)){
-                            compressedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-                        }
-                        catch (IOException e){}
-                        Bitmap thumbnail = getThumbnailBitmap(compressedBitmap);
+                // FINAL LIST containing all the url required to sent to server
+                List<ImageStatusObject> compressedPath = new ArrayList<>();
 
-                        //
+                // Iteration to mediaPreviewList
+                for(MediaPreview m1: mediaPreviewsList){
+
+                    if(m1.isVideo()){
+
+                        // When video trimming is completed this listener is called
+                        OnTrimVideoListener onTrimVideoListener = new OnTrimVideoListener() {
+                           @Override
+                           public void onTrimStarted() { }
+
+                           @Override
+                           public void getResult(Uri uri) {
+
+                               // When video is trimmed, we have to compress it
+                               final String outputVideoFileDir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+                               final File outputVideoFileDirUri = new File(outputVideoFileDir);
+                               final Uri trimmedVideoURL = uri;
+
+                               final String thumbnail = getVideoThumbnail(uri.toString());
+
+                               // thread handles compression of video
+                               Thread thread = new Thread(){
+                                   @Override
+                                   public void run() {
+                                       boolean isConverted = VideoConverter.getInstance().convertVideo(UploadActivity.this,
+                                               trimmedVideoURL,
+                                               outputVideoFileDirUri, 0, 0, 0);
+
+                                       if (isConverted) {
+
+                                           // when compression is complete the compressPath list is updated
+                                           ImageStatusObject img1 = new ImageStatusObject(thumbnail, VideoConverter.cachedFile.getPath());
+                                           compressedPath.add(img1);
+
+                                           // the trimmed video is deleted ( only compressed and trimmed video is saved )
+                                           new File(uri.toString()).delete();
+                                       }
+                                       else{
+                                           Log.v("hey", "converting");
+                                       }
+                                   }
+                               };
+                               thread.start();
+                           }
+
+                           @Override
+                           public void cancelAction() {}
+
+                           @Override
+                           public void onError(String message) { }
+                        };
+
+                        // video trim function
+                        videoTrim(m1, onTrimVideoListener);
                     }
                     else{
-                        videoProcessing(startTime/1000,endTime/1000,path);
-                    }
-                }
-                else{
-                    List<String> path;
-                    for(int  i = 0; i < lp.getChildCount(); i++){
-                        // Bitmap is saved to the app file directory
 
-                        File file = new File(getApplicationContext().getFilesDir(), String.valueOf(i)+".png");
-                        try(FileOutputStream out = new FileOutputStream(file)){
-                            String p = arg.get(lp.getChildAt(i).getId());
-                            if(!isVideo(p)){
-                                Bitmap compressedBitmap = getCompressedBitmap(BitmapFactory.decodeFile(p));
-                                compressedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                        // Creating compressed bitmap
+                        Bitmap compressedBitmap = getCompressedBitmap(BitmapFactory.decodeFile(m1.getPath()));
 
-
-                                Toast.makeText(UploadActivity.this, "saved!", Toast.LENGTH_SHORT).show();
-                            }
+                        // Saving compressed bitmap
+                        File file = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+                        File output = new File(file, m1.getFileName());
+                        try (FileOutputStream out = new FileOutputStream(output)){
+                            compressedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
                         }
-                        catch (IOException e){}
+                        catch (IOException e){
+                            e.printStackTrace();
+                        }
+
+                        // Creating Thumbnail bitmap
+                        Bitmap thumbnail = getThumbnailBitmap(compressedBitmap);
+
+                        // Saving Thumbnail bitmap
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        thumbnail.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                        byte[] byteArray = byteArrayOutputStream.toByteArray();
+                        String base64Thumbnail = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+                        // Creating image status object and adding to list
+                        ImageStatusObject img1 = new ImageStatusObject(base64Thumbnail, output.getAbsolutePath());
+                        compressedPath.add(img1);
+
                     }
+
                 }
             }
         });
@@ -260,28 +314,73 @@ public class UploadActivity extends AppCompatActivity {
             public void onIndexChange(RangeSeekBar rangeSeekBar, int i, int i1) {
                 int duration = (i1 - i);
 
-
-
                 duration = duration/1000;
 
+                // Duration can't exceed MAX_DURATION
                 if(duration > 31){
-                    rangeSeekBar.setRightIndex(i+30000);
+                    rangeSeekBar.setRightIndex(i + MAX_DURATION);
                 }
-                if(i != startTime){
+
+                MediaPreview m1 = getIdOfMedia(currentImage);
+
+                // video preview is seeked to the start of trim
+                if(i != m1.getStartTime()){
                     VideoStatus.seekTo(i);
                 }
-                startTime = i;
-                endTime = Math.min(i1, i + 30000);
 
-                duration = endTime - startTime;
-                String text = String.format(Locale.getDefault(), "%d : %d ",
-                        TimeUnit.MILLISECONDS.toMinutes(duration),
-                        TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+                // start and end time is changed
+                m1.setStartTime(i);
+                m1.setEndTime(Math.min(i1, i + MAX_DURATION));
 
-                durationText.setText(text);
+                // textView displays the duration of selected part
+                durationText.setText(getDurationText(m1));
             }
         });
 
+    }
+
+    // Returns thumbnail of video in Base64 string
+    private String getVideoThumbnail(String uri) {
+
+        Size mSize = new Size(96,96);
+        CancellationSignal ca = new CancellationSignal();
+        Bitmap bitmapThumbnail = null;
+
+        // API 29 has content resolver method for thumbnail generation
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            try {
+                bitmapThumbnail = ThumbnailUtils.createVideoThumbnail(new File(uri), mSize, ca);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            bitmapThumbnail = ThumbnailUtils.createVideoThumbnail(uri, MediaStore.Video.Thumbnails.MICRO_KIND);
+        }
+
+        // Thumbnail is blurred further to reduce size
+//        Bitmap thumbnail = getThumbnailBitmap(bitmapThumbnail);
+
+        // Thumbnail is converted to base64
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmapThumbnail.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String base64Thumbnail = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+
+        return base64Thumbnail;
+    }
+
+    // Returns the mediaPreview object with a particular ID
+    private MediaPreview getIdOfMedia(int currentImage) {
+
+        // checks mediaPreviewList for ID
+        for(MediaPreview m1: mediaPreviewsList){
+            if(m1.getId() == currentImage){
+                return m1;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -295,14 +394,17 @@ public class UploadActivity extends AppCompatActivity {
                 Uri resultUri = result.getUri();
 
                 // change the image to the cropped image
-                if(getIntent().getStringExtra("image") != null){
-                    addImage(resultUri.getPath().toString());
+                if(mediaPreviewsList.size() == 1){
+                    MediaPreview m1 = getIdOfMedia(currentImage);
+                    m1.setPath(resultUri.getPath());
+                    addImage(m1);
                 }
                 else{
                     ImageView img = lp.findViewById(currentImage);
                     Glide.with(UploadActivity.this).load(resultUri).into(img);
-                    arg.set(currentImage, resultUri.getPath().toString());
-                    addImage(arg.get(currentImage));
+                    MediaPreview m1 = getIdOfMedia(currentImage);
+                    m1.setPath(resultUri.getPath());
+                    addImage(m1);
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
@@ -310,33 +412,29 @@ public class UploadActivity extends AppCompatActivity {
         }
     }
 
-    // Checks if the file is video or image based on extension
-    public boolean isVideo(String path){
-        if(path.endsWith("mp4") || path.endsWith("3gp")){
-            return true;
-        }
-        return false;
-    }
-
     // Set the image view according to the image URI
-    public void addImage(String path){
+    public void addImage(MediaPreview m1){
 
         CropRotation.setVisibility(View.VISIBLE);
-        Bitmap bmp = BitmapFactory.decodeFile(path);
+        Bitmap bmp = BitmapFactory.decodeFile(m1.getPath());
 
         ImageStatus.setImageBitmap(bmp);
         timeLineLayout.setVisibility(View.GONE);
+        durationText.setVisibility(View.GONE);
         VideoStatus.setVisibility(View.GONE);
         ImageStatus.setVisibility(View.VISIBLE);
     }
 
     // Set the video view according to the video URI
-    public void addVideo(String path){
+    public void addVideo(@NotNull MediaPreview m1){
 
         // adding media controls
         MediaController mediaController = new MediaController(this);
-        VideoStatus.setVideoPath(path);
+        VideoStatus.setVideoPath(m1.getPath());
+
+        // TimeLine of video
         timeLineLayout.setVisibility(View.VISIBLE);
+
         XmlPullParser parser = getResources().getXml(R.xml.layout_timeline);
 
         try {
@@ -348,8 +446,10 @@ public class UploadActivity extends AppCompatActivity {
 
         AttributeSet attr  = Xml.asAttributeSet(parser);
         TimeLineView timeLineView = new TimeLineView(UploadActivity.this, attr);
-        int count = attr.getAttributeCount();
-        Log.v("As", String.valueOf(count));
+
+        // Duration text
+        durationText.setVisibility(View.VISIBLE);
+        durationText.setText(getDurationText(m1));
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -358,7 +458,7 @@ public class UploadActivity extends AppCompatActivity {
         CropRotation.setVisibility(View.GONE);
         timeLineLayout.addView(timeLineView, params);
 
-        timeLineView.setVideo(Uri.fromFile(new File(path)));
+        timeLineView.setVideo(Uri.fromFile(new File(m1.getPath())));
 
 
         VideoStatus.requestFocus();
@@ -370,18 +470,37 @@ public class UploadActivity extends AppCompatActivity {
         mediaController.setAnchorView(VideoStatus);
         VideoStatus.start();
 
-       VideoStatus.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        VideoStatus.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
            @Override
            public void onPrepared(MediaPlayer mp) {
                int duration = mp.getDuration();
                Log.v("max", String.valueOf(duration));
+
+               // rangeSeekBar is set to duration
                rangeSeekBar.setTickCount(duration);
-               rangeSeekBar.setLeftIndex(duration);
-               rangeSeekBar.setRightIndex(0);
+
+               if(m1.getEndTime() == 0){
+                   m1.setStartTime(0);
+                   m1.setEndTime(duration);
+               }
+               rangeSeekBar.setLeftIndex(m1.getStartTime());
+               rangeSeekBar.setRightIndex(m1.getEndTime());
            }
-       });
+        });
     }
 
+    // returns string value of minutes : seconds
+    public String getDurationText(MediaPreview m1){
+
+        int duration = m1.getEndTime() - m1.getStartTime();
+        String text = String.format(Locale.getDefault(), "%d : %d ",
+                TimeUnit.MILLISECONDS.toMinutes(duration),
+                TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+
+        return text;
+    }
+
+    // returns compressed/scaled bitmap
     public Bitmap getCompressedBitmap(Bitmap bmp){
         // compression of image happens here
         int nh = (int) ( bmp.getHeight() * (512.0 / bmp.getWidth()) );
@@ -427,50 +546,20 @@ public class UploadActivity extends AppCompatActivity {
         return resizedBitmap;
     }
 
-    public void videoProcessing(int startMs, int endMs, String path){
+    // Trims and saves the video
+    public void videoTrim(MediaPreview m1, OnTrimVideoListener listener){
 
-        File saveTrimmedVideo = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-        String time = new SimpleDateFormat("yyyyMMddss").format(new Date())+".mp4";
-        int duration = (endMs - startMs)/1000;
-
-        File fff = new File(saveTrimmedVideo, time);
-
-        onTrimVideoListener = new OnTrimVideoListener() {
-            @Override
-            public void onTrimStarted() {
-
-            }
-
-            @Override
-            public void getResult(Uri uri) {
-
-            }
-
-            @Override
-            public void cancelAction() {
-
-            }
-
-            @Override
-            public void onError(String message) {
-
-            }
-        };
-    }
-
-    public void videoTrim(int StartMs, int EndMs, String path){
-
-        Uri mSrc = Uri.parse(path);
+        Uri mSrc = Uri.parse(m1.getPath());
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(this, mSrc);
         long METADATA_KEY_DURATION = Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
 
         final File file = new File(mSrc.getPath());
 
-        int mTimeVideo = (EndMs - StartMs)/1000;
+        int mTimeVideo = (m1.getEndTime() - m1.getStartTime())/1000;
         int MIN_TIME_FRAME = 1000;
-        int mEndPosition = EndMs;
-        int mStartPosition = StartMs;
+        int mEndPosition = m1.getEndTime();
+        int mStartPosition = m1.getStartTime();
 
         if (mTimeVideo < MIN_TIME_FRAME) {
 
@@ -488,8 +577,9 @@ public class UploadActivity extends AppCompatActivity {
                     @Override
                     public void execute() {
                         try {
-                            String out = "/storage/emulated/0/Android/data/com.vedangj044.statusview/files/Download/";
-                            TrimVideoUtils.startTrim(file, out, finalMStartPosition, finalMEndPosition, onTrimVideoListener);
+                            String out = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()+"/";
+                            Log.v("out", out);
+                            TrimVideoUtils.startTrim(file, out, finalMStartPosition, finalMEndPosition, listener);
                         } catch (final Throwable e) {
                             Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
                         }
@@ -498,20 +588,4 @@ public class UploadActivity extends AppCompatActivity {
         );
     }
 
-    public String compressVideo(String uri){
-        String out = "/storage/emulated/0/Android/data/com.vedangj044.statusview/files/Download/";
-        String filePath = null;
-        try {
-            filePath = SiliCompressor.with(UploadActivity.this).compressVideo(uri, out);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        deleteTrimmedVideo(uri);
-        return filePath;
-    }
-
-    public void deleteTrimmedVideo(String uri){
-
-    }
 }

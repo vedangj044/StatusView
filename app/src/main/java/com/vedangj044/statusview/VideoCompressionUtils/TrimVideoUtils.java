@@ -50,6 +50,7 @@ import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import life.knowledge4.videotrimmer.interfaces.OnTrimVideoListener;
 
@@ -60,7 +61,9 @@ public class TrimVideoUtils {
 
     public static void startTrim(@NonNull File src, @NonNull String dst, long startMs, long endMs, @NonNull OnTrimVideoListener callback) throws IOException {
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
-        final String fileName = "MP4_" + timeStamp + ".mp4";
+        Random r = new Random();
+        String alphabet = String.valueOf((1 + r.nextInt(2)) * 10000 + r.nextInt(10000));
+        final String fileName = "MP4_" + timeStamp +"_"+ alphabet + ".mp4";
         final String filePath = dst + fileName;
 
         File file = new File(filePath);

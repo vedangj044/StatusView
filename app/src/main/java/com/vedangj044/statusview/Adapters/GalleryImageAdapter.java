@@ -141,7 +141,9 @@ public class GalleryImageAdapter extends RecyclerView.Adapter<GalleryImageAdapte
                 else {
                     // When no media is selected then path of the image is sent to the UploadActivity
                     Intent intent = new Intent(mContext, UploadActivity.class);
-                    intent.putExtra("image", arrPass[position]);
+                    List<String> itemList = new ArrayList<>();
+                    itemList.add(arrPass[position]);
+                    intent.putStringArrayListExtra("imageList", (ArrayList<String>) itemList);
                     mContext.startActivity(intent);
                 }
 
