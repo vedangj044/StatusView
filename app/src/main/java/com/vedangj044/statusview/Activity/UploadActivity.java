@@ -244,9 +244,23 @@ public class UploadActivity extends AppCompatActivity {
                                Thread thread = new Thread(){
                                    @Override
                                    public void run() {
+
+                                       // Handles rotation of video
+                                       MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                                       retriever.setDataSource(UploadActivity.this, trimmedVideoURL);
+
+                                       int width = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                                       int height = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                                       int rotation = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
+
+                                       if(rotation != 0){
+                                           width = 0;
+                                           height = 0;
+                                       }
+
                                        boolean isConverted = VideoConverter.getInstance().convertVideo(UploadActivity.this,
                                                trimmedVideoURL,
-                                               outputVideoFileDirUri, 0, 0, 0);
+                                               outputVideoFileDirUri, width, height, 0);
 
                                        if (isConverted) {
 
@@ -357,10 +371,7 @@ public class UploadActivity extends AppCompatActivity {
         else{
             bitmapThumbnail = ThumbnailUtils.createVideoThumbnail(uri, MediaStore.Video.Thumbnails.MICRO_KIND);
         }
-
-        // Thumbnail is blurred further to reduce size
-//        Bitmap thumbnail = getThumbnailBitmap(bitmapThumbnail);
-
+        
         // Thumbnail is converted to base64
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmapThumbnail.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);

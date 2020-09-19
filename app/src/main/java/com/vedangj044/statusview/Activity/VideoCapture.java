@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Camera;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -173,13 +173,22 @@ public class VideoCapture extends Fragment {
                 if(mIsRecording){
                     mIsRecording = false;
                     btnRecord.setImageResource(R.drawable.video_record_foreground);
-                    mMediaRecorder.stop();
+                    try {
+                        mMediaRecorder.stop();
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+
                     mMediaRecorder.reset();
-                    startPreview();
+
+                    List<String> selectedImageList = new ArrayList<>();
+                    selectedImageList.add(mVideoFile);
 
                     Intent intent = new Intent(view.getContext(), UploadActivity.class);
-                    intent.putExtra("image", mVideoFile);
+                    intent.putStringArrayListExtra("imageList", (ArrayList<String>) selectedImageList);
                     startActivity(intent);
+                    getFragmentManager().beginTransaction().remove(VideoCapture.this).commit();
                 }
                 else{
                     checkWriteStoragePermission();
@@ -194,15 +203,24 @@ public class VideoCapture extends Fragment {
                             public void onFinish() {
                                 timeRemaining.setText("done!");
 
-                                mMediaRecorder.stop();
-                                mMediaRecorder.reset();
-                                btnRecord.setImageResource(R.drawable.video_record_stop_foreground);
-                                mIsRecording = true;
-                                Toast.makeText(view.getContext(), "Done!!", Toast.LENGTH_SHORT).show();
+                                try {
+                                    mMediaRecorder.stop();
+                                    mMediaRecorder.reset();
+                                    btnRecord.setImageResource(R.drawable.video_record_stop_foreground);
+                                    mIsRecording = true;
+                                    Toast.makeText(view.getContext(), "Done!!", Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(view.getContext(), UploadActivity.class);
-                                intent.putExtra("image", mVideoFile);
-                                startActivity(intent);
+                                    List<String> selectedImageList = new ArrayList<>();
+                                    selectedImageList.add(mVideoFile);
+
+                                    Intent intent = new Intent(view.getContext(), UploadActivity.class);
+                                    intent.putStringArrayListExtra("imageList", (ArrayList<String>) selectedImageList);
+                                    startActivity(intent);
+                                    getFragmentManager().beginTransaction().remove(VideoCapture.this).commit();
+                                }
+                                catch (Exception e){
+                                    e.printStackTrace();
+                                }
                             }
                         }.start();
                 }
@@ -431,8 +449,12 @@ public class VideoCapture extends Fragment {
                     rotatedHeight = width;
                     rotatedWidth = height;
                 }
-                mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
-                mVideoSize = chooseOptimalSize(map.getOutputSizes(MediaRecorder.class), rotatedWidth, rotatedHeight);
+//                mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
+//                mVideoSize = chooseOptimalSize(map.getOutputSizes(MediaRecorder.class), rotatedWidth, rotatedHeight);
+
+                mVideoSize = new Size(rotatedWidth, rotatedHeight);
+                mPreviewSize = new Size(rotatedWidth, rotatedHeight);
+
                 mCameraId = cameraId;
                 return;
             }
@@ -494,7 +516,7 @@ public class VideoCapture extends Fragment {
             },null);
 
         } catch (IOException | CameraAccessException e) {
-            e.printStackTrace();
+            e.getMessage();
         }
     }
 
@@ -576,7 +598,7 @@ public class VideoCapture extends Fragment {
     }
 
     private void createVideoFolder(){
-        File movieFile = getContext().getFilesDir();
+        File movieFile = getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         mVideoFolder = new File(movieFile, "videoStatus");
 
         if(!mVideoFolder.exists()){
@@ -637,18 +659,15 @@ public class VideoCapture extends Fragment {
 
         mMediaRecorder.setOutputFile(mVideoFile);
         mMediaRecorder.setVideoFrameRate(30);
-        mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
+//        mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
 
         mMediaRecorder.setMaxDuration(MAX_DURATION);
         mMediaRecorder.setOrientationHint(mTotalRotation);
+        mMediaRecorder.prepare();
         try {
-            mMediaRecorder.prepare();
-        }
-        catch (IOException e){
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
             e.printStackTrace();
-                mMediaRecorder.stop();
-            mMediaRecorder.release();
-            mMediaRecorder.reset();
         }
     }
 }

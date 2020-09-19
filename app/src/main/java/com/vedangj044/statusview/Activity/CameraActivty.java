@@ -34,6 +34,7 @@ import com.vedangj044.statusview.R;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -247,7 +248,9 @@ public class CameraActivty extends AppCompatActivity {
                         Intent intent = new Intent(CameraActivty.this, UploadActivity.class);
 
                         // Path to the image
-                        intent.putExtra("image", File.getAbsolutePath());
+                        List<String> selectedImageList = new ArrayList<>();
+                        selectedImageList.add(File.getAbsolutePath());
+                        intent.putStringArrayListExtra("imageList", (ArrayList<String>) selectedImageList);
                         startActivity(intent);
                     }
                     @Override
