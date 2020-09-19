@@ -5,12 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Environment;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -28,6 +36,10 @@ import com.vedangj044.statusview.ListOfResource;
 import com.vedangj044.statusview.ModelObject.TextStatusObject;
 import com.vedangj044.statusview.R;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class CreateTextStatus extends AppCompatActivity{
@@ -266,8 +278,61 @@ public class CreateTextStatus extends AppCompatActivity{
                         String.valueOf(currentBackgroundResource), currentFont);
 
                 Toast.makeText(getApplicationContext(), t1.toString(), Toast.LENGTH_SHORT).show();
+
+                // Creating thumbnail of the text status
+
+                View v1 = getWindow().getDecorView().getRootView();
+                v1.setDrawingCacheEnabled(true);
+                Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+
+                // base64 string of thumbnail
+                String thumbnailBase64 = getThumbnailBitmap(bitmap);
+                v1.setDrawingCacheEnabled(false);
             }
         });
+    }
+
+    // returns the base64 Thumb of the text status snapshot, this is
+    // same as uploadActivity.getThumbnailBitmap function
+    public String getThumbnailBitmap(Bitmap bm) {
+
+        // Scale by which image should be reduced
+        int reduction = 10;
+
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+
+        int newWidth = width/reduction;
+        int newHeight = height/reduction;
+
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+
+        // Blur the scaled down image
+        RenderScript rs = RenderScript.create(this);
+
+        final Allocation input = Allocation.createFromBitmap(rs, resizedBitmap); //use this constructor for best performance, because it uses USAGE_SHARED mode which reuses memory
+        final Allocation output = Allocation.createTyped(rs, input.getType());
+        final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+        script.setRadius(8f);
+        script.setInput(input);
+        script.forEach(output);
+        output.copyTo(resizedBitmap);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String base64Thumbnail = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        return base64Thumbnail;
     }
 
     private void showKeyboardShortcut(boolean t) {

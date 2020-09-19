@@ -227,159 +227,16 @@ public class VideoCapture extends Fragment {
             }
         });
 
+
+
         createVideoFolder();
         mMediaRecorder = new MediaRecorder();
 
-//        surfaceView = view.findViewById(R.id.camera_view);
-//        timeRemaining = view.findViewById(R.id.duration_time);
-//
-//        surfaceHolder = surfaceView.getHolder();
-//        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-//
-//        surfaceHolder.addCallback(this);
-//
-//        btnRecord.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(isRecording){
-//                    mr.stop();
-//                    releaseMediaRecoder();
-//                    camera.lock();
-//                    btnRecord.setImageResource(R.drawable.video_record_foreground);
-//                    isRecording = false;
-//                    Toast.makeText(view.getContext(), "Done!!", Toast.LENGTH_SHORT).show();
-//
-//                    Intent intent = new Intent(view.getContext(), UploadActivity.class);
-//                    intent.putExtra("image", path);
-//                    startActivity(intent);
-//
-//                }
-//                else{
-//                    if(prepareForVideoRecording()){
-//                        mr.start();
-//                        btnRecord.setImageResource(R.drawable.video_record_stop_foreground);
-//                        isRecording = true;
-//
-//                        new CountDownTimer(duration, 1000){
-//                            public void onTick(long millisUntilFinished) {
-//                                timeRemaining.setText(" "+ millisUntilFinished / 1000);
-//                            }
-//
-//                            public void onFinish() {
-//                                timeRemaining.setText("done!");
-//
-//                                mr.stop();
-//                                releaseMediaRecoder();
-//                                camera.lock();
-//                                btnRecord.setImageResource(R.drawable.video_record_stop_foreground);
-//                                isRecording = false;
-//                                Toast.makeText(view.getContext(), "Done!!", Toast.LENGTH_SHORT).show();
-//
-//                                Intent intent = new Intent(view.getContext(), UploadActivity.class);
-//                                intent.putExtra("image", path);
-//                                startActivity(intent);
-//                            }
-//                        }.start();
-//                    }
-//                }
-//            }
-//        });
-
-        // start
 
         mTextureView = (TextureView) view.findViewById(R.id.texture_view);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         return view;
     }
-
-//    private boolean prepareForVideoRecording(){
-//        camera.unlock();
-//
-//        mr = new MediaRecorder();
-//        mr.setCamera(camera);
-//
-//        mr.setAudioSource(MediaRecorder.AudioSource.MIC);
-//        mr.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-//        mr.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
-//
-//        path = getOutputFile(MEDIA_TYPE_VIDEO).toString();
-//        mr.setOutputFile(path);
-//        mr.setMaxDuration(duration);
-//
-//
-//        try {
-//            mr.prepare();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//            releaseMediaRecoder();
-//            return false;
-//        }
-//
-//        return true;
-//    }
-
-//    private void releaseMediaRecoder() {
-//        if(mr != null){
-//            mr.reset();
-//            mr.release();
-//
-//            mr = null;
-//            camera.lock();
-//        }
-//    }
-//
-//    private String currentTimeStamp(){
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HH_mm_ss");
-//        String currentTimeStamp = simpleDateFormat.format(new Date());
-//        return currentTimeStamp;
-//    }
-//
-//    private File getOutputFile(int mediaTypeVideo){
-//        File dir = getContext().getFilesDir();
-//        String timeStamp = currentTimeStamp();
-//
-//        if(mediaTypeVideo == MEDIA_TYPE_VIDEO){
-//            return new File(dir.getPath() + File.separator + "VID_"+timeStamp+".mp4");
-//        }
-//        else{
-//            return null;
-//        }
-//    }
-//
-//    @Override
-//    public void surfaceCreated(SurfaceHolder holder) {
-//        try {
-//            camera = Camera.open();
-//        }catch (Exception e){
-//
-//        }
-//        Camera.Parameters parameters;
-//        parameters = camera.getParameters();
-//        parameters.setPreviewSize(352, 288);
-//        parameters.setPreviewFrameRate(30);
-//        camera.setParameters(parameters);
-//        camera.setDisplayOrientation(90);
-//
-//        try {
-//            camera.setPreviewDisplay(surfaceHolder);
-//            camera.startPreview();
-//        }
-//        catch (IOException e){
-//
-//        }
-//    }
-//
-//    @Override
-//    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-//
-//    }
-//
-//    @Override
-//    public void surfaceDestroyed(SurfaceHolder holder) {
-//
-//    }
-
 
     @Override
     public void onResume() {
@@ -449,11 +306,10 @@ public class VideoCapture extends Fragment {
                     rotatedHeight = width;
                     rotatedWidth = height;
                 }
-//                mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
+                mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), rotatedWidth, rotatedHeight);
 //                mVideoSize = chooseOptimalSize(map.getOutputSizes(MediaRecorder.class), rotatedWidth, rotatedHeight);
 
-                mVideoSize = new Size(rotatedWidth, rotatedHeight);
-                mPreviewSize = new Size(rotatedWidth, rotatedHeight);
+                mPreviewSize = new Size(1080, 1920);
 
                 mCameraId = cameraId;
                 return;
