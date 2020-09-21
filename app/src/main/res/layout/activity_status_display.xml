@@ -5,12 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.StatusDisplay"
+    android:background="@color/viewBackgroud"
     android:id="@+id/background_layout">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:background="@color/viewBackgroud"
         android:layout_centerVertical="true"
         android:id="@+id/status_image"/>
 
@@ -58,12 +60,14 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:text="Vedang Joshi"
+                android:textColor="@android:color/white"
                 android:id="@+id/shared_by"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
+                android:textColor="@android:color/white"
                 android:text="12:57 PM"
                 android:id="@+id/shared_time"/>
 

@@ -170,6 +170,27 @@ public class StatusDisplay extends AppCompatActivity {
 
     }
 
+    private void videoTimer(int duration){
+
+        // Timer object
+        timer = new CountDownTimer(duration, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {}
+
+            @Override
+            public void onFinish() {
+                // if the index is on the last status then timer is cancelled
+                if(current == st1.getNumberOfStatus()){
+                    timer.cancel();
+                }
+                else{
+                    startProgressBar(current);
+                }
+            }
+        };
+
+    }
+
     private void startProgressBar(int index){
 
         // empty the textView and imageView and set background to null
@@ -273,7 +294,7 @@ public class StatusDisplay extends AppCompatActivity {
     // Restores default before change in status
     private void clearScreen() {
 
-        backgroundLayout.setBackgroundResource(0);
+        backgroundLayout.setBackgroundResource(R.color.viewBackgroud);
         textStatus.setText("");
         statusImageUrl.setImageDrawable(null);
 

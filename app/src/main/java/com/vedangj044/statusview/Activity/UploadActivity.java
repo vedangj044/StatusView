@@ -265,7 +265,7 @@ public class UploadActivity extends AppCompatActivity {
                                        if (isConverted) {
 
                                            // when compression is complete the compressPath list is updated
-                                           ImageStatusObject img1 = new ImageStatusObject(thumbnail, VideoConverter.cachedFile.getPath());
+                                           ImageStatusObject img1 = new ImageStatusObject(thumbnail, VideoConverter.cachedFile.getPath(), true);
                                            compressedPath.add(img1);
 
                                            // the trimmed video is deleted ( only compressed and trimmed video is saved )
@@ -314,7 +314,7 @@ public class UploadActivity extends AppCompatActivity {
                         String base64Thumbnail = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
                         // Creating image status object and adding to list
-                        ImageStatusObject img1 = new ImageStatusObject(base64Thumbnail, output.getAbsolutePath());
+                        ImageStatusObject img1 = new ImageStatusObject(base64Thumbnail, output.getAbsolutePath(), false);
                         compressedPath.add(img1);
 
                     }

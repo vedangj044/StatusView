@@ -3,6 +3,7 @@ package com.vedangj044.statusview.ModelObject;
 public class ImageStatusObject extends StatusObject {
 
     private String thumbnailURL, ImageURL;
+    private Boolean isVideo;
 
     /*
     * ThumnailImageURL = base64 string of the original image
@@ -13,6 +14,12 @@ public class ImageStatusObject extends StatusObject {
     public ImageStatusObject(String thumbnailURL, String imageURL) {
         this.thumbnailURL = thumbnailURL;
         ImageURL = imageURL;
+    }
+
+    public ImageStatusObject(String thumbnailURL, String imageURL, Boolean isVideo) {
+        this.thumbnailURL = thumbnailURL;
+        ImageURL = imageURL;
+        this.isVideo = isVideo;
     }
 
     public String getThumbnailURL() {
