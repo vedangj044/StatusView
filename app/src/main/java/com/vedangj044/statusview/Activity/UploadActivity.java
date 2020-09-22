@@ -166,6 +166,10 @@ public class UploadActivity extends AppCompatActivity {
 
                 Glide.with(this).load(s1.getPath()).into(img);
                 lp.addView(img);
+
+                MediaPreview m1 = getIdOfMedia(0);
+
+                moveNext();
             }
         }
         else{
@@ -205,6 +209,12 @@ public class UploadActivity extends AppCompatActivity {
 
                     // when an status is discarded it is deleted from mediaPreviewList as well
                     mediaPreviewsList.remove(getIdOfMedia(currentImage));
+                }
+                if(mediaPreviewsList.size() == 0){
+                    finish();
+                }
+                else{
+                    moveNext();
                 }
             }
         });
@@ -353,6 +363,20 @@ public class UploadActivity extends AppCompatActivity {
 
     }
 
+    private void moveNext() {
+        View v = lp.getChildAt(0);
+        currentImage = v.getId();
+        MediaPreview m1 = getIdOfMedia(currentImage);
+
+        if(m1.isVideo()){
+            addVideo(m1);
+        }
+        else{
+            addImage(m1);
+        }
+
+    }
+
     // Returns thumbnail of video in Base64 string
     private String getVideoThumbnail(String uri) {
 
@@ -492,10 +516,11 @@ public class UploadActivity extends AppCompatActivity {
 
                if(m1.getEndTime() == 0){
                    m1.setStartTime(0);
-                   m1.setEndTime(duration);
+                   m1.setEndTime(Math.min(duration, 30000));
                }
                rangeSeekBar.setLeftIndex(m1.getStartTime());
                rangeSeekBar.setRightIndex(m1.getEndTime());
+               durationText.setText(getDurationText(m1));
            }
         });
     }

@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.vedangj044.statusview.ModelObject.MediaPreview;
 import com.vedangj044.statusview.R;
 import com.vedangj044.statusview.Activity.UploadActivity;
 
@@ -116,6 +117,14 @@ public class GalleryImageAdapter extends RecyclerView.Adapter<GalleryImageAdapte
         // Month - When the image was captured calculated from path and sent back to GalleryViewFragment
         String timePeriod = calculateTimePeriod(arrPass[position]);
         listener.sendSignal(timePeriod);
+
+        MediaPreview m1 = new MediaPreview(arrPass[position], 0);
+        if(m1.isVideo()){
+            holder.videoIcon.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.videoIcon.setVisibility(View.GONE);
+        }
 
         // If the position index exceeds the CacheLimit then image is not cached
         if(position > CacheLimit){
@@ -224,10 +233,12 @@ public class GalleryImageAdapter extends RecyclerView.Adapter<GalleryImageAdapte
 
         private ImageView imageView;
         private ImageView isSelected;
+        private ImageView videoIcon;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.thumbnail_image);
             isSelected = itemView.findViewById(R.id.selected_tick);
+            videoIcon = itemView.findViewById(R.id.video_icon);
         }
     }
 

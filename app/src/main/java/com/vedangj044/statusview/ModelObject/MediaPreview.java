@@ -26,6 +26,8 @@ public class MediaPreview {
     // returns if file is video or image
     private boolean isVideoFinder(String url) {
 
+        url = url.replaceAll(" ", "");
+
         String mimeType = MimeTypeMap.getFileExtensionFromUrl(url);
         if(MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeType).contains("video")){
             return true;

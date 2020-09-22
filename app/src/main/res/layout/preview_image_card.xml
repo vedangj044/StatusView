@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="100dp"
-    android:layout_height="100dp"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="20dp"
     android:layout_margin="1dp">
@@ -11,5 +11,15 @@
         android:layout_height="100dp"
         android:scaleType="centerCrop"
         android:id="@+id/thumbnail_image"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/video_thumgnail_icon_foreground"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/video_icon"
+        android:layout_margin="5dp"
+        android:visibility="gone"/>
 
 </RelativeLayout>
