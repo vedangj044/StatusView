@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
@@ -30,6 +32,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -72,6 +75,8 @@ public class UploadActivity extends AppCompatActivity {
     private RelativeLayout parentLayout;
     private ImageView profilePicture;
     private ImageButton CropRotation;
+
+    private ProgressBar progressBar;
 
     // Array maintains the list of path of the images/videos which is received from intent
     private List<String> arg;
@@ -221,11 +226,14 @@ public class UploadActivity extends AppCompatActivity {
 
 
         sendButton = findViewById(R.id.upload_status);
+        progressBar = findViewById(R.id.progessbar);
 
         // Send button click event
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 
                 // FINAL LIST containing all the url required to sent to server
                 List<ImageStatusObject> compressedPath = new ArrayList<>();
@@ -234,7 +242,7 @@ public class UploadActivity extends AppCompatActivity {
                 for(MediaPreview m1: mediaPreviewsList){
 
                     if(m1.isVideo()){
-
+                        progressBar.setVisibility(View.VISIBLE);
                         // When video trimming is completed this listener is called
                         OnTrimVideoListener onTrimVideoListener = new OnTrimVideoListener() {
                            @Override
@@ -277,6 +285,13 @@ public class UploadActivity extends AppCompatActivity {
                                            // when compression is complete the compressPath list is updated
                                            ImageStatusObject img1 = new ImageStatusObject(thumbnail, VideoConverter.cachedFile.getPath(), true);
                                            compressedPath.add(img1);
+
+                                           new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                               @Override
+                                               public void run() {
+                                                   progressBar.setVisibility(View.GONE);
+                                               }
+                                           });
 
                                            // the trimmed video is deleted ( only compressed and trimmed video is saved )
                                            new File(uri.toString()).delete();
