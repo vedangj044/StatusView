@@ -50,9 +50,13 @@ public class CustomProgressBar extends ProgressBar {
                     public void onFinish() {
                         CustomProgressBar.this.end();
                     }
-                }.start();
+                };
+
+                statusTime.start();
             }
-            statusTime.start();
+            else{
+                statusTime.start();
+            }
         }
         else{
             Log.v("aaa"," as");
@@ -61,11 +65,18 @@ public class CustomProgressBar extends ProgressBar {
     }
 
     public void end(){
-        statusTime.cancel();
+        if(statusTime != null){
+            statusTime.cancel();
+        }
+
         CustomProgressBar.this.post(new Runnable() {
             @Override
             public void run() {
                 CustomProgressBar.this.setProgress(duration);
+                if(duration == 0){
+                    CustomProgressBar.this.setProgress(100);
+                }
+
             }
         });
         this.listener.onComplete();
