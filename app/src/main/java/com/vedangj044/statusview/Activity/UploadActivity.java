@@ -410,15 +410,30 @@ public class UploadActivity extends AppCompatActivity {
         else{
             bitmapThumbnail = ThumbnailUtils.createVideoThumbnail(uri, MediaStore.Video.Thumbnails.MICRO_KIND);
         }
-        
+        Bitmap map1 = ThumbnailUtils.createVideoThumbnail(uri, MediaStore.Video.Thumbnails.MICRO_KIND);
+        save(map1, "map1.png");
+        Log.v("pat", uri);
         // Thumbnail is converted to base64
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmapThumbnail.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        map1.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         String base64Thumbnail = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
+        Log.v("aaaa", base64Thumbnail);
 
         return base64Thumbnail;
+    }
+
+    public void save(Bitmap bmp, String name){
+        File file = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        File output = new File(file, name);
+        try (FileOutputStream out = new FileOutputStream(output)){
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+
     }
 
     // Returns the mediaPreview object with a particular ID

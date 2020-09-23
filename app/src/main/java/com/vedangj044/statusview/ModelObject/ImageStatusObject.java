@@ -22,6 +22,14 @@ public class ImageStatusObject extends StatusObject {
         this.isVideo = isVideo;
     }
 
+    public Boolean getVideo() {
+        return isVideo;
+    }
+
+    public void setVideo(Boolean video) {
+        isVideo = video;
+    }
+
     public String getThumbnailURL() {
         return thumbnailURL;
     }

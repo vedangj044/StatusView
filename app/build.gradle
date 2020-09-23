@@ -60,4 +60,5 @@ dependencies {
         exclude  group: 'com.googlecode.mp4parser', module: 'isoparser'
     }
 
+    implementation 'com.danikula:videocache:2.7.0'
 }

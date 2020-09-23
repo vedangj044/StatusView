@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vedangj044.statusview.Activity.UploadActivity;
 import com.vedangj044.statusview.Adapters.GalleryImageAdapter;
+import com.vedangj044.statusview.Animation.CustomProgressBar;
 import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ public class GalleryViewFragment extends Fragment {
     private TextView TimePeriod, SelectedItem;
     private List<String> selectedItemList;
     private ImageView SelectionDone;
+    private CustomProgressBar customProgressBar;
 
     @Nullable
     @Override
