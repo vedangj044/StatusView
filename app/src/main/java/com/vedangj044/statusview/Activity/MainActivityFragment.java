@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vedangj044.statusview.Adapters.StatusAdapter;
-import com.vedangj044.statusview.Animation.CustomProgressBar;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
 
