@@ -48,8 +48,12 @@ import com.vedangj044.statusview.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -311,8 +315,17 @@ public class UploadActivity extends AppCompatActivity {
                            public void onError(String message) { }
                         };
 
-                        // video trim function
-                        videoTrim(m1, onTrimVideoListener);
+                        // If video is of less than 2 seconds duration it is directly copied
+                        // otherwise trim
+                        if(m1.getEndTime() - m1.getStartTime() <= 2000){
+                            String output = copyFile(m1);
+                            String thumbnail = getVideoThumbnail(output);
+                            progressBar.setVisibility(View.GONE);
+                            compressedPath.add(new ImageStatusObject(thumbnail, output, true));
+                        }
+                        else{
+                            videoTrim(m1, onTrimVideoListener);
+                        }
                     }
                     else{
 
@@ -410,31 +423,17 @@ public class UploadActivity extends AppCompatActivity {
         else{
             bitmapThumbnail = ThumbnailUtils.createVideoThumbnail(uri, MediaStore.Video.Thumbnails.MICRO_KIND);
         }
-        Bitmap map1 = ThumbnailUtils.createVideoThumbnail(uri, MediaStore.Video.Thumbnails.MICRO_KIND);
-        save(map1, "map1.png");
-        Log.v("pat", uri);
+
         // Thumbnail is converted to base64
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        map1.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        bitmapThumbnail.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         String base64Thumbnail = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-        Log.v("aaaa", base64Thumbnail);
-
+        Log.v("thum", base64Thumbnail);
         return base64Thumbnail;
     }
 
-    public void save(Bitmap bmp, String name){
-        File file = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-        File output = new File(file, name);
-        try (FileOutputStream out = new FileOutputStream(output)){
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-
-    }
 
     // Returns the mediaPreview object with a particular ID
     private MediaPreview getIdOfMedia(int currentImage) {
@@ -652,6 +651,48 @@ public class UploadActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    // copy function for video of duration less than 2 seconds
+    private String copyFile(MediaPreview m1) {
+
+        String outputPath = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()+"/";
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+
+            //create output directory if it doesn't exist
+            File dir = new File (outputPath);
+            if (!dir.exists())
+            {
+                dir.mkdirs();
+            }
+
+
+            in = new FileInputStream(m1.getPath());
+            out = new FileOutputStream(outputPath + m1.getFileName());
+
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+            in = null;
+
+            // write the output file (You have now copied the file)
+            out.flush();
+            out.close();
+            out = null;
+
+        }  catch (FileNotFoundException fnfe1) {
+            Log.e("tag", fnfe1.getMessage());
+        }
+        catch (Exception e) {
+            Log.e("tag", e.getMessage());
+        }
+
+        return outputPath+m1.getFileName();
     }
 
 }
