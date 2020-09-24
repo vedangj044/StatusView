@@ -8,7 +8,7 @@ import android.widget.ProgressBar;
 public class CustomProgressBar extends ProgressBar {
 
     private int duration;
-    private int currentOn;
+    public int currentOn = 0;
     private Context mContext;
 
     private CountDownTimer statusTime;
@@ -35,11 +35,9 @@ public class CustomProgressBar extends ProgressBar {
     }
 
     public void start(){
-        currentOn = 0;
-
         if(duration != 0){
             if(statusTime == null){
-                statusTime = new CountDownTimer(duration, countDownInterval){
+                statusTime = new CountDownTimer(duration - currentOn, countDownInterval){
                     @Override
                     public void onTick(long millisUntilFinished) {
                         CustomProgressBar.this.setProgress(currentOn);
@@ -79,6 +77,7 @@ public class CustomProgressBar extends ProgressBar {
 
             }
         });
+        currentOn = 0;
         this.listener.onComplete();
     }
 

@@ -1,6 +1,7 @@
 package com.vedangj044.statusview.Animation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
+
+import com.vedangj044.statusview.Activity.MainActivity;
+import com.vedangj044.statusview.Activity.StatusDisplay;
 
 import java.util.List;
 
@@ -19,6 +23,7 @@ public class ProgressBarAnimationView extends LinearLayout{
 
     public interface OnChange{
         void sendSignal(Integer currentIndex);
+        void fin();
     }
 
     private OnChange listener;
@@ -66,8 +71,15 @@ public class ProgressBarAnimationView extends LinearLayout{
                 if(currentIndex != listOfStatus.size() - 1){
                     next(false);
                 }
+                else{
+                    listener.fin();
+                }
             }
         });
+    }
+
+    public int getCurrentOn(){
+        return listOfStatus.get(currentIndex).currentOn;
     }
 
     public void next(Boolean outside){
