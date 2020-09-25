@@ -14,4 +14,7 @@
     <string name="select_video">Select Video</string>
 
     <string name="selected_video_thumbnail">Selected Video\'s Thumbnail</string>
+    <string name="all_stickers">All Stickers</string>
+    <string name="my_stickers">My Stickers</string>
+    <string name="sticker_icon">sticker_icon</string>
 </resources>

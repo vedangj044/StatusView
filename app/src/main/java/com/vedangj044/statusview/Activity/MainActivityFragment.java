@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vedangj044.statusview.Adapters.StatusAdapter;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
+import com.vedangj044.statusview.Stickers.StickerListActivity;
 
 import java.util.ArrayList;
 import java.util.List;
