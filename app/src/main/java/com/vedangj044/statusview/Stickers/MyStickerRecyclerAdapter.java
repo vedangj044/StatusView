@@ -20,9 +20,11 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
 
     public List<AllStickerModel> mDataset = new ArrayList<>();
     private Context context;
+    private StickerDatabase stickerDatabase;
 
     public MyStickerRecyclerAdapter(Context context) {
         this.context = context;
+        this.stickerDatabase = StickerDatabase.getInstance(context);
     }
 
     @NonNull
@@ -52,6 +54,13 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
                     .into(imageObject.get(i));
 
         }
+
+        holder.deleteIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stickerDatabase.stickerCategoryDAO().deleteStickerCategory(arr);
+            }
+        });
 
     }
 

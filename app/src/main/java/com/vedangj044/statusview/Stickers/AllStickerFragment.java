@@ -59,6 +59,7 @@ public class AllStickerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.sticker_recycler_view, container, false);
 
+
         recyclerView = view.findViewById(R.id.sticker_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 

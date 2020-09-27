@@ -22,13 +22,13 @@ import java.util.concurrent.Executors;
 public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRecyclerAdapter.ViewHolder> {
 
     private List<AllStickerModel> mDataset;
-
+    private List<Integer> already;
     private StickerDatabase stickerDatabase;
 
     public AllStickerRecyclerAdapter(Context context, List<AllStickerModel> mDataset) {
         this.mDataset = mDataset;
         this.stickerDatabase = StickerDatabase.getInstance(context);
-
+        this.already = stickerDatabase.stickerCategoryDAO().getAllStickerId();
     }
 
     @NonNull
@@ -59,28 +59,33 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
         }
 
-        holder.downloadIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AllStickerModel stm = new AllStickerModel(arr.getId(), arr.getName(), arr.getLogo(), arr.getStatus());
+        if(already.contains(arr.getId())){
+            holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
+        }
+        else{
 
-                Executors.newSingleThreadExecutor().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
+            holder.downloadIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AllStickerModel stm = new AllStickerModel(arr.getId(), arr.getName(), arr.getLogo(), arr.getStatus());
 
-                        for(String url: arr.getImages()){
-                            Log.v("aaaa", url);
-                            stickerDatabase.stickerImageDAO().insertStickerImages(new StickerImageModel(arr.getId(), url));
+                    Executors.newSingleThreadExecutor().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
+
+                            for(String url: arr.getImages()){
+                                stickerDatabase.stickerImageDAO().insertStickerImages(new StickerImageModel(arr.getId(), url));
+                            }
+
                         }
+                    });
 
-                    }
-                });
+                    holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
+                }
+            });
 
-                holder.downloadIcon.setImageResource(R.drawable.camera_delete_foreground);
-            }
-        });
-
+        }
     }
 
     @Override

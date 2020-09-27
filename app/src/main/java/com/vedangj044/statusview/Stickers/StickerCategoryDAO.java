@@ -20,6 +20,9 @@ public interface StickerCategoryDAO {
     @Query("Select * from StickerCategory")
     List<AllStickerModel> getStickerCategory();
 
+    @Query("Select id from StickerCategory")
+    List<Integer> getAllStickerId();
+
     @Insert
     void insertStickerCategory(AllStickerModel allStickerModel);
 
