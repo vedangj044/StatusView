@@ -1,6 +1,7 @@
 package com.vedangj044.statusview.Stickers;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +16,19 @@ import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRecyclerAdapter.ViewHolder> {
 
     private List<AllStickerModel> mDataset;
 
-    public AllStickerRecyclerAdapter(List<AllStickerModel> mDataset) {
+    private StickerDatabase stickerDatabase;
+
+    public AllStickerRecyclerAdapter(Context context, List<AllStickerModel> mDataset) {
         this.mDataset = mDataset;
+        this.stickerDatabase = StickerDatabase.getInstance(context);
+
     }
 
     @NonNull
@@ -36,7 +43,7 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
         AllStickerModel arr = mDataset.get(position);
 
-        holder.titleTextView.setText(arr.getTitle());
+        holder.titleTextView.setText(arr.getName());
         holder.downloadIcon.setImageResource(R.drawable.sticker_downlad_foreground);
 
         List<ImageView> imageObject = new ArrayList<>();
@@ -46,11 +53,33 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
         imageObject.add(holder.icon4);
         imageObject.add(holder.icon5);
 
-        for(int i = 0; i < Math.min(5, arr.getImageURL().size()); i++){
-            Glide.with(holder.context).load(arr.getImageURL().get(i))
+        for(int i = 0; i < Math.min(5, arr.getImages().size()); i++){
+            Glide.with(holder.context).load(arr.getImages().get(i))
                     .into(imageObject.get(i));
 
         }
+
+        holder.downloadIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AllStickerModel stm = new AllStickerModel(arr.getId(), arr.getName(), arr.getLogo(), arr.getStatus());
+
+                Executors.newSingleThreadExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
+
+                        for(String url: arr.getImages()){
+                            Log.v("aaaa", url);
+                            stickerDatabase.stickerImageDAO().insertStickerImages(new StickerImageModel(arr.getId(), url));
+                        }
+
+                    }
+                });
+
+                holder.downloadIcon.setImageResource(R.drawable.camera_delete_foreground);
+            }
+        });
 
     }
 

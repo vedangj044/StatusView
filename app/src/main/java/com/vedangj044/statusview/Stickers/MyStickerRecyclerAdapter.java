@@ -18,7 +18,12 @@ import java.util.List;
 
 public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecyclerAdapter.ViewHolder> {
 
-    private List<AllStickerModel> mDataset = new ArrayList<>();
+    public List<AllStickerModel> mDataset = new ArrayList<>();
+    private Context context;
+
+    public MyStickerRecyclerAdapter(Context context) {
+        this.context = context;
+    }
 
     @NonNull
     @Override
@@ -32,6 +37,21 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
 
         AllStickerModel arr = mDataset.get(position);
         holder.deleteIcon.setImageResource(R.drawable.camera_delete_foreground);
+
+        holder.titleTextView.setText(arr.getName());
+
+        List<ImageView> imageObject = new ArrayList<>();
+        imageObject.add(holder.icon1);
+        imageObject.add(holder.icon2);
+        imageObject.add(holder.icon3);
+        imageObject.add(holder.icon4);
+        imageObject.add(holder.icon5);
+
+        for(int i = 0; i < Math.min(5, arr.getImages().size()); i++){
+            Glide.with(holder.context).load(arr.getImages().get(i))
+                    .into(imageObject.get(i));
+
+        }
 
     }
 

@@ -66,6 +66,7 @@ public class MainActivityFragment extends Fragment {
         createText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(view.getContext(), CreateTextStatus.class);
                 startActivity(intent);
             }
