@@ -1,5 +1,6 @@
 package com.vedangj044.statusview.Stickers;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Entity;
@@ -18,7 +19,7 @@ public interface StickerCategoryDAO {
     List<ModelRelation> getStickerImagesURL(int id);
 
     @Query("Select * from StickerCategory")
-    List<AllStickerModel> getStickerCategory();
+    LiveData<List<AllStickerModel>> getStickerCategory();
 
     @Query("Select id from StickerCategory")
     List<Integer> getAllStickerId();

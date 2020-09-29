@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -37,7 +38,14 @@ public class MyStickersFragment extends Fragment {
         StickerDatabase stickerDatabase = StickerDatabase.getInstance(view.getContext());
 
         mAdapter = new MyStickerRecyclerAdapter(view.getContext());
-        mAdapter.mDataset = stickerDatabase.stickerCategoryDAO().getStickerCategory();
+        stickerDatabase.stickerCategoryDAO().getStickerCategory().observe(this, new Observer<List<AllStickerModel>>() {
+            @Override
+            public void onChanged(List<AllStickerModel> allStickerModels) {
+                mAdapter.mDataset = allStickerModels;
+                mAdapter.notifyDataSetChanged();
+
+            }
+        });
 
         for(int i = 0; i < mAdapter.mDataset.size(); i++){
             List<ModelRelation> sim = stickerDatabase.stickerCategoryDAO().getStickerImagesURL(mAdapter.mDataset.get(i).getId());

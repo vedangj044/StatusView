@@ -63,6 +63,7 @@ public class CameraActivty extends AppCompatActivity {
     private int lensFacing = CameraSelector.LENS_FACING_BACK;
     private boolean torch = false;
 
+    private GalleryImageAdapter mAdapter;
     // camera object
     private Camera camera;
 
@@ -75,25 +76,32 @@ public class CameraActivty extends AppCompatActivity {
         captureImage = findViewById(R.id.captureImg);
 
         RecyclerView recyclerImage = findViewById(R.id.recyle_image);
-
         // Linear Layout set to horizontal
         recyclerImage.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        GalleryImageAdapter mAdapter = new GalleryImageAdapter(this, 100);
+        // asking for permission
+        if(allPermissionsGranted()){
+            startCamera();
+            mAdapter = new GalleryImageAdapter(this, 100);
 
-        // Listener for multiple selection Maybe used later
-        mAdapter.setOnNotifyImageData(new GalleryImageAdapter.notifyImageDate() {
-            @Override
-            public void sendSignal(String text) {
+            // Listener for multiple selection Maybe used later
+            mAdapter.setOnNotifyImageData(new GalleryImageAdapter.notifyImageDate() {
+                @Override
+                public void sendSignal(String text) {
 
-            }
+                }
 
-            @Override
-            public void sendSelectedItem(List<String> s) {
+                @Override
+                public void sendSelectedItem(List<String> s) {
 
-            }
-        });
-        recyclerImage.setAdapter(mAdapter);
+                }
+            });
+            recyclerImage.setAdapter(mAdapter);
+
+        }
+        else{
+            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+        }
 
         // Swipe up action on preview view triggers this listener
         // Creates a fragment of GalleryViewFragment class
@@ -118,14 +126,6 @@ public class CameraActivty extends AppCompatActivity {
 
             }
         });
-
-        // asking for permission
-        if(allPermissionsGranted()){
-            startCamera();
-        }
-        else{
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
-        }
 
         // Switch to toggle camera
         lensSwitch = findViewById(R.id.camera_switch);

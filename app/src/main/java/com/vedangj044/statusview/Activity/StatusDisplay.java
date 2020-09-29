@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -146,7 +147,13 @@ public class StatusDisplay extends AppCompatActivity {
 
                         // pause
                         progressBarHolder.pause();
-                        if(onVisibleVideo) { pause(); }
+                        try {
+                            if(onVisibleVideo) { pause(); }
+                        }
+                        catch (Exception e){
+
+                        }
+
 
                         return false;
                     case MotionEvent.ACTION_UP:
