@@ -24,7 +24,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD_HgsMvZ8CGogeuLSy8CFg9HDNrP7cy0U"/>
+            android:value=""/>
 
         <activity android:name=".Maps.MapActivity"></activity>
         <activity android:name=".Stickers.FullStickerPack" />
