@@ -1,6 +1,7 @@
 package com.vedangj044.statusview.Stickers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,16 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
 
         holder.titleTextView.setText(arr.getName());
 
+        holder.titleTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(holder.context.getApplicationContext(), FullStickerPack.class);
+                intent.putStringArrayListExtra("urllist", (ArrayList<String>) arr.getImages());
+                intent.putExtra("title", arr.getName());
+                holder.context.startActivity(intent);
+            }
+        });
+        
         List<ImageView> imageObject = new ArrayList<>();
         imageObject.add(holder.icon1);
         imageObject.add(holder.icon2);

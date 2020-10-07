@@ -18,6 +18,9 @@ public interface StickerCategoryDAO {
     @Query("Select * from stickercategory WHERE id == :id")
     List<ModelRelation> getStickerImagesURL(int id);
 
+    @Query("Select logo from stickercategory")
+    List<String> getStickerLogo();
+
     @Query("Select * from StickerCategory")
     LiveData<List<AllStickerModel>> getStickerCategory();
 

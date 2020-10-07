@@ -14,8 +14,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vedangj044.statusview.Adapters.StatusAdapter;
+import com.vedangj044.statusview.Maps.MapActivity;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
 import com.vedangj044.statusview.Stickers.StickerListActivity;
@@ -66,7 +68,6 @@ public class MainActivityFragment extends Fragment {
         createText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(view.getContext(), CreateTextStatus.class);
                 startActivity(intent);
             }
@@ -77,7 +78,7 @@ public class MainActivityFragment extends Fragment {
         createCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(view.getContext(), CameraActivty.class);
+                Intent intent = new Intent(view.getContext(), MapActivity.class);
                 startActivity(intent);
             }
         });
