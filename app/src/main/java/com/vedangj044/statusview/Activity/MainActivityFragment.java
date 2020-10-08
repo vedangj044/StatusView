@@ -78,7 +78,7 @@ public class MainActivityFragment extends Fragment {
         createCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(view.getContext(), MapActivity.class);
+                Intent intent = new Intent(view.getContext(), StickerListActivity.class);
                 startActivity(intent);
             }
         });

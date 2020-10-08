@@ -178,7 +178,7 @@ public class ProgressBarAnimationView extends LinearLayout {
 
             @Override
             public void onFinish() {
-                listener.requestStart(currentIndex);
+                next(true);
             }
         }.start();
 

@@ -5,6 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Maps.MapActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/top9182"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/black"
+        android:padding="16dp"
+        android:elevation="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/share_location"
+            android:textSize="22sp"
+            android:textColor="@color/iconBackgrouf"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send"
+                android:textSize="22sp"
+                android:id="@+id/send_location"
+                android:textColor="@color/iconBackgrouf"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
     
     <fragment
         android:layout_width="match_parent"
@@ -12,25 +46,59 @@
         android:id="@+id/google_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
-    <SearchView
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/top9182"
         android:id="@+id/search_bar_map"
-        android:queryHint="Enter Location / City"
-        android:iconifiedByDefault="false"
+        android:hint="@string/enter_location_city"
+        android:drawableEnd="@drawable/ic_baseline_search_24"
         android:layout_margin="10dp"
+        android:padding="10dp"
         android:elevation="5dp"
-        android:background="@color/appGrey"/>
+        android:textColorHint="@android:color/black"
+        android:textColor="@android:color/black"
+        android:background="@drawable/round_text_font_background"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/send_location"
-        android:layout_margin="16dp"
+        android:layout_below="@id/search_bar_map"
+        android:layout_margin="20dp"
         android:layout_alignParentEnd="true"
+        android:id="@+id/return_current_location"
+        android:src="@drawable/map_current_location_foreground"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/map_pointer_foreground"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:maxImageSize="38dp"
-        android:tint="@android:color/holo_blue_light"
-        android:src="@drawable/ic_send_arrow_foreground"/>
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/share_location"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:textSize="28sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:id="@+id/address"
+            android:text="108, Dravic Nagat Mahvir Bangh Indore, Madhya Pradesh 456002 iDIA"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

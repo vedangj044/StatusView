@@ -1,6 +1,7 @@
 package com.vanniktech.emoji_stickers;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,8 @@ public class StickerArrayAdapter extends BaseAdapter {
         else{
             imageView = (ImageView) convertView;
         }
+
+        imageView.setBackgroundColor(Color.TRANSPARENT);
 
         Glide.with(mContext).load(stickerUrl.get(position)).into(imageView);
         return imageView;

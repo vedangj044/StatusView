@@ -108,22 +108,22 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
                                 String filename = getFileName();
                                 File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
 
-//                                downloadFile(url, path, filename);
-                                Glide.with(holder.context)
-                                        .asBitmap()
-                                        .thumbnail(0.5f)
-                                        .load(url)
-                                        .into(new CustomTarget<Bitmap>() {
-                                            @Override
-                                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                                saveImage(resource, filename, path);
-                                            }
-
-                                            @Override
-                                            public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                                            }
-                                        });
+                                downloadFile(url, path, filename);
+//                                Glide.with(holder.context)
+//                                        .asBitmap()
+//                                        .thumbnail(0.5f)
+//                                        .load(url)
+//                                        .into(new CustomTarget<Bitmap>() {
+//                                            @Override
+//                                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                                                saveImage(resource, filename, path);
+//                                            }
+//
+//                                            @Override
+//                                            public void onLoadCleared(@Nullable Drawable placeholder) {
+//
+//                                            }
+//                                        });
                                 stickerDatabase.stickerImageDAO().insertStickerImages(new StickerImageModel(arr.getId(), path.getAbsolutePath()+"/"+filename));
                             }
 
@@ -137,23 +137,23 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
         }
     }
 
-//    public void downloadFile(String uRl, File path, String name) {
-//        File direct = path;
-//        File gh = new File(direct + "/" + name);
-//        if (!direct.exists()) {
-//            direct.mkdirs();
-//        }
-//
-//        DownloadManager mgr = (DownloadManager) this.mContext.getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
-//
-//        Uri downloadUri = Uri.parse(uRl);
-//        DownloadManager.Request request = new DownloadManager.Request(
-//                downloadUri);
-//
-//        request.setDestinationUri(Uri.parse(direct.getAbsolutePath()));
-//
-//        mgr.enqueue(request);
-//    }
+    public void downloadFile(String uRl, File path, String name) {
+        File direct = path;
+        String gh = "file://" + direct.getAbsolutePath() + "/" + name;
+        if (!direct.exists()) {
+            direct.mkdirs();
+        }
+
+        DownloadManager mgr = (DownloadManager) this.mContext.getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+
+        Uri downloadUri = Uri.parse(uRl);
+        DownloadManager.Request request = new DownloadManager.Request(
+                downloadUri);
+
+        request.setDestinationUri(Uri.parse(gh));
+
+        mgr.enqueue(request);
+    }
 
     private void saveImage(Bitmap resource, String filename, File path) {
         boolean success = true;
@@ -179,7 +179,7 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
         Random r = new Random();
         String alphabet = String.valueOf((1 + r.nextInt(2)) * 10000 + r.nextInt(10000));
 
-        String name = "STICKER__" +
+        String name = "STICKER_" +
                 new SimpleDateFormat("yyyyMMdd_HHmmss_", Locale.US).format(new Date()) +
                 alphabet + ".png";
 
