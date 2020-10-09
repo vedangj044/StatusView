@@ -20,4 +20,5 @@
     <string name="share_location">Share Location</string>
     <string name="send">Send</string>
     <string name="enter_location_city">Enter Location / City</string>
+    <string name="viewed_by">Viewed By</string>
 </resources>

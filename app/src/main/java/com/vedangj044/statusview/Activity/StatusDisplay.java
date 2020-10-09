@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +35,7 @@ import com.vedangj044.statusview.ModelObject.ImageStatusObject;
 import com.vedangj044.statusview.ModelObject.StatusObject;
 import com.vedangj044.statusview.ModelObject.TextStatusObject;
 import com.vedangj044.statusview.R;
+import com.vedangj044.statusview.ViewCountBottomSheet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +64,11 @@ public class StatusDisplay extends AppCompatActivity {
 
     // Time one of the status is displayed
     private static int DEFAULT_TIME_STATUS_VIEW = 5000;
+
+    private GestureDetector gestureDetector;
+    private Boolean isBecauseOfBottomSheet = false;
+
+    private ViewCountBottomSheet viewCountBottomSheet;
 
     // Video caching instance should be unique is the entire application
     private HttpProxyCacheServer proxy;
@@ -98,6 +105,56 @@ public class StatusDisplay extends AppCompatActivity {
         textStatus = findViewById(R.id.status_text);
         statusImageUrl = findViewById(R.id.status_image);
         statusVideo = findViewById(R.id.status_video);
+
+        ImageView buttonOpenViewCount = findViewById(R.id.button_open_view_count);
+        gestureDetector = new GestureDetector(this, new GestureDetector.OnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public void onShowPress(MotionEvent e) {
+
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+
+                viewCountBottomSheet.show(getSupportFragmentManager(), "ViewCount");
+                progressBarHolder.pause();
+                isBecauseOfBottomSheet = true;
+
+                return false;
+            }
+        });
+
+        viewCountBottomSheet = new ViewCountBottomSheet();
+
+        viewCountBottomSheet.setOnDismissEvent(new ViewCountBottomSheet.onDismissEvent() {
+            @Override
+            public void onDismissE() {
+                progressBarHolder.play();
+                if(onVisibleVideo) { resume(); }
+            }
+        });
+
 
         sharedByName.setText(st1.getSharedByName());
         sharedByTime.setText(st1.getSharedTime());
@@ -142,6 +199,7 @@ public class StatusDisplay extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 long duration = event.getEventTime() - event.getDownTime();
+                gestureDetector.onTouchEvent(event);
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
@@ -164,14 +222,19 @@ public class StatusDisplay extends AppCompatActivity {
                             progressBarHolder.next(true);
                         }
                         else{
-                            progressBarHolder.play();
-                            if(onVisibleVideo) { resume(); }
+                            if(!isBecauseOfBottomSheet){
+                                isBecauseOfBottomSheet = false;
+                                progressBarHolder.play();
+                                if(onVisibleVideo) { resume(); }
+                            }
+
                         }
                         return true;
                 }
                 return false;
             }
         };
+
         nextButton.setOnTouchListener(onTouchListener);
 
         // Manually starts the first status

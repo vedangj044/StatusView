@@ -110,5 +110,13 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/camera_up_arrow_foreground"
+        android:layout_margin="10dp"
+        android:id="@+id/button_open_view_count"/>
 
 </RelativeLayout>
