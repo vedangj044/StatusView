@@ -20,6 +20,7 @@ import com.vedangj044.statusview.Adapters.StatusAdapter;
 import com.vedangj044.statusview.Maps.MapActivity;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
+import com.vedangj044.statusview.SettingStatus;
 import com.vedangj044.statusview.Stickers.StickerListActivity;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class MainActivityFragment extends Fragment {
         createCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(view.getContext(), StickerListActivity.class);
+                Intent intent = new Intent(view.getContext(), CameraActivty.class);
                 startActivity(intent);
             }
         });

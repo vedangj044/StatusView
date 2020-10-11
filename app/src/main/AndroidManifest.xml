@@ -3,13 +3,12 @@
     package="com.vedangj044.statusview">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
 
     <uses-feature android:name="android.hardware.Camera2" />
 
@@ -22,15 +21,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".SettingStatus"></activity>
 
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value=""/>
+            android:value="" />
 
-        <activity android:name=".Maps.MapActivity"
-            android:theme="@style/NoActionBar"></activity>
+        <activity
+            android:name=".Maps.MapActivity"
+            android:theme="@style/NoActionBar" />
         <activity android:name=".Stickers.FullStickerPack" />
         <activity
             android:name=".Stickers.StickerListActivity"

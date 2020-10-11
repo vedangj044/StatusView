@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingStatus"
+    android:padding="10dp"
+    android:background="@color/appGrey">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/setting_status_recycle"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/your_status_updates_will_disappear_after_24_hours"
+        android:layout_margin="10dp"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:layout_below="@+id/setting_status_recycle"/>
+
+
+</RelativeLayout>

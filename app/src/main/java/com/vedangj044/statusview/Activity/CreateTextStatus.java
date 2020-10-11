@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -35,6 +36,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji_stickers.EmojiPopupSticker;
+import com.vanniktech.emoji_stickers.stickers.AddSticker;
 import com.vanniktech.emoji_stickers.stickers.Sticker;
 import com.vanniktech.emoji_stickers.stickers.StickerListener;
 import com.vanniktech.emoji_stickers.stickers.StickerSettings;
@@ -47,6 +49,7 @@ import com.vedangj044.statusview.Stickers.AllStickerModel;
 import com.vedangj044.statusview.Stickers.ModelRelation;
 import com.vedangj044.statusview.Stickers.StickerDatabase;
 import com.vedangj044.statusview.Stickers.StickerImageModel;
+import com.vedangj044.statusview.Stickers.StickerListActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -149,6 +152,13 @@ public class CreateTextStatus extends AppCompatActivity{
                                 .stickers(new ArrayList<>())
                                 .stickerLogo(urlsLogo)
                                 .stickerURLList(urllist)
+                                .addStickerListener(new AddSticker() {
+                                    @Override
+                                    public void addEvent() {
+                                        Intent intent = new Intent(CreateTextStatus.this, StickerListActivity.class);
+                                        startActivity(intent);
+                                    }
+                                })
                                 .listener(new StickerListener() {
                                     @Override
                                     public void onClick(Sticker sticker) {

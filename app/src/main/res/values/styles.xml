@@ -6,10 +6,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:itemBackground">#5B5B60</item>
     </style>
 
     <style name="ActionBar" parent="@style/Widget.AppCompat.ActionBar">
         <item name="background">@color/colorPrimary</item>
+        <item name="android:itemBackground">#5B5B60</item>
     </style>
 
     <style name = "NoActionBar" parent = "Theme.AppCompat.DayNight.NoActionBar">

@@ -351,6 +351,7 @@ public class UploadActivity extends AppCompatActivity {
                         byte[] byteArray = byteArrayOutputStream.toByteArray();
                         String base64Thumbnail = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
+                        Log.v("ss", base64Thumbnail);
                         // Creating image status object and adding to list
                         ImageStatusObject img1 = new ImageStatusObject(base64Thumbnail, output.getAbsolutePath(), false);
                         compressedPath.add(img1);

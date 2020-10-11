@@ -16,6 +16,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
 import com.vedangj044.statusview.Activity.StatusDisplay;
+import com.vedangj044.statusview.SettingStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.MyViewHold
         private MaterialCardView cardView;
         // card view containing all other components
 
+        private ImageView openSettings;
+
         private Context context;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -44,6 +47,7 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.MyViewHold
             sharedBy = itemView.findViewById(R.id.shared_by);
             numberOfStatus = itemView.findViewById(R.id.number_of_status);
             cardView = itemView.findViewById(R.id.card);
+            openSettings = itemView.findViewById(R.id.open_setting_activity);
             context = itemView.getContext();
         }
     }
@@ -75,6 +79,14 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.MyViewHold
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(holder.context, StatusDisplay.class);
+                holder.context.startActivity(intent);
+            }
+        });
+
+        holder.openSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(holder.context, SettingStatus.class);
                 holder.context.startActivity(intent);
             }
         });
