@@ -1,4 +1,4 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.SettingStatus;
 
 public class SettingStatusModel {
 

@@ -1,10 +1,12 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.SettingStatus;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+
+import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
 import java.util.List;

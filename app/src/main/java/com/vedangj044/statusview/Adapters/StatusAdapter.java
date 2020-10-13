@@ -16,7 +16,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
 import com.vedangj044.statusview.Activity.StatusDisplay;
-import com.vedangj044.statusview.SettingStatus;
+import com.vedangj044.statusview.SettingStatus.SettingStatus;
 
 import java.util.ArrayList;
 import java.util.List;

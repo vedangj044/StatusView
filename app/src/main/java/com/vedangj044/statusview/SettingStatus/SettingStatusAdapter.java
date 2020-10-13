@@ -1,4 +1,4 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.SettingStatus;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
 import java.util.List;

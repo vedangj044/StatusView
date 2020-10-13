@@ -1,4 +1,4 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.ViewCount;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
 import java.util.List;

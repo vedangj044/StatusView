@@ -13,7 +13,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,7 +34,7 @@ import com.vedangj044.statusview.ModelObject.ImageStatusObject;
 import com.vedangj044.statusview.ModelObject.StatusObject;
 import com.vedangj044.statusview.ModelObject.TextStatusObject;
 import com.vedangj044.statusview.R;
-import com.vedangj044.statusview.ViewCountBottomSheet;
+import com.vedangj044.statusview.ViewCount.ViewCountBottomSheet;
 
 import java.util.ArrayList;
 import java.util.List;

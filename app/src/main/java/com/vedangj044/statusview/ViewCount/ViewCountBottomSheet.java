@@ -1,4 +1,4 @@
-package com.vedangj044.statusview;
+package com.vedangj044.statusview.ViewCount;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
 import java.util.List;
