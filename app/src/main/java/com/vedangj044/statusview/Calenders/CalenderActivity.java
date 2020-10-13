@@ -35,6 +35,7 @@ public class CalenderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calender);
 
+        setTitle("Scheduled Meeting");
 
         calendarView = findViewById(R.id.calender_data);
         calendarView.setDateSelected(CalendarDay.today(), true);
@@ -74,7 +75,7 @@ public class CalenderActivity extends AppCompatActivity {
 
                         @Override
                         public void decorate(DayViewFacade view) {
-                            view.setBackgroundDrawable(ContextCompat.getDrawable(CalenderActivity.this, R.drawable.ic_outline_donut_large_24));
+                            view.setBackgroundDrawable(ContextCompat.getDrawable(CalenderActivity.this, R.drawable.oval_black_solid));
                         }
                     });
                 }

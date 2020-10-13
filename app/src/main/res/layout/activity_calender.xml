@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Calenders.CalenderActivity">
+    tools:context=".Calenders.CalenderActivity"
+    android:background="@color/appGrey">
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:layout_width="match_parent"
@@ -12,6 +13,8 @@
         android:id="@+id/calender_data"
         android:layout_margin="5dp"
         app:mcv_dateTextAppearance="@android:color/white"
+        app:mcv_headerTextAppearance="@style/CustomTextApprearance"
+        app:mcv_weekDayTextAppearance="@style/CustomTextApprearance"
         />
 
 </RelativeLayout>
