@@ -21,7 +21,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SettingStatus.SettingStatus"></activity>
+        <activity android:name=".Calenders.CalenderActivity"></activity>
+        <activity android:name=".SettingStatus.SettingStatus" />
 
         <uses-library
             android:name="org.apache.http.legacy"
