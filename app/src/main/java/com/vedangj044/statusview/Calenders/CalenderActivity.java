@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -29,6 +30,7 @@ public class CalenderActivity extends AppCompatActivity {
 
     private MaterialCalendarView calendarView;
     private MutableLiveData<List<CalendarDay>> eventList = new MutableLiveData<>();
+    private CalendarDay currentDay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,22 @@ public class CalenderActivity extends AppCompatActivity {
         setTitle("Scheduled Meeting");
 
         calendarView = findViewById(R.id.calender_data);
-        calendarView.setDateSelected(CalendarDay.today(), true);
+
+        Resources.Theme theme = this.getTheme();
+//        calendarView.addDecorator(new DayViewDecorator() {
+//            @Override
+//            public boolean shouldDecorate(CalendarDay day) {
+//                return day.equals(CalendarDay.today());
+//            }
+//
+//            @Override
+//            public void decorate(DayViewFacade view) {
+//                view.setBackgroundDrawable(ContextCompat.getDrawable(CalenderActivity.this, R.drawable.ic_baseline_fiber_manual_record_24));
+//            }
+//        });
+
+        currentDay = CalendarDay.today();
+        calendarView.setDateSelected(currentDay, true);
 
         CountDownTimer cp = new CountDownTimer(5000, 100) {
             @Override
@@ -53,7 +70,7 @@ public class CalenderActivity extends AppCompatActivity {
                 responseDays.add(CalendarDay.from(2020, 10, 20));
                 responseDays.add(CalendarDay.from(2020, 10, 22));
                 responseDays.add(CalendarDay.from(2020, 10, 24));
-                responseDays.add(CalendarDay.from(2020, 10, 26));
+                responseDays.add(CalendarDay.from(2020, 10, 14));
 
                 eventList.setValue(responseDays);
                 Log.v("Hello", "added");
@@ -75,7 +92,7 @@ public class CalenderActivity extends AppCompatActivity {
 
                         @Override
                         public void decorate(DayViewFacade view) {
-                            view.setBackgroundDrawable(ContextCompat.getDrawable(CalenderActivity.this, R.drawable.oval_black_solid));
+                            view.setBackgroundDrawable(ContextCompat.getDrawable(CalenderActivity.this, R.mipmap.calender_cicle_foreground));
                         }
                     });
                 }
@@ -88,6 +105,7 @@ public class CalenderActivity extends AppCompatActivity {
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
                 if(eventList.getValue() != null){
                     if(eventList.getValue().contains(date)){
+                        currentDay = date;
                         Toast.makeText(CalenderActivity.this, "Displays events", Toast.LENGTH_SHORT).show();
                     }
                 }

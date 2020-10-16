@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import com.vedangj044.statusview.Adapters.StatusAdapter;
 import com.vedangj044.statusview.Calenders.CalenderActivity;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
+import com.vedangj044.statusview.SettingStatus.SettingStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ public class MainActivityFragment extends Fragment {
     private RecyclerView viewedRecyclerView;
     private RecyclerView.LayoutManager viewedlayoutManager;
     private StatusAdapter viewedStatusAdapter;
+    private ImageView openSettings;
 
     @Nullable
     @Override
@@ -75,6 +78,15 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(view.getContext(), CalenderActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        openSettings = view.findViewById(R.id.open_settings_button);
+        openSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(view.getContext(), SettingStatus.class);
                 startActivity(intent);
             }
         });

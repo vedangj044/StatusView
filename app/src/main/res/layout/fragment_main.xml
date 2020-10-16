@@ -33,9 +33,12 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="50dp"
+                android:layout_width="40dp"
+                android:layout_marginEnd="20dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/circle_add_icon" />
+                android:rotation="90"
+                android:id="@+id/open_settings_button"
+                android:src="@drawable/ic_baseline_more_vert_24" />
 
         </LinearLayout>
 
