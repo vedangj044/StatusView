@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -73,6 +74,19 @@ public class StatusDisplay extends AppCompatActivity {
     private HttpProxyCacheServer proxy;
 
     @Override
+    protected void onPause() {
+        try {
+            viewCountBottomSheet.dismiss();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        progressBarHolder.pause();
+        super.onPause();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_status_display);
@@ -90,9 +104,15 @@ public class StatusDisplay extends AppCompatActivity {
         StatusList.add(new ImageStatusObject(imgBase64, "https://f4.bcbits.com/img/a2322320532_10.jpg",false));
 
         StatusList.add(new ImageStatusObject(imgBase64, "https://voip.vortexvt.com:8082/ithubfiles/status/advVort/000000012506_1600856289131VIDEO_20200923_154803_14412.mp4", true));
+        StatusList.add(new ImageStatusObject(imgBase64, "https://f4.bcbits.com/img/a2322320532_10.jpg",false));
+
+        StatusList.add(new ImageStatusObject(imgBase64, "https://voip.vortexvt.com:8082/ithubfiles/status/advVort/000000012506_1600856289131VIDEO_20200923_154803_14412.mp4", true));
+        StatusList.add(new TextStatusObject("Hello, Vedang Joshi", "#206a5d", 2131296259));
+        StatusList.add(new ImageStatusObject(imgBase64, "https://voip.vortexvt.com:8082/ithubfiles/status/advVort/000000012506_1600856289131VIDEO_20200923_154803_14412.mp4", true));
+        StatusList.add(new ImageStatusObject(imgBase64, videoURL1, true));
 
         // creating status object
-        st1 = new StatusObject(5, "1000", "Vedang Joshi",
+        st1 = new StatusObject(10, "1000", "Vedang Joshi",
                 "12:57PM", "https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png", StatusList);
 
 
@@ -150,6 +170,7 @@ public class StatusDisplay extends AppCompatActivity {
             @Override
             public void onDismissE() {
                 progressBarHolder.play();
+                isBecauseOfBottomSheet = false;
                 if(onVisibleVideo) { resume(); }
             }
         });
@@ -221,10 +242,11 @@ public class StatusDisplay extends AppCompatActivity {
                             progressBarHolder.next(true);
                         }
                         else{
+                            Log.v("fe", isBecauseOfBottomSheet.toString());
                             if(!isBecauseOfBottomSheet){
-                                isBecauseOfBottomSheet = false;
                                 progressBarHolder.play();
                                 if(onVisibleVideo) { resume(); }
+
                             }
 
                         }
@@ -287,7 +309,6 @@ public class StatusDisplay extends AppCompatActivity {
                 // displays the thumbnail
                 statusImageUrl.setImageBitmap(Bitmap.createScaledBitmap(decodedByte, p, p, false));
 
-                Uri video = Uri.parse(URL);
 
                 // query the proxy if the video is already cached
                 proxy = new HttpProxyCacheServer(this);

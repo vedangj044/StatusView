@@ -90,7 +90,12 @@ public class ProgressBarAnimationView extends LinearLayout {
     public void setCurrentDuration(int duration){
 
         this.duration = duration;
-        listOfStatus.get(currentIndex).setMax(duration);
+        try {
+            listOfStatus.get(currentIndex).setMax(duration);
+        }
+        catch (Exception e){
+            listener.fin();
+        }
 
         // Timer instance is create in this function and started later
         currentTimerInstance = new CountDownTimer(duration, currentCountDownTimerValue) {
