@@ -3,6 +3,8 @@ package com.vedangj044.statusview.Activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -115,6 +117,11 @@ public class StatusDisplay extends AppCompatActivity {
         st1 = new StatusObject(10, "1000", "Vedang Joshi",
                 "12:57PM", "https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png", StatusList);
 
+        ArrayList<String> displayByIntent = getIntent().getStringArrayListExtra("list");
+        if(displayByIntent != null){
+            st1 = new StatusObject(1, "1000", "Vedang Joshi",
+                    "12:57PM", "https://www.nicepng.com/png/detail/340-3400381_smiling-man-smiling-man-face-png.png", StatusList);
+        }
 
         // Information about the person who posted the status is displayed
         sharedByName = findViewById(R.id.shared_by);
@@ -323,7 +330,7 @@ public class StatusDisplay extends AppCompatActivity {
 
                         // hide the thumbnail
                         statusImageUrl.setVisibility(View.GONE);
-                        statusVideo.start();
+
                         loading.setVisibility(View.GONE);
 
                         // sets progress bar duration
@@ -331,7 +338,10 @@ public class StatusDisplay extends AppCompatActivity {
                         StatusDisplay.this.mp = mp;
 
                         // start progress bar
-                        progressBarHolder.start();
+                        if(isBottomSheetOpen()){
+                            statusVideo.start();
+                            progressBarHolder.start();
+                        }
                     }
                 });
 
@@ -361,7 +371,9 @@ public class StatusDisplay extends AppCompatActivity {
                                 loading.setVisibility(View.GONE);
                                 // The progress bar starts to fill ONLY when the status image is completely loaded
 
-                                progressBarHolder.start();
+                                if(isBottomSheetOpen()){
+                                    progressBarHolder.start();
+                                }
 
                                 return false;
                             }
@@ -374,7 +386,10 @@ public class StatusDisplay extends AppCompatActivity {
 
             onVisibleVideo = false;
             progressBarHolder.setCurrentDuration(DEFAULT_TIME_STATUS_VIEW);
-            progressBarHolder.start();
+
+            if(isBottomSheetOpen()){
+                progressBarHolder.start();
+            }
 
             TextStatusObject t1 = (TextStatusObject) st1.getStatusObjectOfDifferentTypes().get(index);
 
@@ -396,6 +411,11 @@ public class StatusDisplay extends AppCompatActivity {
 
         }
 
+    }
+
+    private Boolean isBottomSheetOpen(){
+        Fragment a = getSupportFragmentManager().findFragmentByTag("ViewCount");
+        return a == null;
     }
 
     // Restores default before change in status

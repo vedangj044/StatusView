@@ -1,6 +1,7 @@
 package com.vedangj044.statusview.SettingStatus;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.vedangj044.statusview.Activity.StatusDisplay;
 import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
@@ -48,6 +50,22 @@ public class SettingStatusAdapter extends RecyclerView.Adapter<SettingStatusAdap
 
         holder.statusViewCount.setText(String.valueOf(object.getViewCount()) + " views");
         holder.statusUpdateTime.setText(object.getUpdateTime());
+
+        View.OnClickListener intentToView = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                List<String> thisList = new ArrayList<>();
+                thisList.add("STATUS-UNIQUE-ID");
+
+                Intent intent = new Intent(holder.context, StatusDisplay.class);
+                intent.putStringArrayListExtra("list", (ArrayList<String>) thisList);
+                holder.context.startActivity(intent);
+            }
+        };
+
+        holder.statusThumbnail.setOnClickListener(intentToView);
+        holder.statusViewCount.setOnClickListener(intentToView);
 
         holder.statusMenu.setOnClickListener(new View.OnClickListener() {
             @Override
