@@ -50,7 +50,6 @@ public class AllStickerFragment extends Fragment {
         Call<StickerApiModel> getStickers(@Header("Authorization") String authHeader, @Body JsonObject body);
     }
 
-
     private RecyclerView recyclerView;
     private List<StickerCategoryModel> mDataset = new ArrayList<>();
 
