@@ -13,7 +13,7 @@ import java.util.List;
 @Dao
 public interface StickerImageDAO {
 
-    @Query("Select StickerId from StickerModel")
+    @Query("Select StickerCode from StickerModel")
     List<String> getAllStickerId();
 
     @Query("Select url from stickermodel WHERE categoryIdFk == :id LIMIT 5")

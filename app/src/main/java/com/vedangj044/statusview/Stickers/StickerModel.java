@@ -18,17 +18,17 @@ public class StickerModel {
     private int categoryIdFk;
 
     @PrimaryKey
-    @ColumnInfo(name = "StickerId")
+    @ColumnInfo(name = "StickerCode")
     @NonNull
-    private String StickerId;
+    private String StickerCode;
 
     @ColumnInfo(name = "url")
     private String url;
 
-    public StickerModel(String StickerId, int categoryIdFk, String url) {
+    public StickerModel(String StickerCode, int categoryIdFk, String url) {
         this.categoryIdFk = categoryIdFk;
         this.url = url;
-        this.StickerId = StickerId;
+        this.StickerCode = StickerCode;
     }
 
     public int getCategoryIdFk() {
@@ -39,12 +39,12 @@ public class StickerModel {
         categoryIdFk = categoryIdFk;
     }
 
-    public String getStickerId() {
-        return StickerId;
+    public String getStickerCode() {
+        return StickerCode;
     }
 
-    public void setStickerId(String stickerId) {
-        StickerId = stickerId;
+    public void setStickerCode(String stickerCode) {
+        StickerCode = stickerCode;
     }
 
     public String getUrl() {
