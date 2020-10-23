@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {AllStickerModel.class, StickerImageModel.class}, exportSchema = false, version = 1)
+@Database(entities = {StickerCategoryModel.class, StickerModel.class}, exportSchema = false, version = 1)
 public abstract class StickerDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "sticker_db";
@@ -16,7 +16,6 @@ public abstract class StickerDatabase extends RoomDatabase {
         if(instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(), StickerDatabase.class, DB_NAME)
                     .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries()
                     .build();
         }
         return instance;

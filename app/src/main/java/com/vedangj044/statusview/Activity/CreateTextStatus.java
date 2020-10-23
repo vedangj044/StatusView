@@ -3,7 +3,6 @@ package com.vedangj044.statusview.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import android.content.Context;
@@ -13,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -34,7 +32,6 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji_stickers.EmojiPopupSticker;
 import com.vanniktech.emoji_stickers.stickers.AddSticker;
 import com.vanniktech.emoji_stickers.stickers.Sticker;
@@ -45,18 +42,19 @@ import com.vedangj044.statusview.FragmentWindows.FragmentFont;
 import com.vedangj044.statusview.ListOfResource;
 import com.vedangj044.statusview.ModelObject.TextStatusObject;
 import com.vedangj044.statusview.R;
-import com.vedangj044.statusview.Stickers.AllStickerModel;
-import com.vedangj044.statusview.Stickers.ModelRelation;
+import com.vedangj044.statusview.Stickers.AllStickerRecyclerAdapter;
+import com.vedangj044.statusview.Stickers.StickerCategoryModel;
 import com.vedangj044.statusview.Stickers.StickerDatabase;
-import com.vedangj044.statusview.Stickers.StickerImageModel;
 import com.vedangj044.statusview.Stickers.StickerListActivity;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class CreateTextStatus extends AppCompatActivity{
 
@@ -81,7 +79,7 @@ public class CreateTextStatus extends AppCompatActivity{
     private boolean EmojiIconState = true;
     private EmojiPopupSticker emojiPopup1;
 
-    private List<AllStickerModel> mDataset;
+    private List<StickerCategoryModel> mDataset;
 
     private RelativeLayout fontFragmentContainer;
     private RelativeLayout backgroundFragmentContainer;
@@ -90,6 +88,9 @@ public class CreateTextStatus extends AppCompatActivity{
     private List<Integer> backgroundResourceList = ListOfResource.BackgroundColorResource;
     private List<Integer> textFont = ListOfResource.textFont;
     private List<Integer> fontColor = ListOfResource.fontColor;
+
+
+    private ExecutorService executor = AllStickerRecyclerAdapter.ExecutorHelper.getInstanceExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,30 +120,37 @@ public class CreateTextStatus extends AppCompatActivity{
 
         StickerDatabase db = StickerDatabase.getInstance(this);
 
-        List<String> urlsLogo = db.stickerCategoryDAO().getStickerLogo();
 
         mDataset = new ArrayList<>();
-        db.stickerCategoryDAO().getStickerCategory().observe(this, new Observer<List<AllStickerModel>>() {
-            @Override
-            public void onChanged(List<AllStickerModel> allStickerModels) {
-                mDataset = allStickerModels;
-                Log.v("aaaa", "bbbbbb");
 
+        db.stickerCategoryDAO().getStickerCategory().observe(this, new Observer<List<StickerCategoryModel>>() {
+            @Override
+            public void onChanged(List<StickerCategoryModel> allStickerModels) {
+                mDataset = allStickerModels;
                 List<List<String>> urllist = new ArrayList<>();
 
-                for(int i = 0; i < mDataset.size(); i++){
-                    List<ModelRelation> sim = db.stickerCategoryDAO().getStickerImagesURL(mDataset.get(i).getId());
+                List<String> logo = new ArrayList<>();
 
-                    for(ModelRelation s: sim){
-                        List<String> urls = new ArrayList<>();
+                Future<Void> fill = executor.submit(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
 
-                        for(StickerImageModel s1: s.imageModels){
-                            urls.add(s1.getUrl());
+                        for(int i = 0; i < mDataset.size(); i++){
+
+                            logo.add(mDataset.get(i).getLogo());
+                            List<String> urls = db.stickerImageDAO().getFullStickerByID(mDataset.get(i).getId());
+                            urllist.add(urls);
+                            mDataset.get(i).setImages(urls);
                         }
 
-                        mDataset.get(i).setImages(urls);
-                        urllist.add(urls);
+                        return null;
                     }
+                });
+
+                try {
+                    fill.get();
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
                 }
 
 
@@ -150,7 +158,7 @@ public class CreateTextStatus extends AppCompatActivity{
                 emojiPopup1 = EmojiPopupSticker.Builder.fromRootView(backgroundOfText)
                         .setStickerSettings(new StickerSettings.Builder()
                                 .stickers(new ArrayList<>())
-                                .stickerLogo(urlsLogo)
+                                .stickerLogo(logo)
                                 .stickerURLList(urllist)
                                 .addStickerListener(new AddSticker() {
                                     @Override
@@ -458,4 +466,18 @@ public class CreateTextStatus extends AppCompatActivity{
         }
 
     }
+
+
+    public static class ExecutorHelper{
+
+        private static ExecutorService instanceExecutor;
+
+        public static synchronized ExecutorService getInstanceExecutor(){
+            if(instanceExecutor == null){
+                instanceExecutor = Executors.newSingleThreadExecutor();
+            }
+            return instanceExecutor;
+        }
+    }
+
 }

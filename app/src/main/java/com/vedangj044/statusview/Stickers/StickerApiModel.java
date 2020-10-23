@@ -6,7 +6,7 @@ public class StickerApiModel {
 
     private String message;
     private String status;
-    private List<AllStickerModel> data;
+    private List<StickerCategoryModel> data;
 
 
 
@@ -18,7 +18,7 @@ public class StickerApiModel {
         return status;
     }
 
-    public List<AllStickerModel> getData() {
+    public List<StickerCategoryModel> getData() {
         return data;
     }
 }

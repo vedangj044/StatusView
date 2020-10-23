@@ -1,5 +1,5 @@
-include ':emoji-stickers'
 include ':emoji'
 include ':emoji-google'
+include ':emoji-stickers'
 include ':app'
 rootProject.name = "StatusView"

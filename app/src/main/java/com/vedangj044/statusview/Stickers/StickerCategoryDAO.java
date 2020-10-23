@@ -14,27 +14,22 @@ import java.util.List;
 @Dao
 public interface StickerCategoryDAO {
 
-    @Transaction
-    @Query("Select * from stickercategory WHERE id == :id")
-    List<ModelRelation> getStickerImagesURL(int id);
 
-    @Query("Select logo from stickercategory")
+    @Query("Select logo from tb_sticker_category")
     List<String> getStickerLogo();
 
-    @Query("Select * from StickerCategory")
-    LiveData<List<AllStickerModel>> getStickerCategory();
+    @Query("Select * from tb_sticker_category")
+    LiveData<List<StickerCategoryModel>> getStickerCategory();
 
-    @Query("Select id from StickerCategory")
-    List<Integer> getAllStickerId();
 
     @Insert
-    void insertStickerCategory(AllStickerModel allStickerModel);
+    void insertStickerCategory(StickerCategoryModel stickerCategoryModel);
 
     @Update
-    void updateStickerCategory(AllStickerModel allStickerModel);
+    void updateStickerCategory(StickerCategoryModel stickerCategoryModel);
 
     @Delete
-    void deleteStickerCategory(AllStickerModel allStickerModel);
+    void deleteStickerCategory(StickerCategoryModel stickerCategoryModel);
 
 
 }

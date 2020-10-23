@@ -4,7 +4,6 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -12,16 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.vedangj044.statusview.R;
 
 import java.io.File;
@@ -33,21 +29,38 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-import java.util.concurrent.Executor;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRecyclerAdapter.ViewHolder> {
 
-    private List<AllStickerModel> mDataset;
-    private List<Integer> already;
+    private List<StickerCategoryModel> mDataset;
+    private List<String> already;
     private StickerDatabase stickerDatabase;
     private Context mContext;
+    private ExecutorService executor = ExecutorHelper.getInstanceExecutor();
 
-    public AllStickerRecyclerAdapter(Context context, List<AllStickerModel> mDataset) {
+    public AllStickerRecyclerAdapter(Context context, List<StickerCategoryModel> mDataset) {
         this.mDataset = mDataset;
         this.stickerDatabase = StickerDatabase.getInstance(context);
         this.mContext = context;
-        this.already = stickerDatabase.stickerCategoryDAO().getAllStickerId();
+
+        Future<Void> populate = executor.submit(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                AllStickerRecyclerAdapter.this.already = stickerDatabase.stickerImageDAO().getAllStickerId();
+                return null;
+            }
+        });
+
+        try {
+            populate.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @NonNull
@@ -60,7 +73,8 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        AllStickerModel arr = mDataset.get(position);
+        StickerCategoryModel arr = mDataset.get(position);
+        Log.v("a", ""+arr.getId());
 
         holder.titleTextView.setText(arr.getName());
 
@@ -73,6 +87,7 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
                 mContext.startActivity(intent);
             }
         });
+
         holder.downloadIcon.setImageResource(R.drawable.sticker_downlad_foreground);
 
         List<ImageView> imageObject = new ArrayList<>();
@@ -88,49 +103,68 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
         }
 
-        if(already.contains(arr.getId())){
+        if(already.contains("0")){
             holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
         }
         else{
-
             holder.downloadIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AllStickerModel stm = new AllStickerModel(arr.getId(), arr.getName(), arr.getLogo(), arr.getStatus());
+                    StickerCategoryModel stm = new StickerCategoryModel(arr.getId(), arr.getName(), arr.getLogo(), arr.getStatus());
 
-                    Executors.newSingleThreadExecutor().execute(new Runnable() {
+                    holder.isDownloading.setVisibility(View.VISIBLE);
+                    holder.downloadIcon.setVisibility(View.GONE);
+
+                    Future<Void> task = executor.submit(new Callable<Void>() {
                         @Override
-                        public void run() {
+                        public Void call() throws Exception {
+
                             stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
 
-                            for(String url: arr.getImages()){
+                            for(String url: arr.getImages()) {
 
                                 String filename = getFileName();
                                 File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
 
                                 downloadFile(url, path, filename);
-//                                Glide.with(holder.context)
-//                                        .asBitmap()
-//                                        .thumbnail(0.5f)
-//                                        .load(url)
-//                                        .into(new CustomTarget<Bitmap>() {
-//                                            @Override
-//                                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-//                                                saveImage(resource, filename, path);
-//                                            }
-//
-//                                            @Override
-//                                            public void onLoadCleared(@Nullable Drawable placeholder) {
-//
-//                                            }
-//                                        });
-                                stickerDatabase.stickerImageDAO().insertStickerImages(new StickerImageModel(arr.getId(), path.getAbsolutePath()+"/"+filename));
+                                stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel(filename, arr.getId(), path.getAbsolutePath() + "/" + filename));
                             }
 
+
+                            holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
+
+                            return null;
                         }
                     });
 
-                    holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
+                    try {
+                        task.get();
+                        holder.isDownloading.setVisibility(View.GONE);
+                        holder.downloadIcon.setVisibility(View.VISIBLE);
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+//                    Executors.newSingleThreadExecutor().execute(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
+//
+//                            for(String url: arr.getImages()) {
+//
+//                                String filename = getFileName();
+//                                File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+//
+//                                downloadFile(url, path, filename);
+//                                stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel("0", arr.getCategoryId(), path.getAbsolutePath() + "/" + filename));
+//                            }
+//
+//                        }
+//
+//                    });
+//
+//                    holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
                 }
             });
 
@@ -204,6 +238,8 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
         private ImageView downloadIcon;
 
+        private ProgressBar isDownloading;
+
         private Context context;
 
         public ViewHolder(@NonNull View itemView) {
@@ -219,8 +255,22 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
             icon5 = itemView.findViewById(R.id.sticker_icon_5);
 
             downloadIcon = itemView.findViewById(R.id.sticker_download_state);
+            isDownloading = itemView.findViewById(R.id.is_download);
 
             context = itemView.getContext();
         }
     }
+
+    public static class ExecutorHelper{
+
+        private static ExecutorService instanceExecutor;
+
+        public static synchronized ExecutorService getInstanceExecutor(){
+            if(instanceExecutor == null){
+                instanceExecutor = Executors.newSingleThreadExecutor();
+            }
+            return instanceExecutor;
+        }
+    }
+
 }

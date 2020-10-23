@@ -19,6 +19,7 @@ import com.vedangj044.statusview.Calenders.CalenderActivity;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
 import com.vedangj044.statusview.SettingStatus.SettingStatus;
+import com.vedangj044.statusview.Stickers.StickerListActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class MainActivityFragment extends Fragment {
         createCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(view.getContext(), CalenderActivity.class);
+                Intent intent = new Intent(view.getContext(), StickerListActivity.class);
                 startActivity(intent);
             }
         });

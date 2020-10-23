@@ -8,8 +8,6 @@ import android.widget.GridView;
 
 import androidx.viewpager.widget.PagerAdapter;
 
-import com.vanniktech.emoji.listeners.OnEmojiClickListener;
-import com.vanniktech.emoji.listeners.OnEmojiLongClickListener;
 import com.vanniktech.emoji_stickers.stickers.Sticker;
 import com.vanniktech.emoji_stickers.stickers.StickerListener;
 

@@ -52,7 +52,7 @@ public class AllStickerFragment extends Fragment {
 
 
     private RecyclerView recyclerView;
-    private List<AllStickerModel> mDataset = new ArrayList<>();
+    private List<StickerCategoryModel> mDataset = new ArrayList<>();
 
     @Nullable
     @Override

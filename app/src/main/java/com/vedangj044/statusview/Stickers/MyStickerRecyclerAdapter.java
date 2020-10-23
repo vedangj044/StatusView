@@ -2,6 +2,8 @@ package com.vedangj044.statusview.Stickers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,22 +11,42 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.vedangj044.statusview.R;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecyclerAdapter.ViewHolder> {
 
-    public List<AllStickerModel> mDataset = new ArrayList<>();
+    public List<StickerCategoryModel> mDataset = new ArrayList<>();
     private Context context;
+    private LifecycleOwner lifecycleOwner;
     private StickerDatabase stickerDatabase;
 
-    public MyStickerRecyclerAdapter(Context context) {
+    private ExecutorService executor = AllStickerRecyclerAdapter.ExecutorHelper.getInstanceExecutor();
+
+
+    public MyStickerRecyclerAdapter(Context context, LifecycleOwner lifecycleOwner) {
         this.context = context;
+        this.lifecycleOwner = lifecycleOwner;
         this.stickerDatabase = StickerDatabase.getInstance(context);
     }
 
@@ -38,7 +60,7 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        AllStickerModel arr = mDataset.get(position);
+        StickerCategoryModel arr = mDataset.get(position);
         holder.deleteIcon.setImageResource(R.drawable.camera_delete_foreground);
 
         holder.titleTextView.setText(arr.getName());
@@ -60,16 +82,77 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
         imageObject.add(holder.icon4);
         imageObject.add(holder.icon5);
 
-        for(int i = 0; i < Math.min(5, arr.getImages().size()); i++){
-            Glide.with(holder.context).load(arr.getImages().get(i))
-                    .into(imageObject.get(i));
+        stickerDatabase.stickerImageDAO().getStickerURLById(arr.getId()).observe(lifecycleOwner, new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> strings) {
 
-        }
+                arr.setImages(strings);
+
+                CountDownTimer ctx = new CountDownTimer(2000, 2000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        for(int i = 0; i < Math.min(5, strings.size()); i++){
+                            Glide.with(holder.context).load(strings.get(i))
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .skipMemoryCache(true)
+                                    .into(imageObject.get(i));
+                        }
+                    }
+                };
+
+                for(int i = 0; i < Math.min(5, strings.size()); i++){
+
+                    File file = new File(strings.get(i));
+                    if(file.exists()){
+                        Glide.with(holder.context).load(strings.get(i))
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .into(imageObject.get(i));
+                    }
+                    else{
+                        ctx.start();
+                        break;
+                    }
+
+                }
+
+            }
+        });
 
         holder.deleteIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stickerDatabase.stickerCategoryDAO().deleteStickerCategory(arr);
+
+                for(ImageView v1: imageObject){
+                    v1.setImageResource(0);
+                }
+
+                Future<Void> delete = executor.submit(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+
+                        for(String imageURL: arr.getImages()){
+                            File file = new File(imageURL);
+                            file.delete();
+                        }
+
+                        stickerDatabase.stickerCategoryDAO().deleteStickerCategory(arr);
+
+                        return null;
+                    }
+                });
+
+                try {
+                    delete.get();
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
 
@@ -110,6 +193,18 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
             deleteIcon = itemView.findViewById(R.id.sticker_download_state);
 
             context = itemView.getContext();
+        }
+    }
+
+    public static class ExecutorHelper{
+
+        private static ExecutorService instanceExecutor;
+
+        public static synchronized ExecutorService getInstanceExecutor(){
+            if(instanceExecutor == null){
+                instanceExecutor = Executors.newSingleThreadExecutor();
+            }
+            return instanceExecutor;
         }
     }
 }

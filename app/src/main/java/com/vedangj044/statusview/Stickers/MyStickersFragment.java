@@ -37,27 +37,31 @@ public class MyStickersFragment extends Fragment {
 
         StickerDatabase stickerDatabase = StickerDatabase.getInstance(view.getContext());
 
-        mAdapter = new MyStickerRecyclerAdapter(view.getContext());
-        stickerDatabase.stickerCategoryDAO().getStickerCategory().observe(this, new Observer<List<AllStickerModel>>() {
+        mAdapter = new MyStickerRecyclerAdapter(view.getContext(), this);
+
+        stickerDatabase.stickerCategoryDAO().getStickerCategory().observe(this, new Observer<List<StickerCategoryModel>>() {
             @Override
-            public void onChanged(List<AllStickerModel> allStickerModels) {
+            public void onChanged(List<StickerCategoryModel> allStickerModels) {
                 mAdapter.mDataset = allStickerModels;
                 mAdapter.notifyDataSetChanged();
 
-                for(int i = 0; i < mAdapter.mDataset.size(); i++){
-                    List<ModelRelation> sim = stickerDatabase.stickerCategoryDAO().getStickerImagesURL(mAdapter.mDataset.get(i).getId());
-
-                    for(ModelRelation s: sim){
-                        List<String> urls = new ArrayList<>();
-
-                        for(StickerImageModel s1: s.imageModels){
-                            urls.add(s1.getUrl());
-                        }
-
-                        mAdapter.mDataset.get(i).setImages(urls);
-                        mAdapter.notifyDataSetChanged();
-                    }
-                }
+//                for(int i = 0; i < mAdapter.mDataset.size(); i++){
+//
+//                    List<String> urls = stickerDatabase.stickerImageDAO().getAllStickerId();
+//
+//                    List<ModelRelation> sim = stickerDatabase.stickerCategoryDAO().getStickerImagesURL(mAdapter.mDataset.get(i).getId());
+//
+//                    for(ModelRelation s: sim){
+//                        List<String> urls = new ArrayList<>();
+//
+//                        for(StickerImageModel s1: s.imageModels){
+//                            urls.add(s1.getUrl());
+//                        }
+//
+//                        mAdapter.mDataset.get(i).setImages(urls);
+//                        mAdapter.notifyDataSetChanged();
+//                    }
+//                }
 
             }
         });

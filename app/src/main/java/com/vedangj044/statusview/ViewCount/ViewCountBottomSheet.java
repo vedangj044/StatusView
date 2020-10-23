@@ -1,6 +1,7 @@
 package com.vedangj044.statusview.ViewCount;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,12 @@ public class ViewCountBottomSheet extends BottomSheetDialogFragment {
 
     private List<ViewCountObject> mDataset = new ArrayList<>();
     private onDismissEvent listener;
+
+    private String statusID;
+
+    public void setStatusID(String statusID) {
+        this.statusID = statusID;
+    }
 
     public interface onDismissEvent{
         void onDismissE();
@@ -44,6 +51,8 @@ public class ViewCountBottomSheet extends BottomSheetDialogFragment {
         viewCount.setText(String.valueOf(mDataset.size()));
 
         ViewCountAdapter vAdapter = new ViewCountAdapter(mDataset);
+
+        Log.v("statusID", statusID);
 
         recyclerView.setAdapter(vAdapter);
 

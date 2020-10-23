@@ -287,6 +287,7 @@ public class StatusDisplay extends AppCompatActivity {
         // empty the textView and imageView and set background to null
         clearScreen();
 
+        viewCountBottomSheet.setStatusID(String.valueOf(index));
 
         // Loader is visible
         final ProgressBar loading = findViewById(R.id.loading);
