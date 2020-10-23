@@ -82,7 +82,7 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
         imageObject.add(holder.icon4);
         imageObject.add(holder.icon5);
 
-        stickerDatabase.stickerImageDAO().getStickerURLById(arr.getId()).observe(lifecycleOwner, new Observer<List<String>>() {
+        stickerDatabase.stickerImageDAO().getFullStickerByID(arr.getId()).observe(lifecycleOwner, new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> strings) {
 
@@ -97,10 +97,27 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
                     @Override
                     public void onFinish() {
                         for(int i = 0; i < Math.min(5, strings.size()); i++){
-                            Glide.with(holder.context).load(strings.get(i))
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .skipMemoryCache(true)
-                                    .into(imageObject.get(i));
+
+                            File file = new File(strings.get(i));
+                            if(file.exists()){
+                                Glide.with(holder.context).load(strings.get(i))
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                        .skipMemoryCache(true)
+                                        .into(imageObject.get(i));
+                            }
+                            else{
+
+                                Future<Void> del = executor.submit(new Callable<Void>() {
+                                    @Override
+                                    public Void call() throws Exception {
+                                        stickerDatabase.stickerCategoryDAO().deleteStickerCategory(arr);
+                                        return null;
+                                    }
+                                });
+
+                                break;
+                            }
+
                         }
                     }
                 };

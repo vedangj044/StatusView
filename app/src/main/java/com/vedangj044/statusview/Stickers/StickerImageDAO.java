@@ -16,11 +16,11 @@ public interface StickerImageDAO {
     @Query("Select StickerCode from StickerModel")
     List<String> getAllStickerId();
 
-    @Query("Select url from stickermodel WHERE categoryIdFk == :id LIMIT 5")
-    LiveData<List<String>> getStickerURLById(int id);
+    @Query("Select url from stickermodel WHERE categoryIdFk == :id")
+    List<String> getStickerURLById(int id);
 
     @Query("Select url from stickermodel where categoryIdFk == :id")
-    List<String> getFullStickerByID(int id);
+    LiveData<List<String>> getFullStickerByID(int id);
 
     @Insert
     void insertStickerImages(StickerModel stickerModel);

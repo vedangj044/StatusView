@@ -131,6 +131,8 @@ public class CreateTextStatus extends AppCompatActivity{
 
                 List<String> logo = new ArrayList<>();
 
+
+
                 Future<Void> fill = executor.submit(new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
@@ -138,7 +140,7 @@ public class CreateTextStatus extends AppCompatActivity{
                         for(int i = 0; i < mDataset.size(); i++){
 
                             logo.add(mDataset.get(i).getLogo());
-                            List<String> urls = db.stickerImageDAO().getFullStickerByID(mDataset.get(i).getId());
+                            List<String> urls = db.stickerImageDAO().getStickerURLById(mDataset.get(i).getId());
                             urllist.add(urls);
                             mDataset.get(i).setImages(urls);
                         }
