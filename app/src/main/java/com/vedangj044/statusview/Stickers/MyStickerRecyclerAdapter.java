@@ -69,7 +69,13 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(holder.context.getApplicationContext(), FullStickerPack.class);
-                intent.putStringArrayListExtra("urllist", (ArrayList<String>) arr.getImages());
+
+                List<String> urls = new ArrayList<>();
+                for(StickerModel model: arr.getImages()){
+                    urls.add(model.getImage());
+                }
+
+                intent.putStringArrayListExtra("urllist", (ArrayList<String>) urls);
                 intent.putExtra("title", arr.getName());
                 holder.context.startActivity(intent);
             }
@@ -86,7 +92,11 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
             @Override
             public void onChanged(List<String> strings) {
 
-                arr.setImages(strings);
+                List<StickerModel> models = new ArrayList<>();
+                for(String s: strings){
+                    models.add(new StickerModel(s));
+                }
+                arr.setImages(models);
 
                 CountDownTimer ctx = new CountDownTimer(2000, 2000) {
                     @Override
@@ -153,8 +163,8 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
                     @Override
                     public Void call() throws Exception {
 
-                        for(String imageURL: arr.getImages()){
-                            File file = new File(imageURL);
+                        for(StickerModel imageURL: arr.getImages()){
+                            File file = new File(imageURL.getImage());
                             file.delete();
                         }
 

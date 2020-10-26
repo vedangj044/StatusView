@@ -4,54 +4,63 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import static androidx.room.ForeignKey.CASCADE;
 
 @Entity(tableName = "StickerModel", foreignKeys = {@ForeignKey(entity = StickerCategoryModel.class,
 parentColumns = "categoryId",
-childColumns = "categoryIdFk",
+childColumns = "stickerCategoryId",
 onDelete = CASCADE)})
 public class StickerModel {
 
-    @ColumnInfo(name = "categoryIdFk")
-    private int categoryIdFk;
+    @Ignore
+    private int id;
+
+    @ColumnInfo(name = "stickerCategoryId")
+    private int stickerCategoryId;
 
     @PrimaryKey
-    @ColumnInfo(name = "StickerCode")
+    @ColumnInfo(name = "code")
     @NonNull
-    private String StickerCode;
+    private String code;
 
-    @ColumnInfo(name = "url")
-    private String url;
+    @ColumnInfo(name = "image")
+    private String image;
 
-    public StickerModel(String StickerCode, int categoryIdFk, String url) {
-        this.categoryIdFk = categoryIdFk;
-        this.url = url;
-        this.StickerCode = StickerCode;
+    public StickerModel(String code, int stickerCategoryId, String image) {
+        this.stickerCategoryId = stickerCategoryId;
+        this.image = image;
+        this.code = code;
     }
 
-    public int getCategoryIdFk() {
-        return categoryIdFk;
+    @Ignore
+    public StickerModel(String image) {
+        this.image = image;
     }
 
-    public void setCategoryIdFk(int categoryIdFk) {
-        categoryIdFk = categoryIdFk;
+    public int getStickerCategoryId() {
+        return stickerCategoryId;
     }
 
-    public String getStickerCode() {
-        return StickerCode;
+    public void setStickerCategoryId(int stickerCategoryId) {
+        stickerCategoryId = stickerCategoryId;
     }
 
-    public void setStickerCode(String stickerCode) {
-        StickerCode = stickerCode;
+    public String getCode() {
+        return code;
     }
 
-    public String getUrl() {
-        return url;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

@@ -83,7 +83,13 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext.getApplicationContext(), FullStickerPack.class);
-                intent.putStringArrayListExtra("urllist", (ArrayList<String>) arr.getImages());
+
+                List<String> urls = new ArrayList<>();
+                for(StickerModel model: arr.getImages()){
+                    urls.add(model.getImage());
+                }
+
+                intent.putStringArrayListExtra("urllist", (ArrayList<String>) urls);
                 intent.putExtra("title", arr.getName());
                 mContext.startActivity(intent);
             }
@@ -99,7 +105,7 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
         imageObject.add(holder.icon5);
 
         for(int i = 0; i < Math.min(5, arr.getImages().size()); i++){
-            Glide.with(holder.context).load(arr.getImages().get(i))
+            Glide.with(holder.context).load(arr.getImages().get(i).getImage())
                     .into(imageObject.get(i));
 
         }
@@ -122,13 +128,13 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
                             stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
 
-                            for(String url: arr.getImages()) {
+                            for(StickerModel url: arr.getImages()) {
 
                                 String filename = getFileName();
                                 File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
 
-                                downloadFile(url, path, filename);
-                                stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel(filename, arr.getId(), path.getAbsolutePath() + "/" + filename));
+                                downloadFile(url.getImage(), path, filename);
+                                stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel(url.getCode(), url.getStickerCategoryId(), path.getAbsolutePath() + "/" + filename));
                             }
 
 

@@ -20,9 +20,14 @@ import com.vedangj044.statusview.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.ResponseBody;
+import okio.Timeout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,7 +52,7 @@ public class AllStickerFragment extends Fragment {
 
     public interface StickerApiHolder{
         @POST("stickerCategory/getAllStickerCategory")
-        Call<StickerApiModel> getStickers(@Header("Authorization") String authHeader, @Body JsonObject body);
+        Call<StickerApiResponseModel> getStickers(@Header("Authorization") String authHeader, @Body JsonObject body);
     }
 
     private RecyclerView recyclerView;
@@ -73,23 +78,31 @@ public class AllStickerFragment extends Fragment {
         body.addProperty( "username", "000000012506");
 
 
-        Call<StickerApiModel> call = stickerApiHolder.getStickers(getBasicAuthenticationString(), body);
+        Call<StickerApiResponseModel> call = stickerApiHolder.getStickers(getBasicAuthenticationString(), body);
 
-        call.enqueue(new Callback<StickerApiModel>() {
+
+        call.enqueue(new Callback<StickerApiResponseModel>() {
             @Override
-            public void onResponse(Call<StickerApiModel> call, Response<StickerApiModel> response) {
+            public void onResponse(Call<StickerApiResponseModel> call, Response<StickerApiResponseModel> response) {
                 if(!response.isSuccessful()){
                     return;
                 }
+
+
                 Toast.makeText(view.getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                StickerApiModel arr1 = response.body();
-                mDataset = arr1.getData();
+                StickerApiResponseModel arr1 = response.body();
+
+                for(StickerApiResponseHelper resp: arr1.getData()){
+                    StickerCategoryModel mod = resp.getCategory();
+                    mod.setImages(resp.getStickerImages());
+                }
+
 
                 recyclerView.setAdapter(new AllStickerRecyclerAdapter(view.getContext(), mDataset));
             }
 
             @Override
-            public void onFailure(Call<StickerApiModel> call, Throwable t) {
+            public void onFailure(Call<StickerApiResponseModel> call, Throwable t) {
                 Toast.makeText(view.getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

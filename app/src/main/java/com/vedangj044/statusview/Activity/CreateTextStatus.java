@@ -46,6 +46,7 @@ import com.vedangj044.statusview.Stickers.AllStickerRecyclerAdapter;
 import com.vedangj044.statusview.Stickers.StickerCategoryModel;
 import com.vedangj044.statusview.Stickers.StickerDatabase;
 import com.vedangj044.statusview.Stickers.StickerListActivity;
+import com.vedangj044.statusview.Stickers.StickerModel;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -142,7 +143,12 @@ public class CreateTextStatus extends AppCompatActivity{
                             logo.add(mDataset.get(i).getLogo());
                             List<String> urls = db.stickerImageDAO().getStickerURLById(mDataset.get(i).getId());
                             urllist.add(urls);
-                            mDataset.get(i).setImages(urls);
+
+                            List<StickerModel> models = new ArrayList<>();
+                            for(String model: urls){
+                                models.add(new StickerModel(model));
+                            }
+                            mDataset.get(i).setImages(models);
                         }
 
                         return null;

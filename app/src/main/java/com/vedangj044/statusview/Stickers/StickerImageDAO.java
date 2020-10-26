@@ -13,13 +13,13 @@ import java.util.List;
 @Dao
 public interface StickerImageDAO {
 
-    @Query("Select StickerCode from StickerModel")
+    @Query("Select code from StickerModel")
     List<String> getAllStickerId();
 
-    @Query("Select url from stickermodel WHERE categoryIdFk == :id")
+    @Query("Select image from stickermodel WHERE stickerCategoryId == :id")
     List<String> getStickerURLById(int id);
 
-    @Query("Select url from stickermodel where categoryIdFk == :id")
+    @Query("Select image from stickermodel where stickerCategoryId == :id")
     LiveData<List<String>> getFullStickerByID(int id);
 
     @Insert

@@ -32,10 +32,10 @@ public class StickerCategoryModel {
     }
 
     @Ignore
-    private List<String> images = new ArrayList<>();
+    private List<StickerModel> images = new ArrayList<>();
 
     @Ignore
-    public StickerCategoryModel(String title, String logo, List<String> images) {
+    public StickerCategoryModel(String title, String logo, List<StickerModel> images) {
         this.name = title;
         this.logo = logo;
         this.images = images;
@@ -63,14 +63,14 @@ public class StickerCategoryModel {
     }
 
     @Ignore
-    public void setImages(List<String> images) {
+    public void setImages(List<StickerModel> images) {
         this.images = images;
     }
 
     @Ignore
-    public List<String> getImages() {
+    public List<StickerModel> getImages() {
         if(images == null){
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         return images;
     }
