@@ -50,6 +50,8 @@ public class AllStickerFragment extends Fragment {
     public static final String basicAuthUsername = "admin";
     public static final String basicAuthPassword = "password";
 
+    public static final String tag = "sticker";
+
     public interface StickerApiHolder{
         @POST("stickerCategory/getAllStickerCategory")
         Call<StickerApiResponseModel> getStickers(@Header("Authorization") String authHeader, @Body JsonObject body);
@@ -91,14 +93,16 @@ public class AllStickerFragment extends Fragment {
 
                 Toast.makeText(view.getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 StickerApiResponseModel arr1 = response.body();
+                Log.v(tag, response.body().toString());
 
-                for(StickerApiResponseHelper resp: arr1.getData()){
-                    StickerCategoryModel mod = resp.getCategory();
-                    mod.setImages(resp.getStickerImages());
+                for(StickerApiResponsePrimaryHelper resp: arr1.getData()){
+                    StickerCategoryModel mod = resp.getStickerPayload().getCategory();
+                    mod.setImages(resp.getStickerPayload().getStickerImages());
+                    mDataset.add(mod);
                 }
 
 
-                recyclerView.setAdapter(new AllStickerRecyclerAdapter(view.getContext(), mDataset));
+                recyclerView.setAdapter(new AllStickerRecyclerAdapter(view.getContext(), mDataset, AllStickerFragment.this));
             }
 
             @Override

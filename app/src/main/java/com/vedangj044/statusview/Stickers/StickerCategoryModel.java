@@ -75,4 +75,13 @@ public class StickerCategoryModel {
         return images;
     }
 
+    @Override
+    public String toString() {
+        return "StickerCategoryModel{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", logo='" + logo + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

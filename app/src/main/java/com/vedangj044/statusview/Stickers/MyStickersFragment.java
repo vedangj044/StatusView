@@ -45,23 +45,6 @@ public class MyStickersFragment extends Fragment {
                 mAdapter.mDataset = allStickerModels;
                 mAdapter.notifyDataSetChanged();
 
-//                for(int i = 0; i < mAdapter.mDataset.size(); i++){
-//
-//                    List<String> urls = stickerDatabase.stickerImageDAO().getAllStickerId();
-//
-//                    List<ModelRelation> sim = stickerDatabase.stickerCategoryDAO().getStickerImagesURL(mAdapter.mDataset.get(i).getId());
-//
-//                    for(ModelRelation s: sim){
-//                        List<String> urls = new ArrayList<>();
-//
-//                        for(StickerImageModel s1: s.imageModels){
-//                            urls.add(s1.getUrl());
-//                        }
-//
-//                        mAdapter.mDataset.get(i).setImages(urls);
-//                        mAdapter.notifyDataSetChanged();
-//                    }
-//                }
 
             }
         });

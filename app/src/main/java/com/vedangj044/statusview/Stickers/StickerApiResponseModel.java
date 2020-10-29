@@ -1,5 +1,7 @@
 package com.vedangj044.statusview.Stickers;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class StickerApiResponseModel {
@@ -7,7 +9,8 @@ public class StickerApiResponseModel {
     private String message;
     private String status;
 
-    private List<StickerApiResponseHelper> data = null;
+    @SerializedName("data")
+    private List<StickerApiResponsePrimaryHelper> data;
 
     public String getMessage() {
         return message;
@@ -25,11 +28,20 @@ public class StickerApiResponseModel {
         this.status = status;
     }
 
-    public List<StickerApiResponseHelper> getData() {
+    public List<StickerApiResponsePrimaryHelper> getData() {
         return data;
     }
 
-    public void setData(List<StickerApiResponseHelper> data) {
+    public void setData(List<StickerApiResponsePrimaryHelper> data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "StickerApiResponseModel{" +
+                "message='" + message + '\'' +
+                ", status='" + status + '\'' +
+                ", data=" + data +
+                '}';
     }
 }

@@ -16,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -39,29 +41,16 @@ import java.util.concurrent.Future;
 public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRecyclerAdapter.ViewHolder> {
 
     private List<StickerCategoryModel> mDataset;
-    private List<String> already;
     private StickerDatabase stickerDatabase;
     private Context mContext;
     private ExecutorService executor = ExecutorHelper.getInstanceExecutor();
+    private LifecycleOwner lifecycleOwner;
 
-    public AllStickerRecyclerAdapter(Context context, List<StickerCategoryModel> mDataset) {
+    public AllStickerRecyclerAdapter(Context context, List<StickerCategoryModel> mDataset, LifecycleOwner lifecycleOwner) {
         this.mDataset = mDataset;
         this.stickerDatabase = StickerDatabase.getInstance(context);
         this.mContext = context;
-
-        Future<Void> populate = executor.submit(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                AllStickerRecyclerAdapter.this.already = stickerDatabase.stickerImageDAO().getAllStickerId();
-                return null;
-            }
-        });
-
-        try {
-            populate.get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        this.lifecycleOwner = lifecycleOwner;
     }
 
     @NonNull
@@ -95,7 +84,7 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
             }
         });
 
-        holder.downloadIcon.setImageResource(R.drawable.sticker_downlad_foreground);
+
 
         List<ImageView> imageObject = new ArrayList<>();
         imageObject.add(holder.icon1);
@@ -110,35 +99,34 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
         }
 
-        if(already.contains("0")){
-            holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
-        }
-        else{
-            holder.downloadIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    StickerCategoryModel stm = new StickerCategoryModel(arr.getId(), arr.getName(), arr.getLogo(), arr.getStatus());
+        stickerDatabase.stickerImageDAO().getCountOfStickerByCategoryID(arr.getId()).observe(lifecycleOwner, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
 
-                    holder.isDownloading.setVisibility(View.VISIBLE);
-                    holder.downloadIcon.setVisibility(View.GONE);
+                if(arr.getImages().size() == integer){
+                    holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
+                }
+
+                if(arr.getImages().size() > integer && integer > 0){
+                    holder.downloadIcon.setImageResource(R.drawable.ic_baseline_system_update_alt_24);
 
                     Future<Void> task = executor.submit(new Callable<Void>() {
                         @Override
                         public Void call() throws Exception {
 
-                            stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
+                            List<String> alreadyDownloadedStickers = stickerDatabase.stickerImageDAO().getAllStickerId(arr.getId());
 
-                            for(StickerModel url: arr.getImages()) {
+                            for(StickerModel models: arr.getImages()){
+                                if(!alreadyDownloadedStickers.contains(models.getCode())){
 
-                                String filename = getFileName();
-                                File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+                                    String filename = getFileName();
+                                    File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
 
-                                downloadFile(url.getImage(), path, filename);
-                                stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel(url.getCode(), url.getStickerCategoryId(), path.getAbsolutePath() + "/" + filename));
+                                    downloadFile(models.getImage(), path, filename);
+                                    stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel(models.getCode(), models.getStickerCategoryId(), path.getAbsolutePath()+"/"+filename));
+
+                                }
                             }
-
-
-                            holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
 
                             return null;
                         }
@@ -146,36 +134,59 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
                     try {
                         task.get();
-                        holder.isDownloading.setVisibility(View.GONE);
-                        holder.downloadIcon.setVisibility(View.VISIBLE);
                     } catch (ExecutionException | InterruptedException e) {
                         e.printStackTrace();
                     }
 
-
-//                    Executors.newSingleThreadExecutor().execute(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
-//
-//                            for(String url: arr.getImages()) {
-//
-//                                String filename = getFileName();
-//                                File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
-//
-//                                downloadFile(url, path, filename);
-//                                stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel("0", arr.getCategoryId(), path.getAbsolutePath() + "/" + filename));
-//                            }
-//
-//                        }
-//
-//                    });
-//
-//                    holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
                 }
-            });
 
-        }
+                if(integer == 0){
+                    holder.downloadIcon.setImageResource(R.drawable.sticker_downlad_foreground);
+                    holder.downloadIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            StickerCategoryModel stm = new StickerCategoryModel(arr.getId(), arr.getName(), arr.getLogo(), arr.getStatus());
+
+                            holder.isDownloading.setVisibility(View.VISIBLE);
+                            holder.downloadIcon.setVisibility(View.GONE);
+
+                            Future<Void> task = executor.submit(new Callable<Void>() {
+                                @Override
+                                public Void call() throws Exception {
+
+                                    stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
+
+                                    for(StickerModel url: arr.getImages()) {
+
+                                        String filename = getFileName();
+                                        File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+
+                                        downloadFile(url.getImage(), path, filename);
+                                        stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel(url.getCode(), url.getStickerCategoryId(), path.getAbsolutePath() + "/" + filename));
+                                    }
+
+
+                                    holder.downloadIcon.setImageResource(R.drawable.sticker_already_download_foreground);
+
+                                    return null;
+                                }
+                            });
+
+                            try {
+                                task.get();
+                                holder.isDownloading.setVisibility(View.GONE);
+                                holder.downloadIcon.setVisibility(View.VISIBLE);
+                            } catch (ExecutionException | InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+
+            }
+        });
+
     }
 
     public void downloadFile(String uRl, File path, String name) {
