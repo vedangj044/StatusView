@@ -17,10 +17,12 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.badoo.mobile.util.WeakHandler;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.vedangj044.statusview.R;
@@ -42,7 +44,7 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
     private LifecycleOwner lifecycleOwner;
     private StickerDatabase stickerDatabase;
 
-    private ExecutorService executor = AllStickerRecyclerAdapter.ExecutorHelper.getInstanceExecutor();
+    private ExecutorService executor = ExecutorHelper.getInstanceExecutor();
 
 
     public MyStickerRecyclerAdapter(Context context, LifecycleOwner lifecycleOwner) {
@@ -89,67 +91,75 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
         imageObject.add(holder.icon4);
         imageObject.add(holder.icon5);
 
-        stickerDatabase.stickerImageDAO().getFullStickerByID(arr.getId()).observe(lifecycleOwner, new Observer<List<String>>() {
-            @Override
-            public void onChanged(List<String> strings) {
+        for(int i = 0; i < Math.min(5, arr.getImages().size()); i++){
 
-                List<StickerModel> models = new ArrayList<>();
-                for(String s: strings){
-                    models.add(new StickerModel(s));
-                }
-                arr.setImages(models);
+            LoadNetworkImage(holder.context, imageObject.get(i), arr.getImages().get(i).getImage());
+//            Glide.with(holder.context).load(arr.getImages().get(i).getImage())
+//                    .into(imageObject.get(i));
+        }
 
-                CountDownTimer ctx = new CountDownTimer(2000, 2000) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        for(int i = 0; i < Math.min(5, strings.size()); i++){
-
-                            File file = new File(strings.get(i));
-                            if(file.exists()){
-                                Glide.with(holder.context).load(strings.get(i))
-                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                        .skipMemoryCache(true)
-                                        .into(imageObject.get(i));
-                            }
-                            else{
-
-                                Future<Void> del = executor.submit(new Callable<Void>() {
-                                    @Override
-                                    public Void call() throws Exception {
-                                        stickerDatabase.stickerCategoryDAO().deleteStickerCategory(arr);
-                                        return null;
-                                    }
-                                });
-                                break;
-                            }
-
-                        }
-                    }
-                };
-
-                for(int i = 0; i < Math.min(5, strings.size()); i++){
-
-                    File file = new File(strings.get(i));
-                    if(file.exists()){
-                        Glide.with(holder.context).load(strings.get(i))
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
-                                .into(imageObject.get(i));
-                    }
-                    else{
-                        ctx.start();
-                        break;
-                    }
-
-                }
-
-            }
-        });
+//        stickerDatabase.stickerImageDAO().getFullStickerByID(arr.getId()).observe(lifecycleOwner, new Observer<List<String>>() {
+//            @Override
+//            public void onChanged(List<String> strings) {
+//
+//                List<StickerModel> models = new ArrayList<>();
+//                for(String s: strings){
+//                    models.add(new StickerModel(s));
+//                }
+//                arr.setImages(models);
+//
+//                CountDownTimer ctx = new CountDownTimer(2000, 2000) {
+//                    @Override
+//                    public void onTick(long millisUntilFinished) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onFinish() {
+//                        for(int i = 0; i < Math.min(5, strings.size()); i++){
+//
+//                            File file = new File(strings.get(i));
+//                            if(file.exists()){
+//                                Glide.with(holder.context).load(strings.get(i))
+//                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                                        .skipMemoryCache(true)
+//                                        .into(imageObject.get(i));
+//                            }
+//                            else{
+//
+////                                Future<Void> del = executor.submit(new Callable<Void>() {
+////                                    @Override
+////                                    public Void call() throws Exception {
+////                                        stickerDatabase.stickerCategoryDAO().deleteStickerCategory(arr);
+////                                        return null;
+////                                    }
+////                                });
+//
+//                                break;
+//                            }
+//
+//                        }
+//                    }
+//                };
+//
+//                for(int i = 0; i < Math.min(5, strings.size()); i++){
+//
+//                    File file = new File(strings.get(i));
+//                    if(file.exists()){
+//                        Glide.with(holder.context).load(strings.get(i))
+//                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                                .skipMemoryCache(true)
+//                                .into(imageObject.get(i));
+//                    }
+//                    else{
+//                        ctx.start();
+//                        break;
+//                    }
+//
+//                }
+//
+//            }
+//        });
 
         holder.deleteIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,6 +193,38 @@ public class MyStickerRecyclerAdapter extends RecyclerView.Adapter<MyStickerRecy
             }
         });
 
+    }
+
+    public static void LoadNetworkImage(final Context context, final ImageView imageView, final String imageUrl) {
+
+
+
+        final WeakHandler mHandler = new WeakHandler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                LoadNetworkImage(context, imageView,imageUrl);
+            }
+        };
+
+        Glide.with(context).
+                load(imageUrl).
+                transition(DrawableTransitionOptions.withCrossFade()).
+                listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+
+
+                        mHandler.postDelayed(runnable,1);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                }).
+                into(imageView);
     }
 
     @Override

@@ -20,12 +20,17 @@ import com.vedangj044.statusview.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MyStickersFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private MyStickerRecyclerAdapter mAdapter;
+    private ExecutorService executor = MyStickerRecyclerAdapter.ExecutorHelper.getInstanceExecutor();
+
 
     @Nullable
     @Override
@@ -42,9 +47,32 @@ public class MyStickersFragment extends Fragment {
         stickerDatabase.stickerCategoryDAO().getStickerCategory().observe(this, new Observer<List<StickerCategoryModel>>() {
             @Override
             public void onChanged(List<StickerCategoryModel> allStickerModels) {
+
+                for(StickerCategoryModel st : allStickerModels){
+                    if(!mAdapter.mDataset.contains(st)){
+
+                        Future<Void> populate = executor.submit(new Callable<Void>() {
+                            @Override
+                            public Void call() throws Exception {
+
+                                List<String> urls =  stickerDatabase.stickerImageDAO().getStickerURLById(st.getId());
+
+                                List<StickerModel> obj = new ArrayList<>();
+                                for(String url : urls){
+                                    obj.add(new StickerModel(url));
+                                }
+
+                                st.setImages(obj);
+
+
+                                return null;
+                            }
+                        });
+
+                    }
+                }
                 mAdapter.mDataset = allStickerModels;
                 mAdapter.notifyDataSetChanged();
-
 
             }
         });
@@ -57,6 +85,17 @@ public class MyStickersFragment extends Fragment {
         return view;
     }
 
+    public static class ExecutorHelper{
+
+        private static ExecutorService instanceExecutor;
+
+        public static synchronized ExecutorService getInstanceExecutor(){
+            if(instanceExecutor == null){
+                instanceExecutor = Executors.newSingleThreadExecutor();
+            }
+            return instanceExecutor;
+        }
+    }
 
 }
 

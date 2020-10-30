@@ -75,4 +75,6 @@ dependencies {
     annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
 
     implementation 'com.github.prolificinteractive:material-calendarview:2.0.1'
+
+    implementation 'com.badoo.mobile:android-weak-handler:1.1'
 }
