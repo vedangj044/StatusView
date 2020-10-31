@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -58,6 +59,7 @@ public class AllStickerFragment extends Fragment {
     }
 
     private RecyclerView recyclerView;
+    private ProgressBar progressBar;
     private List<StickerCategoryModel> mDataset = new ArrayList<>();
 
     @Nullable
@@ -68,6 +70,9 @@ public class AllStickerFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.sticker_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        progressBar = view.findViewById(R.id.loader_sticker);
+        progressBar.setVisibility(View.VISIBLE);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://voip.vortexvt.com:8082/ItHub/")
@@ -94,6 +99,7 @@ public class AllStickerFragment extends Fragment {
                 Toast.makeText(view.getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 StickerApiResponseModel arr1 = response.body();
                 Log.v(tag, response.body().toString());
+                progressBar.setVisibility(View.GONE);
 
                 for(StickerApiResponsePrimaryHelper resp: arr1.getData()){
                     StickerCategoryModel mod = resp.getStickerPayload().getCategory();

@@ -1,8 +1,10 @@
 package com.vedangj044.statusview.Stickers;
 
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -20,10 +22,12 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.badoo.mobile.util.WeakHandler;
 import com.bumptech.glide.Glide;
 import com.vedangj044.statusview.R;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -150,19 +154,24 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
                             holder.isDownloading.setVisibility(View.VISIBLE);
                             holder.downloadIcon.setVisibility(View.GONE);
 
+                            File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+                            final String[] lastFileName = {""};
+
                             Future<Void> task = executor.submit(new Callable<Void>() {
                                 @Override
                                 public Void call() throws Exception {
 
                                     stickerDatabase.stickerCategoryDAO().insertStickerCategory(stm);
 
+
                                     for(StickerModel url: arr.getImages()) {
 
                                         String filename = getFileName();
-                                        File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
 
                                         downloadFile(url.getImage(), path, filename);
                                         stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel(url.getCode(), url.getStickerCategoryId(), path.getAbsolutePath() + "/" + filename));
+
+                                        lastFileName[0] = filename;
                                     }
 
 
@@ -172,13 +181,10 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
                                 }
                             });
 
-                            try {
-                                task.get();
-                                holder.isDownloading.setVisibility(View.GONE);
-                                holder.downloadIcon.setVisibility(View.VISIBLE);
-                            } catch (ExecutionException | InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            DownladCompleteCheck(holder, path.getAbsolutePath()+"/"+lastFileName[0]);
+
+
+
                         }
                     });
 
@@ -188,6 +194,27 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
         });
 
     }
+
+    private static void DownladCompleteCheck(ViewHolder holder, String s) {
+
+//
+//        final WeakHandler mHandler = new WeakHandler();
+//        final Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                DownladCompleteCheck(holder, s);
+//            }
+//        };
+//        File f = new File(s);
+//        if(f.exists()){
+//            holder.isDownloading.setVisibility(View.GONE);
+//            holder.downloadIcon.setVisibility(View.VISIBLE);
+//        }
+//        else{
+//            mHandler.postDelayed(runnable, 2);
+//        }
+    }
+
 
     public void downloadFile(String uRl, File path, String name) {
         File direct = path;
@@ -205,6 +232,7 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
         request.setDestinationUri(Uri.parse(gh));
 
         mgr.enqueue(request);
+
     }
 
     private void saveImage(Bitmap resource, String filename, File path) {

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,8 @@ import androidx.room.Room;
 
 import com.vedangj044.statusview.R;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -28,6 +31,7 @@ import java.util.concurrent.Future;
 public class MyStickersFragment extends Fragment {
 
     private RecyclerView recyclerView;
+    private TextView noStickerTextView;
     private MyStickerRecyclerAdapter mAdapter;
     private ExecutorService executor = MyStickerRecyclerAdapter.ExecutorHelper.getInstanceExecutor();
 
@@ -39,6 +43,7 @@ public class MyStickersFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.sticker_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        noStickerTextView = view.findViewById(R.id.no_sticker_text);
 
         StickerDatabase stickerDatabase = StickerDatabase.getInstance(view.getContext());
 
@@ -47,6 +52,13 @@ public class MyStickersFragment extends Fragment {
         stickerDatabase.stickerCategoryDAO().getStickerCategory().observe(this, new Observer<List<StickerCategoryModel>>() {
             @Override
             public void onChanged(List<StickerCategoryModel> allStickerModels) {
+
+                if(allStickerModels.size() == 0){
+                    noStickerTextView.setVisibility(View.VISIBLE);
+                }
+                else{
+                    noStickerTextView.setVisibility(View.GONE);
+                }
 
                 for(StickerCategoryModel st : allStickerModels){
                     if(!mAdapter.mDataset.contains(st)){
