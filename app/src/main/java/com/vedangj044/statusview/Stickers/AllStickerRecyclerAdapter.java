@@ -197,22 +197,8 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
     private static void DownladCompleteCheck(ViewHolder holder, String s) {
 
-//
-//        final WeakHandler mHandler = new WeakHandler();
-//        final Runnable runnable = new Runnable() {
-//            @Override
-//            public void run() {
-//                DownladCompleteCheck(holder, s);
-//            }
-//        };
-//        File f = new File(s);
-//        if(f.exists()){
-//            holder.isDownloading.setVisibility(View.GONE);
-//            holder.downloadIcon.setVisibility(View.VISIBLE);
-//        }
-//        else{
-//            mHandler.postDelayed(runnable, 2);
-//        }
+
+
     }
 
 

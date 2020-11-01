@@ -21,7 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Calenders.CalenderActivity"></activity>
+        <activity android:name=".WishesWinner.WishesWinnerActivity"></activity>
+        <activity android:name=".Wishes.WishesActivity" />
+        <activity android:name=".Calenders.CalenderActivity" />
         <activity android:name=".SettingStatus.SettingStatus" />
 
         <uses-library

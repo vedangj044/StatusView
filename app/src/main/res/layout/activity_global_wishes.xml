@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<!--    <ImageView-->
+<!--        android:id="@+id/loginback"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:scaleType="fitXY"-->
+<!--        app:srcCompat="@drawable/signup_bg" />-->
+
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/rl_header"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="@dimen/_5sdp">-->
+
+<!--        <androidx.appcompat.widget.AppCompatImageView-->
+<!--            android:id="@+id/img_back"-->
+<!--            android:layout_width="@dimen/_40sdp"-->
+<!--            android:layout_height="@dimen/_40sdp"-->
+<!--            android:layout_marginStart="@dimen/_5sdp"-->
+<!--            android:padding="@dimen/_9sdp"-->
+<!--            app:srcCompat="@drawable/backicon" />-->
+
+<!--    </RelativeLayout>-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/tv_head"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@+id/rl_header"-->
+<!--        android:src="@drawable/wishes"-->
+<!--        android:layout_marginStart="@dimen/_20sdp"-->
+<!--        android:textStyle="bold" />-->
+
+<!--    <androidx.cardview.widget.CardView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_below="@+id/tv_head"-->
+<!--        android:layout_marginTop="@dimen/_30sdp"-->
+<!--        android:background="@color/white"-->
+<!--        app:cardBackgroundColor="@color/app_bg"-->
+<!--        app:cardCornerRadius="@dimen/_35sdp"-->
+<!--        app:cardElevation="0dp">-->
+
+
+<!--        <FrameLayout-->
+<!--            android:id="@+id/frame_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/my_subscription_linear"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical"-->
+<!--                android:paddingLeft="@dimen/_20sdp"-->
+<!--                android:paddingTop="@dimen/_100sdp"-->
+<!--                android:paddingRight="@dimen/_20sdp"-->
+<!--                android:paddingBottom="@dimen/_10sdp"-->
+<!--                android:visibility="gone">-->
+
+<!--                <androidx.appcompat.widget.AppCompatImageView-->
+<!--                    android:id="@+id/image_view_2"-->
+<!--                    android:layout_width="@dimen/_200sdp"-->
+<!--                    android:layout_height="200dp"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:paddingBottom="@dimen/_10sdp"-->
+<!--                    android:src="@drawable/profile_ginny_" />-->
+
+<!--                <androidx.appcompat.widget.AppCompatTextView-->
+<!--                    android:id="@+id/subscription_text"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="@dimen/_5sdp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="@string/empty_subscription" />-->
+
+<!--            </LinearLayout>-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/my_message_linear"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical"-->
+<!--                android:paddingLeft="@dimen/_20sdp"-->
+<!--                android:paddingTop="@dimen/_80sdp"-->
+<!--                android:paddingRight="@dimen/_20sdp"-->
+<!--                android:paddingBottom="@dimen/_10sdp"-->
+<!--                android:visibility="gone">-->
+
+<!--                <ImageView-->
+<!--                    android:id="@+id/image_view_1"-->
+<!--                    android:layout_width="@dimen/_200sdp"-->
+<!--                    android:layout_height="200dp"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:paddingBottom="@dimen/_10sdp"-->
+<!--                    android:src="@drawable/profile_ginny_" />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/message_text"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="@dimen/_5sdp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="@string/empty_message" />-->
+
+<!--            </LinearLayout>-->
+
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/messages"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_marginTop="@dimen/_20sdp" />-->
+
+
+<!--        </FrameLayout>-->
+
+<!--        <ProgressBar-->
+<!--            android:id="@+id/progressload"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_gravity="center" />-->
+
+<!--    </androidx.cardview.widget.CardView>-->
+
+
+</RelativeLayout>
