@@ -1,14 +1,21 @@
 package com.vedangj044.statusview.Stickers;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.FileObserver;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +23,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +42,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -49,6 +59,8 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
     private Context mContext;
     private ExecutorService executor = ExecutorHelper.getInstanceExecutor();
     private LifecycleOwner lifecycleOwner;
+
+    private String lastFileName;
 
     public AllStickerRecyclerAdapter(Context context, List<StickerCategoryModel> mDataset, LifecycleOwner lifecycleOwner) {
         this.mDataset = mDataset;
@@ -103,6 +115,11 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
         }
 
+        if(mDataset.get(position).isDownloadStatus()){
+            holder.isDownloading.setVisibility(View.GONE);
+            holder.downloadIcon.setVisibility(View.VISIBLE);
+        }
+
         stickerDatabase.stickerImageDAO().getCountOfStickerByCategoryID(arr.getId()).observe(lifecycleOwner, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
@@ -126,7 +143,7 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
                                     String filename = getFileName();
                                     File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
 
-                                    downloadFile(models.getImage(), path, filename);
+                                    downloadFile(holder, models.getImage(), path, filename);
                                     stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel(models.getCode(), models.getStickerCategoryId(), path.getAbsolutePath()+"/"+filename));
 
                                 }
@@ -155,7 +172,7 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
                             holder.downloadIcon.setVisibility(View.GONE);
 
                             File path = new File(holder.context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
-                            final String[] lastFileName = {""};
+
 
                             Future<Void> task = executor.submit(new Callable<Void>() {
                                 @Override
@@ -168,10 +185,10 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
                                         String filename = getFileName();
 
-                                        downloadFile(url.getImage(), path, filename);
+                                        downloadFile(holder, url.getImage(), path, filename);
                                         stickerDatabase.stickerImageDAO().insertStickerImages(new StickerModel(url.getCode(), url.getStickerCategoryId(), path.getAbsolutePath() + "/" + filename));
 
-                                        lastFileName[0] = filename;
+                                        lastFileName = filename;
                                     }
 
 
@@ -181,10 +198,8 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
                                 }
                             });
 
-                            DownladCompleteCheck(holder, path.getAbsolutePath()+"/"+lastFileName[0]);
-
-
-
+                            DownladCompleteCheck(position);
+                            holder.downloadIcon.setOnClickListener(null);
                         }
                     });
 
@@ -195,14 +210,46 @@ public class AllStickerRecyclerAdapter extends RecyclerView.Adapter<AllStickerRe
 
     }
 
-    private static void DownladCompleteCheck(ViewHolder holder, String s) {
+    private List<Integer> pos = new ArrayList<>();
 
+    private void DownladCompleteCheck(int position) {
 
+        pos.add(position);
+
+        FileObserver observer = new FileObserver(this.mContext.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()) {
+            @Override
+            public void onEvent(int event, @Nullable String path) {
+
+                if(path!=null){
+                    if(path.equals(lastFileName)){
+                        update();
+                    }
+                }
+
+            }
+        };
+
+        observer.startWatching();
+
+    }
+
+    public void update(){
+
+        Handler m = new Handler(Looper.getMainLooper());
+        m.post(new Runnable() {
+            @Override
+            public void run() {
+                for(Integer i : pos){
+                    mDataset.get(i).setDownloadStatus(true);
+                }
+                notifyDataSetChanged();
+            }
+        });
 
     }
 
 
-    public void downloadFile(String uRl, File path, String name) {
+    public void downloadFile(ViewHolder holder, String uRl, File path, String name) {
         File direct = path;
         String gh = "file://" + direct.getAbsolutePath() + "/" + name;
         if (!direct.exists()) {

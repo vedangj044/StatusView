@@ -41,6 +41,16 @@ public class StickerCategoryModel {
         this.images = images;
     }
 
+    @Ignore
+    private boolean downloadStatus = false;
+
+    public boolean isDownloadStatus() {
+        return downloadStatus;
+    }
+
+    public void setDownloadStatus(boolean downloadStatus) {
+        this.downloadStatus = downloadStatus;
+    }
 
     public int getId() {
         return id;
