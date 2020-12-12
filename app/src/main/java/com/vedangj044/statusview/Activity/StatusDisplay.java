@@ -39,6 +39,7 @@ import com.vedangj044.statusview.ModelObject.TextStatusObject;
 import com.vedangj044.statusview.R;
 import com.vedangj044.statusview.ViewCount.ViewCountBottomSheet;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,8 +103,9 @@ public class StatusDisplay extends AppCompatActivity {
         List<StatusObject> StatusList = new ArrayList<>();
         StatusList.add(new TextStatusObject("Hello, Vedang Joshi", "#206a5d", 2131296259));
         StatusList.add(new ImageStatusObject(imgBase64, videoURL1, true));
+        StatusList.add(new ImageStatusObject(imgBase64, "https://voip.vortexvt.com:8082/ithubfiles/status/advVort/000000012507_1605852499187IMG_20201120_113818_19616.png",false));
         StatusList.add(new ImageStatusObject(imgBase64, "https://media.wired.com/photos/5a593a7ff11e325008172bc2/125:94/w_2393,h_1800,c_limit/pulsar-831502910.jpg", false));
-        StatusList.add(new ImageStatusObject(imgBase64, "https://f4.bcbits.com/img/a2322320532_10.jpg",false));
+
 
         StatusList.add(new ImageStatusObject(imgBase64, "https://voip.vortexvt.com:8082/ithubfiles/status/advVort/000000012506_1600856289131VIDEO_20200923_154803_14412.mp4", true));
         StatusList.add(new ImageStatusObject(imgBase64, "https://f4.bcbits.com/img/a2322320532_10.jpg",false));
@@ -368,6 +370,9 @@ public class StatusDisplay extends AppCompatActivity {
 
                             @Override
                             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+
+//                                statusImageUrl.getLayoutParams().height = resource.getIntrinsicHeight();
+
                                 // Loader is gone
                                 loading.setVisibility(View.GONE);
                                 // The progress bar starts to fill ONLY when the status image is completely loaded
@@ -379,6 +384,7 @@ public class StatusDisplay extends AppCompatActivity {
                                 return false;
                             }
                         }).into(statusImageUrl);
+//                statusImageUrl.requestLayout();
             }
         }
 

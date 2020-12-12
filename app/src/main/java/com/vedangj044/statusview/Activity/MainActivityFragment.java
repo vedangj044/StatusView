@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vedangj044.statusview.Adapters.StatusAdapter;
+import com.vedangj044.statusview.Calenders.CalenderActivity;
+import com.vedangj044.statusview.Maps.MapActivity;
 import com.vedangj044.statusview.ModelObject.ThumbnailStatusObject;
 import com.vedangj044.statusview.R;
 import com.vedangj044.statusview.SettingStatus.SettingStatus;
@@ -22,6 +24,7 @@ import com.vedangj044.statusview.Stickers.StickerListActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivityFragment extends Fragment {
 
@@ -77,7 +80,7 @@ public class MainActivityFragment extends Fragment {
         createCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(view.getContext(), StickerListActivity.class);
+                Intent intent = new Intent(view.getContext(), CameraActivty.class);
                 startActivity(intent);
             }
         });
@@ -86,7 +89,7 @@ public class MainActivityFragment extends Fragment {
         openSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(view.getContext(), SettingStatus.class);
+                Intent intent = new Intent(view.getContext(), MapActivity.class);
                 startActivity(intent);
             }
         });

@@ -78,10 +78,25 @@ public class CalenderActivity extends AppCompatActivity {
         };
         cp.start();
 
+        CountDownTimer cp1 = new CountDownTimer(10000, 5000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                List<CalendarDay> respo = new ArrayList<>();
+                eventList.setValue(respo);
+            }
+        };
+        cp1.start();
 
         eventList.observe(this, new Observer<List<CalendarDay>>() {
             @Override
             public void onChanged(List<CalendarDay> calendarDays) {
+
+                calendarView.removeDecorators();
 
                 for(CalendarDay days : calendarDays){
                     calendarView.addDecorator(new DayViewDecorator() {

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
@@ -330,7 +331,7 @@ public class UploadActivity extends AppCompatActivity {
                     else{
 
                         // Creating compressed bitmap
-                        Bitmap compressedBitmap = getCompressedBitmap(BitmapFactory.decodeFile(m1.getPath()));
+                        Bitmap compressedBitmap = getCompressedBitmap(m1.getPath(), BitmapFactory.decodeFile(m1.getPath()));
 
                         // Saving compressed bitmap
                         File file = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
@@ -481,9 +482,8 @@ public class UploadActivity extends AppCompatActivity {
     public void addImage(MediaPreview m1){
 
         CropRotation.setVisibility(View.VISIBLE);
-        Bitmap bmp = BitmapFactory.decodeFile(m1.getPath());
+        Glide.with(this).load(m1.getPath()).into(ImageStatus);
 
-        ImageStatus.setImageBitmap(bmp);
         timeLineLayout.setVisibility(View.GONE);
         durationText.setVisibility(View.GONE);
         VideoStatus.setVisibility(View.GONE);
@@ -567,7 +567,46 @@ public class UploadActivity extends AppCompatActivity {
     }
 
     // returns compressed/scaled bitmap
-    public Bitmap getCompressedBitmap(Bitmap bmp){
+    public Bitmap getCompressedBitmap(String path, Bitmap bmp){
+
+        Bitmap scaled = null;
+
+        try {
+            ExifInterface ei = new ExifInterface(path);
+
+            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    scaled = rotatedImage(bmp, 90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    scaled = rotatedImage(bmp, 180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    scaled = rotatedImage(bmp, 270);
+                case ExifInterface.ORIENTATION_NORMAL:
+                default:
+                    scaled = rotatedImage(bmp, 0);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return scaled;
+    }
+
+    // rotate image based on Exif interface
+    private Bitmap rotatedImage(Bitmap bmp, int angle){
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return scaledBitmap(Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(),
+                matrix, true));
+    }
+
+    private Bitmap scaledBitmap(Bitmap bmp){
         // compression of image happens here
         int nh = (int) ( bmp.getHeight() * (512.0 / bmp.getWidth()) );
         Bitmap scaled = Bitmap.createScaledBitmap(bmp, 512, nh, true);
